@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EQ 테크닉 바이블 — 5장</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;700&display=swap');
+    :root {
+      --bg:#ffffff; --bg2:#f8f8f6; --bg3:#f2f1ee; --surface:#ebe9e4;
+      --border:#d8d5ce; --accent:#c9541e; --blue:#2563eb; --green:#16a34a;
+      --red:#dc2626; --text:#1a1a18; --text-dim:#5a5a54; --text-mute:#a8a8a0;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-weight:400;line-height:1.85;font-size:16px;}
+
+    .toc-sidebar{position:fixed;top:0;left:0;width:256px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);padding:40px 24px;overflow-y:auto;z-index:100;}
+    .toc-sidebar .book-title{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:6px;}
+    .toc-sidebar h2{font-size:14px;font-weight:700;margin-bottom:28px;}
+    .toc-sidebar ul{list-style:none;}
+    .toc-sidebar li{margin-bottom:2px;}
+    .toc-sidebar a{display:block;padding:7px 12px;border-radius:6px;color:var(--text-dim);text-decoration:none;font-size:13px;transition:all .2s;}
+    .toc-sidebar a:hover,.toc-sidebar a.active{background:var(--surface);color:var(--accent);}
+    .toc-chapter{font-size:10px;letter-spacing:.1em;color:var(--text-mute);font-weight:700;margin:20px 0 6px 12px;text-transform:uppercase;}
+
+    .progress-bar{position:fixed;top:0;left:256px;right:0;height:3px;background:var(--border);z-index:200;}
+    .progress-fill{height:100%;background:var(--accent);width:0%;transition:width .1s;}
+
+    .main{margin-left:256px;max-width:820px;padding:80px 64px 120px;}
+
+    .chapter-header{margin-bottom:72px;}
+    .chapter-label{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:18px;}
+    .chapter-label::before{content:'';display:block;width:28px;height:2px;background:var(--accent);}
+    .chapter-header h1{font-family:'Noto Serif KR',serif;font-size:clamp(30px,5vw,50px);font-weight:700;line-height:1.3;margin-bottom:24px;}
+    .chapter-header h1 em{color:var(--accent);font-style:normal;}
+    .chapter-intro{font-size:17px;line-height:1.95;color:var(--text-dim);border-left:3px solid var(--border);padding-left:20px;}
+
+    .section{margin-bottom:72px;}
+    h2{font-family:'Noto Serif KR',serif;font-size:24px;font-weight:700;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+    h2 .num{color:var(--accent);margin-right:10px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;}
+    h3{font-size:17px;font-weight:700;margin:40px 0 14px;}
+    h3::before{content:'▍';color:var(--accent);margin-right:8px;}
+    p{margin-bottom:18px;font-size:16px;line-height:1.95;}
+
+    /* 주파수 대역표 */
+    .freq-band-table{width:100%;border-collapse:collapse;margin:28px 0;font-size:13px;}
+    .freq-band-table th{background:var(--text);color:#fff;font-size:11px;font-weight:700;letter-spacing:.06em;padding:12px 14px;text-align:center;border-right:1px solid rgba(255,255,255,.15);}
+    .freq-band-table th:first-child{text-align:left;}
+    .freq-band-table td{padding:11px 14px;border-bottom:1px solid var(--border);border-right:1px solid var(--border);text-align:center;vertical-align:top;font-size:13px;line-height:1.6;color:var(--text-dim);}
+    .freq-band-table td:first-child{font-weight:700;color:var(--text);text-align:left;background:var(--bg2);}
+    .freq-band-table tr:last-child td{border-bottom:none;}
+
+    /* 악기 블록 */
+    .instrument-block{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:32px;margin:32px 0;}
+    .inst-header{display:flex;align-items:center;gap:16px;margin-bottom:22px;}
+    .inst-icon{font-size:32px;}
+    .inst-title{font-size:20px;font-weight:700;color:var(--text);}
+    .inst-sub{font-size:13px;color:var(--text-mute);margin-top:2px;}
+
+    .eq-steps{display:flex;flex-direction:column;gap:10px;margin:16px 0;}
+    .eq-step{display:grid;grid-template-columns:120px 1fr;gap:12px;align-items:start;padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:8px;}
+    .eq-freq{font-size:13px;font-weight:700;color:var(--accent);}
+    .eq-action{font-size:14px;color:var(--text-dim);line-height:1.65;}
+    .eq-action strong{color:var(--text);}
+    .inst-tip{margin-top:18px;padding:16px 20px;background:rgba(201,84,30,.06);border-radius:8px;font-size:14px;color:var(--text-dim);line-height:1.7;}
+    .inst-tip strong{color:var(--accent);}
+
+    /* 팁 리스트 */
+    .tip-list{display:flex;flex-direction:column;gap:12px;margin:24px 0;}
+    .tip-item{display:flex;align-items:flex-start;gap:16px;padding:16px 20px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;}
+    .tip-num{min-width:28px;height:28px;background:var(--accent);color:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;margin-top:1px;}
+    .tip-item p{margin:0;font-size:15px;color:var(--text-dim);line-height:1.7;}
+    .tip-item p strong{color:var(--text);}
+
+    .callout{border-radius:10px;padding:20px 24px;margin:28px 0;border-left:4px solid;}
+    .callout.tip{background:#f0fdf4;border-color:var(--green);}
+    .callout.info{background:#eff6ff;border-color:var(--blue);}
+    .callout.warning{background:#fff5f5;border-color:var(--red);}
+    .callout-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+    .callout.tip .callout-label{color:var(--green);}
+    .callout.info .callout-label{color:var(--blue);}
+    .callout.warning .callout-label{color:var(--red);}
+    .callout p{margin:0;font-size:15px;line-height:1.8;color:var(--text-dim);}
+    .callout p strong{color:var(--text);}
+
+    mark{background:rgba(201,84,30,.1);color:#a83e10;padding:1px 4px;border-radius:3px;}
+
+    .divider{display:flex;align-items:center;gap:14px;margin:64px 0;color:var(--text-mute);font-size:12px;}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+    .summary-box{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:32px;margin:40px 0;}
+    .summary-box h4{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:18px;}
+    .summary-box ul{list-style:none;display:flex;flex-direction:column;gap:12px;}
+    .summary-box li{display:flex;align-items:flex-start;gap:12px;font-size:15px;line-height:1.7;}
+    .summary-box li::before{content:'→';color:var(--accent);font-weight:700;min-width:16px;}
+
+    .chapter-nav{display:flex;justify-content:space-between;margin-top:96px;padding-top:32px;border-top:1px solid var(--border);}
+    .nav-btn{display:inline-flex;flex-direction:column;gap:4px;text-decoration:none;padding:16px 24px;border-radius:10px;border:1px solid var(--border);transition:all .2s;}
+    .nav-btn:hover{border-color:var(--accent);background:var(--bg3);}
+    .nav-btn.next{text-align:right;}
+    .nav-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-mute);}
+    .nav-title{font-size:14px;font-weight:700;color:var(--text);}
+
+    @media(max-width:860px){.toc-sidebar{display:none;}.main{margin-left:0;padding:40px 24px 80px;}.progress-bar{left:0;}.eq-step{grid-template-columns:1fr;}}
+    ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg2);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  </style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="toc-sidebar">
+  <div class="book-title">EQ 테크닉 바이블</div>
+  <h2>목차</h2>
+  <ul>
+    <div class="toc-chapter">Chapter 5</div>
+    <li><a href="#freq-band">주파수 대역별 특성</a></li>
+    <li><a href="#tips">EQ 실전 10가지 원칙</a></li>
+    <li><a href="#vocal">보컬</a></li>
+    <li><a href="#guitar">기타</a></li>
+    <li><a href="#piano">피아노</a></li>
+    <li><a href="#others">브라스 · 스트링스</a></li>
+    <li><a href="#summary">정리</a></li>
+    <div class="toc-chapter">다른 챕터</div>
+    <li><a href="chapter4.html">← 4장. 드럼과 베이스</a></li>
+    <li><a href="index.html">전체 목차</a></li>
+  </ul>
+</nav>
+
+<main class="main">
+  <header class="chapter-header">
+    <div class="chapter-label">Chapter 05</div>
+    <h1>보컬 · 기타 · 피아노<br/><em>실전 EQ</em></h1>
+    <p class="chapter-intro">
+      리듬 섹션 위에 올라가는 악기들의 EQ.<br/>
+      각 악기의 핵심 주파수를 파악하면 믹스 안에서 자리가 보인다.
+    </p>
+  </header>
+
+  <!-- 주파수 대역별 특성 -->
+  <section class="section" id="freq-band">
+    <h2><span class="num">01</span>주파수 대역별 공통 특성</h2>
+
+    <p>어느 악기에나 적용되는 주파수 대역별 특성을 먼저 파악해두면, 새로운 악기를 접했을 때도 탐색 범위를 빠르게 좁힐 수 있다.</p>
+
+    <table class="freq-band-table">
+      <thead>
+        <tr>
+          <th>대역</th>
+          <th>특성과 역할</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>60Hz 이하</td>
+          <td>실제로 들리기보다 몸으로 느끼는 초저역. 장르와 악기에 따라 필요 여부가 갈린다. 불필요하면 하이패스 필터로 과감히 제거한다.</td>
+        </tr>
+        <tr>
+          <td>60~300Hz</td>
+          <td>리듬 섹션의 바디감·두께감·묵직함을 결정하는 대역. 이 대역의 밸런스가 믹스 전체의 중심을 잡는다.</td>
+        </tr>
+        <tr>
+          <td>300Hz~2kHz</td>
+          <td>대부분 악기의 음색이 집중되는 중역. 500Hz~1kHz 부근에 여러 악기가 몰리기 쉽다. 악기 간 공간 분리가 중요한 대역.</td>
+        </tr>
+        <tr>
+          <td>2~4kHz</td>
+          <td>존재감·앞으로 나오는 느낌을 결정한다. 과하게 올리면 귀에 피로감을 준다. 보컬, 기타 솔로의 핵심 대역.</td>
+        </tr>
+        <tr>
+          <td>4~7kHz</td>
+          <td>음색의 밝기를 결정한다. 이 대역이 많으면 날카롭고, 부족하면 흐릿하게 들린다.</td>
+        </tr>
+        <tr>
+          <td>7kHz 이상</td>
+          <td>거의 배음만 존재. 공기감(에어)과 S/N비에 영향을 준다. 셸빙으로 전체적인 밝기 조정에 활용한다.</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="divider">✦</div>
+
+  <!-- EQ 10가지 원칙 -->
+  <section class="section" id="tips">
+    <h2><span class="num">02</span>EQ 실전 10가지 원칙</h2>
+    <p>믹싱 현장에서 반복적으로 확인되는 EQ 운용의 핵심 원칙들이다. 작업 전 체크리스트로 활용해보자.</p>
+
+    <div class="tip-list">
+      <div class="tip-item">
+        <div class="tip-num">1</div>
+        <p><strong>신뢰할 수 있는 모니터 시스템을 먼저 갖춰라.</strong> 모니터가 왜곡되면 아무리 EQ를 잘해도 다른 환경에서 다르게 들린다.</p>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">2</div>
+        <p><strong>EQ 전에 목표 사운드를 먼저 정해라.</strong> 레퍼런스 트랙을 옆에 두고 비교하면서 작업하면 방향이 명확해진다.</p>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">3</div>
+        <p><strong>각 악기의 소리를 따로 파악해라.</strong> 전체 앙상블 속 소리를 듣는 것도 중요하지만, 악기별 핵심 주파수를 알아야 EQ가 의미를 가진다.</p>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">4</div>
+        <p><strong>부스트만큼 컷도 효과적으로 활용하라.</strong> 오히려 필요 없는 대역을 컷하면 믹스 전체가 더 명확해지는 경우가 많다.</p>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">5</div>
+        <p><strong>여러 악기에 같은 주파수만 EQ하지 마라.</strong> 모든 악기를 같은 대역에서 올리면 그 대역이 폭발적으로 쌓인다.</p>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">6</div>
+        <p><strong>특정 음역을 한쪽 채널에 몰지 마라.</strong> 믹스의 저역·중역·고역을 스테레오 전체에 균형 있게 배치해야 한다.</p>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">7</div>
+        <p><strong>넓은 Q폭이 자연스러운 결과를 낸다.</strong> 특히 부스트할 때 좁은 Q는 부자연스럽고 귀에 거슬린다.</p>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">8</div>
+        <p><strong>솔로가 아닌 전체 믹스로 최종 판단하라.</strong> 솔로로 좋게 들려도 믹스 안에서 묻히거나 과하게 튀는 경우가 많다.</p>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">9</div>
+        <p><strong>레코딩 단계에서 EQ를 결정하라.</strong> 마이크 위치와 공간 세팅이 먼저다. 소스가 좋으면 믹스에서 EQ를 거의 안 써도 된다.</p>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">10</div>
+        <p><strong>EQ 전후를 같은 볼륨으로 비교하라.</strong> 볼륨이 커진 것을 음색이 좋아진 것으로 착각하지 않도록 레벨을 맞춰 비교한다.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider">✦</div>
+
+  <!-- 보컬 -->
+  <section class="section" id="vocal">
+    <h2><span class="num">03</span>보컬</h2>
+    <p>보컬은 대부분의 장르에서 믹스의 중심이다. 명료도와 자연스러움을 동시에 잡는 것이 보컬 EQ의 핵심이다. 과도한 EQ는 보컬을 인공적으로 만들기 때문에 최소한으로 접근하는 것이 원칙이다.</p>
+
+    <div class="instrument-block">
+      <div class="inst-header">
+        <div class="inst-icon">🎙️</div>
+        <div>
+          <div class="inst-title">보컬 EQ 접근법</div>
+          <div class="inst-sub">명료도와 자연스러움의 균형</div>
+        </div>
+      </div>
+      <div class="eq-steps">
+        <div class="eq-step">
+          <div class="eq-freq">100Hz 이하</div>
+          <div class="eq-action"><strong>하이패스 필터 적용.</strong> 보컬에 필요 없는 저역 잡음, 공기 진동, 팝 노이즈(파열음)를 제거한다. 80~120Hz에서 컷하는 것이 일반적이다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">200~400Hz</div>
+          <div class="eq-action"><strong>뭉침 제거 검토.</strong> 마이크 근접 효과로 이 대역이 과하게 쌓이기 쉽다. 약간 컷하면 보컬이 더 선명하게 앞으로 나온다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">800Hz~3kHz</div>
+          <div class="eq-action"><strong>명료도와 음색 조정.</strong> 보컬의 핵심 대역. 2~3kHz를 살짝 올리면 가사가 더 또렷하게 들린다. 단, 과하면 날카롭고 귀에 피로감을 준다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">5~7kHz</div>
+          <div class="eq-action"><strong>자음(치찰음) 조정.</strong> 'ㅅ', 'ㅈ', 'ㅊ' 소리의 선명도를 조절한다. 이 대역이 과하면 듣기 피곤해지므로 소량만 조정한다. 디에서(De-esser) 활용도 고려하자.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">10kHz 이상</div>
+          <div class="eq-action"><strong>공기감(에어) 추가.</strong> 셸빙으로 살짝 올리면 보컬이 더 밝고 생동감 있게 들린다. 콘덴서 마이크 녹음에 효과적이다.</div>
+        </div>
+      </div>
+      <div class="inst-tip">
+        <strong>팁:</strong> 남성 보컬은 저역이 중요하고, 여성 보컬은 고역이 핵심이다. 마이크 방향과 입과의 거리에 따라 근접 효과가 달라지므로 녹음 단계에서 먼저 조정하는 것이 EQ보다 효과적이다.
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">보컬 EQ 실수</div>
+      <p>보컬을 솔로로 듣고 EQ를 맞추면 믹스 안에서 묻히는 경우가 많다. <strong>항상 다른 악기와 함께 들으면서 보컬이 자연스럽게 앞으로 나오는 위치</strong>를 찾아야 한다.</p>
+    </div>
+  </section>
+
+  <div class="divider">✦</div>
+
+  <!-- 기타 -->
+  <section class="section" id="guitar">
+    <h2><span class="num">04</span>기타</h2>
+    <p>어쿠스틱/일렉, 나일론/스틸 현, 앰프 세팅에 따라 소리가 크게 달라진다. EQ 전에 마이크 위치를 먼저 조정하는 것이 훨씬 효과적이다.</p>
+
+    <div class="instrument-block">
+      <div class="inst-header">
+        <div class="inst-icon">🎸</div>
+        <div>
+          <div class="inst-title">일렉 기타 EQ</div>
+          <div class="inst-sub">앰프 캐릭터를 살리면서 믹스에 맞춘다</div>
+        </div>
+      </div>
+      <div class="eq-steps">
+        <div class="eq-step">
+          <div class="eq-freq">80Hz 이하</div>
+          <div class="eq-action"><strong>하이패스 필터.</strong> 일렉 기타의 저역은 대부분 불필요하다. 베이스와의 공간 분리를 위해 과감하게 자른다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">200~500Hz</div>
+          <div class="eq-action"><strong>바디감 조정.</strong> 기타의 두께감이 이 대역에 있다. 뭉치는 느낌이 있으면 300~400Hz를 컷해본다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">1~3kHz</div>
+          <div class="eq-action"><strong>존재감·컷 포인트.</strong> 귀를 찌르는 날카로운 소리가 이 대역에 있는 경우가 많다. 핀포인트로 찾아 컷하면 듣기 편해진다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">3~6kHz</div>
+          <div class="eq-action"><strong>존재감·프레이즈.</strong> 기타 솔로나 리프가 믹스 안에서 또렷하게 들리는 대역. 올리면 앞으로 나온다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">8~12kHz</div>
+          <div class="eq-action"><strong>밝기·선명도.</strong> 과하게 올리면 S/N비가 나빠지고 노이즈가 부각된다. 소량으로 조정한다.</div>
+        </div>
+      </div>
+      <div class="inst-tip">
+        <strong>팁:</strong> 기타가 여러 대일 때는 각각 다른 주파수 공간을 배치해주는 것이 핵심이다. 리듬 기타는 중역, 솔로 기타는 중고역처럼 역할을 나눠 EQ하면 서로 충돌 없이 공존할 수 있다.
+      </div>
+    </div>
+
+    <div class="instrument-block">
+      <div class="inst-header">
+        <div class="inst-icon">🎵</div>
+        <div>
+          <div class="inst-title">어쿠스틱 기타 EQ</div>
+          <div class="inst-sub">자연스러운 공명을 살린다</div>
+        </div>
+      </div>
+      <div class="eq-steps">
+        <div class="eq-step">
+          <div class="eq-freq">80~100Hz 이하</div>
+          <div class="eq-action"><strong>하이패스 필터.</strong> 손가락 소음, 바닥 진동, 공기 잡음을 제거한다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">200~300Hz</div>
+          <div class="eq-action"><strong>뭉침 제거.</strong> 어쿠스틱 기타 특유의 통 울림이 이 대역에서 과하게 공명하는 경우가 있다. 컷하면 깔끔해진다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">2~3kHz</div>
+          <div class="eq-action"><strong>윤곽·피킹감.</strong> 스트로크와 피킹의 어택이 또렷해진다. 보컬과 겹치지 않도록 주의한다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">10~12kHz</div>
+          <div class="eq-action"><strong>공기감·현 소리.</strong> 어쿠스틱 기타 특유의 맑고 산뜻한 느낌. 셸빙으로 살짝 올리면 생동감이 더해진다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider">✦</div>
+
+  <!-- 피아노 -->
+  <section class="section" id="piano">
+    <h2><span class="num">05</span>피아노</h2>
+    <p>피아노는 가장 넓은 음역을 가진 악기다. 역할(반주 vs 솔로)에 따라 EQ 방향이 완전히 달라진다. 고역과 광대역 부스트에 특히 주의한다.</p>
+
+    <div class="instrument-block">
+      <div class="inst-header">
+        <div class="inst-icon">🎹</div>
+        <div>
+          <div class="inst-title">반주용 피아노 EQ</div>
+          <div class="inst-sub">다른 악기를 위한 공간을 만든다</div>
+        </div>
+      </div>
+      <div class="eq-steps">
+        <div class="eq-step">
+          <div class="eq-freq">100~200Hz</div>
+          <div class="eq-action"><strong>컷 권장.</strong> 반주 역할의 피아노는 이 대역을 적절히 컷하면 보컬과 다른 솔로 악기가 앞으로 나온다. 팝·록에서 특히 효과적이다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">300~500Hz</div>
+          <div class="eq-action"><strong>뭉침 제거.</strong> 코드 반주 시 이 대역이 쌓여 믹스가 탁해지는 경우가 많다. 컷하면 투명도가 올라간다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">4~6kHz</div>
+          <div class="eq-action"><strong>음색 밝기.</strong> 피아노의 건반 타건감이 이 대역에 있다. 올리면 존재감이 강해진다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">12kHz 이상</div>
+          <div class="eq-action"><strong>에어감.</strong> 너무 올리면 전체가 무거워지므로 소량만 조정한다.</div>
+        </div>
+      </div>
+      <div class="inst-tip">
+        <strong>팁:</strong> 반주 피아노는 "들릴 듯 말 듯"이 이상적이다. 솔로로 들을 때 빈약하게 느껴져도, 믹스 안에서 자연스럽게 배경을 채우는 역할이면 성공이다.
+      </div>
+    </div>
+
+    <div class="instrument-block">
+      <div class="inst-header">
+        <div class="inst-icon">🎼</div>
+        <div>
+          <div class="inst-title">솔로 피아노 EQ (재즈, 클래식)</div>
+          <div class="inst-sub">전음역의 자연스러운 밸런스</div>
+        </div>
+      </div>
+      <div class="eq-steps">
+        <div class="eq-step">
+          <div class="eq-freq">100~200Hz</div>
+          <div class="eq-action"><strong>깔끔하게 정리.</strong> 재즈 피아노 반주에서 컷하면 다이내믹하게 들린다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">4~6kHz</div>
+          <div class="eq-action"><strong>타건감 조정.</strong> 연주의 어택이 더 또렷해진다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">12~16kHz</div>
+          <div class="eq-action"><strong>고역 밝기.</strong> 충분히 올리기보다 필요한 만큼만 조정. 전체 균형을 보면서 결정한다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider">✦</div>
+
+  <!-- 브라스·스트링스 -->
+  <section class="section" id="others">
+    <h2><span class="num">06</span>브라스 · 스트링스</h2>
+
+    <div class="instrument-block">
+      <div class="inst-header">
+        <div class="inst-icon">🎺</div>
+        <div>
+          <div class="inst-title">브라스 (관악기) EQ</div>
+          <div class="inst-sub">강렬함과 존재감을 조절한다</div>
+        </div>
+      </div>
+      <div class="eq-steps">
+        <div class="eq-step">
+          <div class="eq-freq">300~500Hz</div>
+          <div class="eq-action"><strong>두께감.</strong> 브라스의 바디감이 이 대역에 있다. 올리면 묵직해지고, 낮추면 가볍고 산뜻해진다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">3~5kHz</div>
+          <div class="eq-action"><strong>날카로움·존재감.</strong> 브라스 특유의 날카롭고 강렬한 음색이 이 대역에 있다. 과하면 귀에 피로감을 준다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">8~12kHz</div>
+          <div class="eq-action"><strong>위로 뻗는 밝기.</strong> 트럼펫의 고음이 위로 뻗는 느낌. 브라스 섹션이 살아있는 느낌을 준다.</div>
+        </div>
+      </div>
+      <div class="inst-tip">
+        <strong>팁:</strong> 브라스는 강조를 과하게 하지 않는 것이 자연스럽다. 원래 음색의 캐릭터가 강하기 때문에 EQ보다 레벨과 공간 배치로 먼저 조정하자.
+      </div>
+    </div>
+
+    <div class="instrument-block">
+      <div class="inst-header">
+        <div class="inst-icon">🎻</div>
+        <div>
+          <div class="inst-title">스트링스 (현악기) EQ</div>
+          <div class="inst-sub">풍성함과 투명도의 균형</div>
+        </div>
+      </div>
+      <div class="eq-steps">
+        <div class="eq-step">
+          <div class="eq-freq">80Hz 이하</div>
+          <div class="eq-action"><strong>하이패스 필터.</strong> 불필요한 저역 잡음과 노이즈를 제거한다. 스트링스에서 이 대역은 거의 항상 불필요하다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">800Hz~2kHz</div>
+          <div class="eq-action"><strong>음색 밝기.</strong> 올리면 현의 텍스처가 또렷해진다. 너무 올리면 딱딱하고 차갑게 들린다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">7~10kHz</div>
+          <div class="eq-action"><strong>현의 마찰음·에어감.</strong> 스트링스 특유의 위로 뻗는 섬세한 느낌. 올리면 더 라이브하게, 낮추면 더 부드럽게 들린다.</div>
+        </div>
+      </div>
+      <div class="inst-tip">
+        <strong>팁:</strong> 스트링스는 넓은 공간에 배치되는 악기이므로 마이크 위치가 매우 중요하다. 중역을 너무 높이면 거슬리는 소리가 되기 쉬우므로 광대역으로 부드럽게 조정하는 것이 기본이다.
+      </div>
+    </div>
+  </section>
+
+  <div class="divider">✦</div>
+
+  <section class="section" id="summary">
+    <h2><span class="num">07</span>5장 정리</h2>
+    <div class="summary-box">
+      <h4>핵심 요약</h4>
+      <ul>
+        <li>보컬은 100Hz 이하 로우컷 → 200~400Hz 정리 → 2~3kHz 명료도 순서로 접근한다.</li>
+        <li>기타는 EQ 전에 마이크 위치 조정이 먼저다. 역할(리듬/솔로)에 따라 주파수 공간을 나눈다.</li>
+        <li>반주 피아노는 100~200Hz를 컷해서 보컬과 솔로 악기의 공간을 만들어준다.</li>
+        <li>브라스와 스트링스는 원래 캐릭터가 강하므로 EQ보다 레벨과 공간 배치가 먼저다.</li>
+        <li>어느 악기든 솔로가 아닌 전체 믹스 안에서 최종 판단한다.</li>
+      </ul>
+    </div>
+  </section>
+
+  <nav class="chapter-nav">
+    <a href="chapter4.html" class="nav-btn">
+      <span class="nav-label">이전 챕터</span>
+      <span class="nav-title">← 4장. 드럼과 베이스</span>
+    </a>
+    <a href="index.html" class="nav-btn next">
+      <span class="nav-label">목차</span>
+      <span class="nav-title">전체 목차 →</span>
+    </a>
+  </nav>
+</main>
+
+<script>
+  window.addEventListener('scroll',()=>{
+    const doc=document.documentElement;
+    document.getElementById('progressFill').style.width=(doc.scrollTop/(doc.scrollHeight-doc.clientHeight)*100)+'%';
+  });
+  document.querySelectorAll('section[id]').forEach(s=>{
+    new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          document.querySelectorAll('.toc-sidebar a[href^="#"]').forEach(l=>l.classList.remove('active'));
+          const l=document.querySelector(`.toc-sidebar a[href="#${e.target.id}"]`);
+          if(l)l.classList.add('active');
+        }
+      });
+    },{rootMargin:'-30% 0px -60% 0px'}).observe(s);
+  });
+</script>
+</body>
+</html>
