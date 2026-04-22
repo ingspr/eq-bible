@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EQ 테크닉 바이블 — 8장</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;700&display=swap');
+    :root {
+      --bg:#ffffff; --bg2:#f8f8f6; --bg3:#f2f1ee; --surface:#ebe9e4;
+      --border:#d8d5ce; --accent:#c9541e; --blue:#2563eb; --green:#16a34a;
+      --red:#dc2626; --text:#1a1a18; --text-dim:#5a5a54; --text-mute:#a8a8a0;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-weight:400;line-height:1.85;font-size:16px;}
+
+    .toc-sidebar{position:fixed;top:0;left:0;width:256px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);padding:40px 24px;overflow-y:auto;z-index:100;}
+    .toc-sidebar .book-title{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:6px;}
+    .toc-sidebar h2{font-size:14px;font-weight:700;margin-bottom:28px;}
+    .toc-sidebar ul{list-style:none;}
+    .toc-sidebar li{margin-bottom:2px;}
+    .toc-sidebar a{display:block;padding:7px 12px;border-radius:6px;color:var(--text-dim);text-decoration:none;font-size:13px;transition:all .2s;}
+    .toc-sidebar a:hover,.toc-sidebar a.active{background:var(--surface);color:var(--accent);}
+    .toc-chapter{font-size:10px;letter-spacing:.1em;color:var(--text-mute);font-weight:700;margin:20px 0 6px 12px;text-transform:uppercase;}
+
+    .progress-bar{position:fixed;top:0;left:256px;right:0;height:3px;background:var(--border);z-index:200;}
+    .progress-fill{height:100%;background:var(--accent);width:0%;transition:width .1s;}
+
+    .main{margin-left:256px;max-width:820px;padding:80px 64px 120px;}
+
+    .chapter-header{margin-bottom:72px;}
+    .chapter-label{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:18px;}
+    .chapter-label::before{content:'';display:block;width:28px;height:2px;background:var(--accent);}
+    .chapter-header h1{font-family:'Noto Serif KR',serif;font-size:clamp(30px,5vw,50px);font-weight:700;line-height:1.3;margin-bottom:24px;}
+    .chapter-header h1 em{color:var(--accent);font-style:normal;}
+    .chapter-intro{font-size:17px;line-height:1.95;color:var(--text-dim);border-left:3px solid var(--border);padding-left:20px;}
+
+    .section{margin-bottom:72px;}
+    h2{font-family:'Noto Serif KR',serif;font-size:24px;font-weight:700;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+    h2 .num{color:var(--accent);margin-right:10px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;}
+    h3{font-size:17px;font-weight:700;margin:40px 0 14px;}
+    h3::before{content:'▍';color:var(--accent);margin-right:8px;}
+    p{margin-bottom:18px;font-size:16px;line-height:1.95;}
+
+    /* 비교 그리드 */
+    .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:28px 0;}
+    .compare-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px 26px;}
+    .compare-card h4{font-size:15px;font-weight:700;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+    .compare-card h4 span{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;background:var(--accent);color:#fff;padding:2px 8px;border-radius:4px;margin-left:8px;vertical-align:middle;}
+    .compare-card ul{list-style:none;display:flex;flex-direction:column;gap:8px;}
+    .compare-card li{font-size:14px;color:var(--text-dim);line-height:1.65;padding-left:14px;position:relative;}
+    .compare-card li::before{content:'·';position:absolute;left:0;color:var(--accent);font-weight:700;}
+
+    /* 파라미터 표 */
+    .param-table{width:100%;border-collapse:collapse;margin:24px 0;font-size:13px;}
+    .param-table th{background:var(--text);color:#fff;font-size:11px;letter-spacing:.06em;padding:11px 14px;text-align:left;font-weight:700;}
+    .param-table td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text-dim);line-height:1.65;}
+    .param-table td:first-child{font-weight:700;color:var(--text);white-space:nowrap;}
+    .param-table tr:last-child td{border-bottom:none;}
+    .param-table tr:nth-child(even) td{background:var(--bg2);}
+
+    /* 단계 절차 */
+    .steps{display:flex;flex-direction:column;gap:0;margin:24px 0;}
+    .step{display:grid;grid-template-columns:40px 1fr;gap:16px;padding:18px 0;border-bottom:1px solid var(--border);}
+    .step:last-child{border-bottom:none;}
+    .step-num{width:40px;height:40px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;margin-top:2px;}
+    .step-content{padding-top:4px;}
+    .step-title{font-size:15px;font-weight:700;margin-bottom:6px;}
+    .step-desc{font-size:14px;color:var(--text-dim);line-height:1.75;margin:0;}
+
+    /* 메서드 그리드 */
+    .method-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0;}
+    .method-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:22px 24px;}
+    .method-card h4{font-size:14px;font-weight:700;margin-bottom:10px;color:var(--accent);}
+    .method-card p{margin:0;font-size:13px;color:var(--text-dim);line-height:1.75;}
+
+    /* 팁 리스트 */
+    .tip-list{display:flex;flex-direction:column;gap:12px;margin:24px 0;}
+    .tip-item{display:flex;align-items:flex-start;gap:16px;padding:16px 20px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;}
+    .tip-num{min-width:28px;height:28px;background:var(--accent);color:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;margin-top:1px;}
+    .tip-item p{margin:0;font-size:15px;color:var(--text-dim);line-height:1.7;}
+    .tip-item p strong{color:var(--text);}
+
+    /* 이퀄라이징 시퀀스 */
+    .eq-seq{display:flex;flex-direction:column;gap:0;margin:24px 0;border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+    .eq-seq-item{display:grid;grid-template-columns:48px 1fr;gap:0;}
+    .eq-seq-item + .eq-seq-item{border-top:1px solid var(--border);}
+    .eq-seq-step{background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;padding:18px 0;}
+    .eq-seq-content{padding:16px 22px;}
+    .eq-seq-title{font-size:14px;font-weight:700;margin-bottom:4px;}
+    .eq-seq-desc{font-size:13px;color:var(--text-dim);line-height:1.7;margin:0;}
+    .eq-seq-freq{font-size:13px;color:var(--accent);font-weight:700;margin-top:6px;}
+
+    /* 회로 박스 */
+    .circuit-box{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:28px 32px;margin:24px 0;}
+    .circuit-box h4{font-size:14px;font-weight:700;margin-bottom:14px;color:var(--text);}
+    .circuit-timeline{display:flex;flex-direction:column;gap:12px;}
+    .circuit-era{display:flex;gap:16px;align-items:flex-start;}
+    .circuit-year{font-size:11px;font-weight:700;color:var(--accent);min-width:56px;padding-top:2px;letter-spacing:.04em;}
+    .circuit-desc{font-size:14px;color:var(--text-dim);line-height:1.7;}
+
+    .callout{border-radius:10px;padding:20px 24px;margin:28px 0;border-left:4px solid;}
+    .callout.tip{background:#f0fdf4;border-color:var(--green);}
+    .callout.info{background:#eff6ff;border-color:var(--blue);}
+    .callout.warning{background:#fff5f5;border-color:var(--red);}
+    .callout.accent{background:rgba(201,84,30,.05);border-color:var(--accent);}
+    .callout-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+    .callout.tip .callout-label{color:var(--green);}
+    .callout.info .callout-label{color:var(--blue);}
+    .callout.warning .callout-label{color:var(--red);}
+    .callout.accent .callout-label{color:var(--accent);}
+    .callout p{margin:0;font-size:15px;line-height:1.8;color:var(--text-dim);}
+    .callout p strong{color:var(--text);}
+
+    mark{background:rgba(201,84,30,.1);color:#a83e10;padding:1px 4px;border-radius:3px;}
+
+    .divider{display:flex;align-items:center;gap:14px;margin:64px 0;color:var(--text-mute);font-size:12px;}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+    .summary-box{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:32px;margin:40px 0;}
+    .summary-box h4{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:18px;}
+    .summary-box ul{list-style:none;display:flex;flex-direction:column;gap:12px;}
+    .summary-box li{display:flex;align-items:flex-start;gap:12px;font-size:15px;line-height:1.7;}
+    .summary-box li::before{content:'→';color:var(--accent);font-weight:700;min-width:16px;}
+
+    .chapter-nav{display:flex;justify-content:space-between;margin-top:96px;padding-top:32px;border-top:1px solid var(--border);}
+    .nav-btn{display:inline-flex;flex-direction:column;gap:4px;text-decoration:none;padding:16px 24px;border-radius:10px;border:1px solid var(--border);transition:all .2s;}
+    .nav-btn:hover{border-color:var(--accent);background:var(--bg3);}
+    .nav-btn.next{text-align:right;}
+    .nav-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-mute);}
+    .nav-title{font-size:14px;font-weight:700;color:var(--text);}
+
+    @media(max-width:860px){.toc-sidebar{display:none;}.main{margin-left:0;padding:40px 24px 80px;}.progress-bar{left:0;}.compare-grid,.method-grid{grid-template-columns:1fr;}.eq-seq-step{padding:14px 10px;font-size:11px;}}
+    ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg2);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  </style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="toc-sidebar">
+  <div class="book-title">EQ 테크닉 바이블</div>
+  <h2>목차</h2>
+  <ul>
+    <div class="toc-chapter">Chapter 8</div>
+    <li><a href="#what-is-geq">그래픽 이퀄라이저란</a></li>
+    <li><a href="#bands-db">밴드 수와 dB 범위</a></li>
+    <li><a href="#studio-pa">스튜디오 & PA 활용</a></li>
+    <li><a href="#ch-config">1ch vs 2ch 선택</a></li>
+    <li><a href="#price">기종 선택과 가격대</a></li>
+    <li><a href="#practice">실전 이퀄라이징</a></li>
+    <li><a href="#room">룸 어쿠스틱 자가 보정</a></li>
+    <li><a href="#circuit">내부 회로 이야기</a></li>
+    <li><a href="#summary">정리</a></li>
+    <div class="toc-chapter">다른 챕터</div>
+    <li><a href="chapter7.html">← 7장. M/S & 마스터링 EQ</a></li>
+    <li><a href="index.html">전체 목차</a></li>
+  </ul>
+</nav>
+
+<main class="main">
+  <header class="chapter-header">
+    <div class="chapter-label">Chapter 08</div>
+    <h1>그래픽 이퀄라이저<br/><em>심층 가이드</em></h1>
+    <p class="chapter-intro">
+      왜 그래픽인가, 밴드 수는 어떻게 결정되는가, 현장에서 어떻게 쓰는가.<br/>
+      그래픽 이퀄라이저를 제대로 이해하면 파라메트릭 EQ도 더 잘 보인다.
+    </p>
+  </header>
+
+  <!-- 1. 그래픽 이퀄라이저란 -->
+  <section class="section" id="what-is-geq">
+    <h2><span class="num">01</span>그래픽 이퀄라이저란 무엇인가</h2>
+
+    <p>
+      악기나 목소리의 음색은 <mark>기본음과 배음의 밸런스</mark>로 결정된다.
+      이퀄라이징이란 그 배음의 비율을 의도적으로 바꾸는 작업이다.
+      악기마다 고유한 음색 이미지가 있고, 믹스 안에서 맡은 역할이 있다.
+      원음을 그대로 살릴 수도 있고, EQ로 새로운 음색을 만들어낼 수도 있다.
+    </p>
+
+    <h3>왜 "그래픽"이라고 부르는가</h3>
+    <p>
+      그래픽 이퀄라이저의 슬라이더는 중심이 '0(플랫)'이고, 위로 올리면 부스트,
+      내리면 컷이다. 슬라이더들의 위치를 한눈에 보는 것만으로
+      <mark>주파수 특성 그래프와 동일한 형태</mark>를 파악할 수 있다.
+      이 직관적인 패널 디자인 때문에 "그래픽"이라는 이름이 붙었다.
+    </p>
+
+    <div class="callout info">
+      <div class="callout-label">그래픽 vs 멀티밴드</div>
+      <p>
+        볼륨 방식이더라도 슬라이더 위치가 주파수 커브와 연동되지 않는 구조는
+        <strong>"멀티밴드 이퀄라이저"</strong>라 부르며 그래픽 이퀄라이저가 아니다.
+        진짜 그래픽 EQ는 슬라이더 형태가 곧 EQ 커브의 시각적 표현이어야 한다.
+      </p>
+    </div>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h4>그래픽 이퀄라이저 <span>Graphic EQ</span></h4>
+        <ul>
+          <li>슬라이더 위치 = 주파수 커브 시각화</li>
+          <li>조작이 직관적이고 빠름</li>
+          <li>밴드 주파수가 고정되어 있음</li>
+          <li>PA 현장, 룸 어쿠스틱 보정에 강점</li>
+          <li>Constant-Q 방식으로 예측 가능한 조작</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <h4>파라메트릭 이퀄라이저 <span>Parametric EQ</span></h4>
+        <ul>
+          <li>FREQ·GAIN·Q 세 파라미터를 자유 설정</li>
+          <li>원하는 주파수 포인트에 정확히 접근 가능</li>
+          <li>협대역 수술적 처리에 탁월</li>
+          <li>스튜디오 레코딩·믹싱의 표준 도구</li>
+          <li>그래픽 EQ의 대체가 아닌 별개의 도구</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 2. 밴드 수와 dB 범위 -->
+  <section class="section" id="bands-db">
+    <h2><span class="num">02</span>밴드 수와 dB 범위 선택하기</h2>
+
+    <h3>밴드 수 — 얼마나 세밀하게 나눌 것인가</h3>
+    <p>
+      가청 주파수(20Hz~20kHz)를 몇 구간으로 나누느냐에 따라 밴드 수가 결정된다.
+      옥타브 계산 공식에 따라 밴드 주파수가 결정되며, 분할이 촘촘할수록 세밀한 조정이 가능하다.
+    </p>
+
+    <table class="param-table">
+      <thead>
+        <tr><th>분할 방식</th><th>밴드 수</th><th>주요 용도</th><th>특징</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1옥타브</td>
+          <td>10밴드</td>
+          <td>음악 제작, 악기별 이퀄라이징</td>
+          <td>다루기 쉽고 직관적. 음악 작업의 표준</td>
+        </tr>
+        <tr>
+          <td>½옥타브</td>
+          <td>약 20밴드</td>
+          <td>중간 용도</td>
+          <td>세밀함과 조작성의 절충</td>
+        </tr>
+        <tr>
+          <td>⅓옥타브</td>
+          <td>27~31밴드</td>
+          <td>룸 어쿠스틱 보정, 측정용</td>
+          <td>정밀하지만 인접 밴드 간 간섭 주의</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout warning">
+      <div class="callout-label">⅓옥타브 EQ의 함정</div>
+      <p>
+        밴드가 많으면 더 정밀할 것 같지만, <strong>인접 밴드 간 상호 영향</strong>이 커서
+        오히려 조작이 어렵다. 한 밴드를 건드리면 옆 밴드에 영향을 준다.
+        음악 제작에는 10밴드(1옥타브)가 다루기 쉽고 충분한 경우가 대부분이다.
+      </p>
+    </div>
+
+    <h3>±dB 범위 — 얼마나 크게 바꿀 것인가</h3>
+    <p>
+      슬라이더의 최대 변화량이 기종마다 ±6dB, ±12dB, ±15dB 등으로 다르다.
+      같은 물리적 이동 거리라도 최대 범위가 클수록 mm당 변화량이 크다.
+    </p>
+
+    <table class="param-table">
+      <thead>
+        <tr><th>dB 범위</th><th>섬세함</th><th>변화량</th><th>권장 용도</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>±6dB</td>
+          <td>높음 (섬세)</td>
+          <td>작음</td>
+          <td>룸 보정, 마스터링 버스</td>
+        </tr>
+        <tr>
+          <td>±12dB</td>
+          <td>중간</td>
+          <td>중간</td>
+          <td>악기별 이퀄라이징, 범용</td>
+        </tr>
+        <tr>
+          <td>±15dB 이상</td>
+          <td>낮음 (거침)</td>
+          <td>큼</td>
+          <td>과감한 음색 변형, 이펙트적 사용</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout tip">
+      <div class="callout-label">선택 기준</div>
+      <p>
+        악기별 이퀄라이징이 주 목적이라면 <strong>±12dB 전후</strong>가 적당하다.
+        섬세한 보정이 필요한 룸 어쿠스틱 작업에는 ±6dB로도 충분하며 조작 실수도 줄어든다.
+        dB는 로그 스케일이라는 것도 기억하자. 6dB는 2배, 12dB는 4배의 에너지 변화다.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 3. 스튜디오 & PA 활용 -->
+  <section class="section" id="studio-pa">
+    <h2><span class="num">03</span>스튜디오 & PA 현장 활용법</h2>
+
+    <h3>스튜디오에서의 역할</h3>
+    <p>
+      스튜디오에서 그래픽 이퀄라이저는 믹싱보다 <mark>모니터 환경 보정</mark>에 더 자주 쓰인다.
+      어떤 스튜디오에서 만든 믹스가 다른 곳에서 다르게 들린다면,
+      컨트롤 룸 자체의 주파수 응답에 문제가 있는 것이다.
+    </p>
+
+    <div class="method-grid">
+      <div class="method-card">
+        <h4>🎚️ 모니터 환경 보정</h4>
+        <p>모니터 앰프 직전에 ⅓옥타브 27밴드 EQ를 삽입하고 측정용 마이크로 방의 응답을 측정하면서 플랫에 가깝게 보정한다. "들리는 소리 = 실제 소리"에 가까워진다.</p>
+      </div>
+      <div class="method-card">
+        <h4>🎛️ 채널별 음색 보정</h4>
+        <p>파라메트릭 EQ로 해결하기 어려운 특정 대역 문제를 그래픽 EQ로 보완한다. 특히 여러 밴드를 동시에 조금씩 조정해야 할 때 그래픽 EQ가 빠르다.</p>
+      </div>
+    </div>
+
+    <h3>PA 현장에서의 역할</h3>
+    <p>
+      라이브 공연 현장에서 그래픽 이퀄라이저는 거의 항상 에펙터 랙에 포함된다.
+      스튜디오와 결정적으로 다른 점은 <mark>실시간으로 변하는 환경</mark>을 다뤄야 한다는 것이다.
+    </p>
+
+    <div class="method-grid">
+      <div class="method-card">
+        <h4>🏟️ 공연장 음질 특성 보정</h4>
+        <p>공연장의 형태, 소재, 관객 수에 따라 주파수 응답이 크게 달라진다. EQ로 공연장의 음향 버릇을 잡으면 어느 위치에서 들어도 균일한 소리가 된다.</p>
+      </div>
+      <div class="method-card">
+        <h4>🔊 피드백 마진 확보</h4>
+        <p>피드백이 일어나기 쉬운 특정 주파수를 사운드 체크 중에 미리 파악하고 EQ로 낮춰두면 공연 중 하울링 위험을 줄일 수 있다.</p>
+      </div>
+    </div>
+
+    <div class="callout accent">
+      <div class="callout-label">현장 엔지니어의 관점</div>
+      <p>
+        피드백 예방 목적에는 파라메트릭 이퀄라이저가 더 정밀하다는 엔지니어도 있다.
+        협대역으로 정확히 피드백 주파수만 건드릴 수 있기 때문이다.
+        결국 <strong>그래픽 EQ는 빠른 전체 보정, 파라메트릭 EQ는 정밀한 포인트 처리</strong>로
+        각자의 역할이 있으며, 현장에서는 두 가지를 함께 사용하는 경우가 많다.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 4. 1ch vs 2ch -->
+  <section class="section" id="ch-config">
+    <h2><span class="num">04</span>1ch vs 2ch — 어떻게 선택하는가</h2>
+
+    <p>
+      그래픽 이퀄라이저는 모노(1ch)와 스테레오(2ch) 구성이 있다.
+      단순히 채널 수의 차이지만, 용도에 따라 선택이 달라진다.
+    </p>
+
+    <table class="param-table">
+      <thead>
+        <tr><th>구성</th><th>특징</th><th>주용도</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1ch (모노)</td>
+          <td>랙 공간 효율 높음, 개별 처리 특화</td>
+          <td>악기별 독립 이퀄라이징, 모노 PA 채널 보정</td>
+        </tr>
+        <tr>
+          <td>2ch (스테레오)</td>
+          <td>좌우 동시 처리, 게인 연동 기능 있는 기종도 있음</td>
+          <td>스테레오 믹스 보정, 마스터 버스, 스테레오 PA</td>
+        </tr>
+        <tr>
+          <td>2in 1out</td>
+          <td>두 입력을 합산 후 단일 처리</td>
+          <td>좌우를 동시에 같은 양으로 이퀄라이징</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout tip">
+      <div class="callout-label">2ch 기종 선택 팁</div>
+      <p>
+        좌우 슬라이더를 <strong>연동(Gang) 모드로 함께 조작</strong>할 수 있는 기종이 편리하다.
+        테이프나 레코드의 음질 보정처럼 좌우를 같은 양으로 처리할 때 하나의 조작으로 끝낼 수 있다.
+        연동과 독립 처리를 상황에 따라 전환할 수 있는 기종이 가장 유연하다.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 5. 기종 선택과 가격대 -->
+  <section class="section" id="price">
+    <h2><span class="num">05</span>기종 선택과 가격대</h2>
+
+    <p>
+      같은 10밴드 그래픽 이퀄라이저라도 가격 차이가 수십 배에 달한다.
+      구조는 비슷한데 왜 이런 차이가 날까.
+    </p>
+
+    <div class="tip-list">
+      <div class="tip-item">
+        <div class="tip-num">1</div>
+        <p><strong>노이즈 특성</strong> — 프로용은 S/N비가 극히 낮다. 여러 채널을 거치면 노이즈가 쌓이기 때문에, 각 기기의 노이즈 플로어가 믹스 전체 품질에 영향을 준다.</p>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">2</div>
+        <p><strong>장시간 안정성</strong> — 공연 중 소리가 달라지거나 탈락하는 일이 없어야 한다. 이를 위한 부품 선별과 회로 설계 비용이 가격에 반영된다.</p>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">3</div>
+        <p><strong>왜곡 특성</strong> — 큰 신호가 들어와도 음질이 무너지지 않아야 한다. 고급 기종일수록 다이나믹 레인지와 왜율 스펙이 엄격하다.</p>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">4</div>
+        <p><strong>주파수 정밀도</strong> — 표시된 주파수와 실제 피크 주파수가 일치하는 정도. 프로용은 허용 오차가 매우 좁다.</p>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">현실적인 선택 기준</div>
+      <p>
+        아마추어나 홈 스튜디오 용도라면 고가의 프로용 기기가 꼭 필요하지 않다.
+        자신의 <strong>실제 사용 목적과 환경</strong>에 맞는 기종을 고르는 것이 중요하다.
+        플러그인 EQ의 경우, 동급 하드웨어 대비 훨씬 저렴하게 유사한 특성을 얻을 수 있어
+        홈 스튜디오에서는 소프트웨어 선택이 현실적이다.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 6. 실전 이퀄라이징 -->
+  <section class="section" id="practice">
+    <h2><span class="num">06</span>실전 이퀄라이징 접근법</h2>
+
+    <p>
+      그래픽 이퀄라이저로 이퀄라이징을 할 때의 실제 접근 순서다.
+      무작정 올리고 내리는 것이 아니라, <mark>주파수 구성의 흐름을 파악하면서</mark> 진행한다.
+    </p>
+
+    <div class="eq-seq">
+      <div class="eq-seq-item">
+        <div class="eq-seq-step">1</div>
+        <div class="eq-seq-content">
+          <div class="eq-seq-title">저역 기초 확인</div>
+          <p class="eq-seq-desc">전체가 흐리고 탁한 느낌이 날 때는 저역부터 시작한다. 한꺼번에 올리지 말고 한 밴드씩 움직이며 어디서 변화가 일어나는지 귀로 확인한다.</p>
+          <div class="eq-seq-freq">▶ 100~125Hz를 먼저 조정</div>
+        </div>
+      </div>
+      <div class="eq-seq-item">
+        <div class="eq-seq-step">2</div>
+        <div class="eq-seq-content">
+          <div class="eq-seq-title">중역 선명도 조정</div>
+          <p class="eq-seq-desc">악기의 윤곽이 또렷하지 않을 때는 중역이 문제인 경우가 많다. 올리거나 내리면서 악기 음정이 얼마나 선명하게 들리는지 확인한다.</p>
+          <div class="eq-seq-freq">▶ 1kHz~2kHz 조정으로 베이스 음정 선명도 확인</div>
+        </div>
+      </div>
+      <div class="eq-seq-item">
+        <div class="eq-seq-step">3</div>
+        <div class="eq-seq-content">
+          <div class="eq-seq-title">중저역 컷으로 공간 만들기</div>
+          <p class="eq-seq-desc">올리기만 하는 것이 최선이 아니다. 뭉치는 중저역을 내리면 고역이 상대적으로 돋보이고, 믹스 전체가 밝아진다.</p>
+          <div class="eq-seq-freq">▶ 250~500Hz를 -2~3dB 컷 시도</div>
+        </div>
+      </div>
+      <div class="eq-seq-item">
+        <div class="eq-seq-step">4</div>
+        <div class="eq-seq-content">
+          <div class="eq-seq-title">고역 공기감 조정</div>
+          <p class="eq-seq-desc">중저역을 정리한 뒤 고역을 조금 올리면 열리고 밝은 느낌이 생긴다. 서부 해안 스타일의 맑은 사운드를 원할 때 유효한 접근이다.</p>
+          <div class="eq-seq-freq">▶ 8kHz 이상을 +1~2dB 셸빙 부스트</div>
+        </div>
+      </div>
+      <div class="eq-seq-item">
+        <div class="eq-seq-step">5</div>
+        <div class="eq-seq-content">
+          <div class="eq-seq-title">보컬 존재감 조정</div>
+          <p class="eq-seq-desc">보컬을 믹스에서 앞으로 내고 싶을 때는 1kHz 근처부터 시험한다. 배음의 구조를 느끼면서 전체 음색 속에서 보컬의 위치를 찾는다.</p>
+          <div class="eq-seq-freq">▶ 1~3kHz를 소량 부스트 후 A/B 비교</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-label">프리앰파시스 / 디앰파시스</div>
+      <p>
+        테이프 녹음 시 고역(10kHz 부근)을 강조해 녹음하고(프리앰파시스),
+        재생 시 역방향으로 되돌리면(디앰파시스) 테이프 히스 노이즈가 상대적으로 줄어드는 효과가 생긴다.
+        이 원리가 돌비 노이즈 리덕션의 기초이기도 하다.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 7. 룸 어쿠스틱 자가 보정 -->
+  <section class="section" id="room">
+    <h2><span class="num">07</span>룸 어쿠스틱 자가 보정법</h2>
+
+    <p>
+      전문 측정 장비 없이도 그래픽 이퀄라이저와 귀만으로
+      자신의 방 음향을 어느 정도 보정할 수 있다.
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">핑크 노이즈 준비</div>
+          <p class="step-desc">핑크 노이즈(Pink Noise)를 스피커로 재생한다. 핑크 노이즈는 저역에서 고역까지 동일한 '에너지'를 가진 노이즈로, 이상적인 룸에서는 전 대역이 같은 레벨로 들려야 한다. DAW나 무료 앱으로 쉽게 생성할 수 있다.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">귀로 대역 편차 파악</div>
+          <p class="step-desc">청취 위치에서 핑크 노이즈를 들으면서 어느 대역이 유독 크게 혹은 작게 들리는지 파악한다. 저역이 지나치게 부풀면 룸 모드(정재파) 문제, 고역이 흡수되면 과도한 흡음재 문제다.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">그래픽 EQ로 보정</div>
+          <p class="step-desc">크게 들리는 대역은 내리고, 작게 들리는 대역은 올린다. 전 대역이 균일하게 들릴 때까지 조정한다. 완벽한 플랫보다는 "자연스럽게 들리는 응답"이 목표다.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">음악으로 최종 확인</div>
+          <p class="step-desc">잘 아는 레퍼런스 음악을 재생해 보정 결과를 확인한다. EQ 보정 전과 후를 A/B 비교하면서 모니터링 환경이 얼마나 개선됐는지 평가한다.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">스마트폰 RTA 앱 활용</div>
+      <p>
+        스마트폰에 RTA(Real-Time Analyzer) 앱을 설치하면 마이크로 방의 주파수 응답을
+        시각적으로 확인할 수 있다. 완전히 정확하지는 않지만,
+        <strong>특히 큰 피크가 있는 대역을 찾는 데</strong> 충분히 실용적이다.
+        무료 앱도 많으니 측정 장비가 없을 때 유용하게 활용할 수 있다.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 8. 내부 회로 -->
+  <section class="section" id="circuit">
+    <h2><span class="num">08</span>내부 회로 — 왜 소리가 달라지는가</h2>
+
+    <p>
+      그래픽 이퀄라이저 내부 회로가 어떻게 발전해왔는지를 알면,
+      플러그인과 하드웨어의 차이, 기종 간 음색 차이의 이유가 이해된다.
+    </p>
+
+    <div class="circuit-box">
+      <h4>그래픽 이퀄라이저 회로의 변천</h4>
+      <div class="circuit-timeline">
+        <div class="circuit-era">
+          <div class="circuit-year">초기</div>
+          <div class="circuit-desc"><strong>LC 병렬 회로</strong> — 코일(Inductor)과 콘덴서(Capacitor)를 조합한 방식. 주파수가 물리적 코일 크기로 결정되어 기기가 크고 무거웠다. 코일 특유의 포화 특성이 음색에 독특한 색을 더하는 경우도 있었다.</div>
+        </div>
+        <div class="circuit-era">
+          <div class="circuit-year">현재</div>
+          <div class="circuit-desc"><strong>시뮬레이티드 인덕터</strong> — 반도체 소자로 코일의 동작을 흉내낸 방식. 소형화가 가능해 ⅓옥타브 27밴드 같은 고밀도 기종도 실용적인 크기로 만들 수 있다. 대부분의 현대 그래픽 EQ가 이 방식을 사용한다.</div>
+        </div>
+        <div class="circuit-era">
+          <div class="circuit-year">파라메트릭</div>
+          <div class="circuit-desc"><strong>이중 귀환 루프 (State Variable Filter)</strong> — 파라메트릭 이퀄라이저에 사용되는 방식. 밴드패스 필터의 발진 응용형으로, FREQ·GAIN·Q를 독립적으로 제어할 수 있는 구조다.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout accent">
+      <div class="callout-label">플러그인 vs 하드웨어</div>
+      <p>
+        아날로그 하드웨어 EQ는 트랜스포머, 증폭 회로, 코일의 물리적 특성으로 인해
+        독특한 포화와 위상 응답이 더해진다. 이것이 "아날로그 음색"의 정체다.
+        플러그인은 이론상 투명하지만, 많은 고품질 플러그인이 이 아날로그 특성을 모델링해 재현한다.
+        <strong>어느 쪽이 낫다는 것은 없고, 목적과 취향에 따라 선택한다.</strong>
+      </p>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 정리 -->
+  <section class="section" id="summary">
+    <h2><span class="num">09</span>정리</h2>
+
+    <div class="summary-box">
+      <h4>Chapter 8 핵심 요약</h4>
+      <ul>
+        <li>그래픽 이퀄라이저는 슬라이더 위치 자체가 주파수 커브의 시각적 표현이다. 그래서 "그래픽"이다.</li>
+        <li>음악 제작에는 10밴드(1옥타브)가 가장 다루기 쉽다. ⅓옥타브는 정밀하지만 인접 밴드 간 간섭이 크다.</li>
+        <li>±12dB가 범용적으로 적당하다. 섬세한 보정에는 ±6dB가 실수를 줄여준다.</li>
+        <li>스튜디오에서는 모니터 환경 보정에, PA 현장에서는 공연장 음질 특성 보정과 피드백 마진 확보에 쓴다.</li>
+        <li>실전 접근 순서: 저역 → 중역 선명도 → 중저역 컷 → 고역 공기감 → 보컬 존재감.</li>
+        <li>핑크 노이즈 + 귀 + 그래픽 EQ로 전문 장비 없이도 룸 어쿠스틱을 어느 정도 보정할 수 있다.</li>
+        <li>그래픽 EQ와 파라메트릭 EQ는 대체 관계가 아니다. 용도에 따라 함께 쓰는 것이 최선이다.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section style="margin:48px 0 0;">
+    <div style="background:var(--bg2);border:1.5px solid var(--border);border-radius:14px;padding:28px 32px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;">✏️ 실습해보기</div>
+      <p style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 16px;">이 챕터를 읽었다면, 바로 DAW에서 해보세요.</p>
+      <ol style="list-style:none;display:flex;flex-direction:column;gap:10px;margin:0;padding:0;">
+        <li style="display:flex;gap:12px;align-items:flex-start;"><span style="min-width:22px;height:22px;background:var(--accent);color:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;">1</span><span style="font-size:14px;color:var(--text-dim);line-height:1.7;">DAW에서 10밴드 그래픽 EQ 플러그인을 열고, 핑크 노이즈를 재생하면서 저역 → 중역 → 고역 순서대로 각 슬라이더가 어떤 소리를 바꾸는지 귀로 확인해보세요.</span></li>
+        <li style="display:flex;gap:12px;align-items:flex-start;"><span style="min-width:22px;height:22px;background:var(--accent);color:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;">2</span><span style="font-size:14px;color:var(--text-dim);line-height:1.7;">믹스 버스에 그래픽 EQ를 삽입하고 250~500Hz를 -2dB 컷한 뒤 8kHz 이상을 +1.5dB 올려보세요. 전체 믹스의 공간감이 어떻게 달라지는지 느껴봅니다.</span></li>
+        <li style="display:flex;gap:12px;align-items:flex-start;"><span style="min-width:22px;height:22px;background:var(--accent);color:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;">3</span><span style="font-size:14px;color:var(--text-dim);line-height:1.7;">스마트폰에 무료 RTA 앱을 설치하고, 작업실에서 핑크 노이즈를 재생하면서 어느 주파수가 부풀어 있는지 측정해보세요. 방의 음향 특성을 처음으로 "눈으로" 보는 경험이 됩니다.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <nav class="chapter-nav">
+    <a href="chapter7.html" class="nav-btn">
+      <span class="nav-label">이전 챕터</span>
+      <span class="nav-title">← 7장. M/S & 마스터링 EQ</span>
+    </a>
+    <a href="index.html" class="nav-btn next">
+      <span class="nav-label">목차</span>
+      <span class="nav-title">전체 목차 →</span>
+    </a>
+  </nav>
+</main>
+
+<script>
+  window.addEventListener('scroll',()=>{
+    const doc=document.documentElement;
+    document.getElementById('progressFill').style.width=(doc.scrollTop/(doc.scrollHeight-doc.clientHeight)*100)+'%';
+  });
+  document.querySelectorAll('section[id]').forEach(s=>{
+    const link=document.querySelector(`.toc-sidebar a[href="#${s.id}"]`);
+    if(!link)return;
+    const obs=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting)document.querySelectorAll('.toc-sidebar a').forEach(a=>a.classList.remove('active'));
+        if(e.isIntersecting)link.classList.add('active');
+      });
+    },{rootMargin:'-30% 0px -60% 0px'});
+    obs.observe(s);
+  });
+</script>
+</body>
+</html>
