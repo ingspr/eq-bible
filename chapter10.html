@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EQ 테크닉 바이블 — 10장</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;700&display=swap');
+    :root {
+      --bg:#ffffff; --bg2:#f8f8f6; --bg3:#f2f1ee; --surface:#ebe9e4;
+      --border:#d8d5ce; --accent:#c9541e; --blue:#2563eb; --green:#16a34a;
+      --red:#dc2626; --text:#1a1a18; --text-dim:#5a5a54; --text-mute:#a8a8a0;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-weight:400;line-height:1.85;font-size:16px;}
+
+    .toc-sidebar{position:fixed;top:0;left:0;width:256px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);padding:40px 24px;overflow-y:auto;z-index:100;}
+    .toc-sidebar .book-title{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:6px;}
+    .toc-sidebar h2{font-size:14px;font-weight:700;margin-bottom:28px;}
+    .toc-sidebar ul{list-style:none;}
+    .toc-sidebar li{margin-bottom:2px;}
+    .toc-sidebar a{display:block;padding:7px 12px;border-radius:6px;color:var(--text-dim);text-decoration:none;font-size:13px;transition:all .2s;}
+    .toc-sidebar a:hover,.toc-sidebar a.active{background:var(--surface);color:var(--accent);}
+    .toc-chapter{font-size:10px;letter-spacing:.1em;color:var(--text-mute);font-weight:700;margin:20px 0 6px 12px;text-transform:uppercase;}
+
+    .progress-bar{position:fixed;top:0;left:256px;right:0;height:3px;background:var(--border);z-index:200;}
+    .progress-fill{height:100%;background:var(--accent);width:0%;transition:width .1s;}
+
+    .main{margin-left:256px;max-width:820px;padding:80px 64px 120px;}
+
+    .chapter-header{margin-bottom:72px;}
+    .chapter-label{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:18px;}
+    .chapter-label::before{content:'';display:block;width:28px;height:2px;background:var(--accent);}
+    .chapter-header h1{font-family:'Noto Serif KR',serif;font-size:clamp(30px,5vw,50px);font-weight:700;line-height:1.3;margin-bottom:24px;}
+    .chapter-header h1 em{color:var(--accent);font-style:normal;}
+    .chapter-intro{font-size:17px;line-height:1.95;color:var(--text-dim);border-left:3px solid var(--border);padding-left:20px;}
+
+    .section{margin-bottom:72px;}
+    h2{font-family:'Noto Serif KR',serif;font-size:24px;font-weight:700;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+    h2 .num{color:var(--accent);margin-right:10px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;}
+    h3{font-size:17px;font-weight:700;margin:40px 0 14px;}
+    h3::before{content:'▍';color:var(--accent);margin-right:8px;}
+    p{margin-bottom:18px;font-size:16px;line-height:1.95;}
+
+    /* EQ 타입 카드 */
+    .type-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:28px 0;}
+    .type-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px 26px;position:relative;}
+    .type-card.highlight{border-color:var(--accent);background:rgba(201,84,30,.03);}
+    .type-tag{display:inline-block;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:2px 8px;border-radius:4px;margin-bottom:10px;}
+    .type-tag.analog{background:rgba(201,84,30,.1);color:var(--accent);}
+    .type-tag.digital{background:rgba(37,99,235,.1);color:var(--blue);}
+    .type-tag.hybrid{background:rgba(22,163,74,.1);color:var(--green);}
+    .type-card h4{font-size:15px;font-weight:700;margin-bottom:10px;}
+    .type-card p{margin:0 0 12px;font-size:13px;color:var(--text-dim);line-height:1.7;}
+    .type-card p:last-child{margin-bottom:0;}
+    .type-usecase{font-size:12px;color:var(--text-mute);border-top:1px solid var(--border);padding-top:10px;margin-top:12px;}
+    .type-usecase strong{color:var(--accent);}
+
+    /* EQ 분류 트리 */
+    .eq-tree{margin:28px 0;border:1px solid var(--border);border-radius:14px;overflow:hidden;}
+    .eq-tree-root{background:var(--text);color:#fff;padding:16px 24px;font-weight:700;font-size:15px;}
+    .eq-tree-branch{padding:0;}
+    .eq-tree-item{display:grid;grid-template-columns:160px 1fr;border-top:1px solid var(--border);}
+    .eq-tree-label{background:var(--bg2);padding:14px 20px;font-size:13px;font-weight:700;border-right:1px solid var(--border);display:flex;align-items:center;}
+    .eq-tree-desc{padding:14px 20px;font-size:13px;color:var(--text-dim);line-height:1.65;display:flex;align-items:center;}
+
+    /* 빈티지 타임라인 */
+    .timeline{position:relative;margin:40px 0;padding-left:28px;}
+    .timeline::before{content:'';position:absolute;left:8px;top:0;bottom:0;width:2px;background:var(--border);}
+    .timeline-item{position:relative;margin-bottom:36px;}
+    .timeline-item:last-child{margin-bottom:0;}
+    .timeline-dot{position:absolute;left:-24px;top:6px;width:14px;height:14px;border-radius:50%;background:var(--bg2);border:2px solid var(--border);z-index:1;}
+    .timeline-item.highlight .timeline-dot{background:var(--accent);border-color:var(--accent);}
+    .timeline-era{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--text-mute);margin-bottom:4px;}
+    .timeline-item.highlight .timeline-era{color:var(--accent);}
+
+    /* 빈티지 EQ 카드 */
+    .vintage-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:28px 30px;margin:0;}
+    .vintage-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:16px;}
+    .vintage-name{font-size:19px;font-weight:700;}
+    .vintage-maker{font-size:12px;color:var(--text-mute);margin-top:3px;}
+    .vintage-year{font-size:28px;font-weight:900;color:var(--border);font-family:'Noto Serif KR',serif;flex-shrink:0;}
+    .vintage-desc{font-size:14px;color:var(--text-dim);line-height:1.8;margin-bottom:16px;}
+    .vintage-spec{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;}
+    .spec-tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:4px;background:var(--bg3);color:var(--text-dim);}
+    .vintage-sound{font-size:13px;padding:12px 16px;background:rgba(201,84,30,.05);border-radius:8px;border-left:3px solid var(--accent);color:var(--text-dim);line-height:1.7;}
+    .vintage-sound strong{color:var(--accent);}
+    .vintage-plugins{margin-top:14px;padding-top:14px;border-top:1px solid var(--border);}
+    .vintage-plugins-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text-mute);margin-bottom:8px;}
+    .plugin-list{display:flex;flex-wrap:wrap;gap:6px;}
+    .plugin-tag{font-size:12px;font-weight:700;padding:3px 10px;border-radius:4px;border:1px solid var(--border);color:var(--text-dim);background:var(--bg);}
+
+    /* 비교표 */
+    .compare-table{width:100%;border-collapse:collapse;margin:24px 0;font-size:13px;}
+    .compare-table th{background:var(--text);color:#fff;font-size:11px;letter-spacing:.06em;padding:11px 14px;text-align:left;font-weight:700;}
+    .compare-table td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text-dim);line-height:1.65;}
+    .compare-table td:first-child{font-weight:700;color:var(--text);}
+    .compare-table tr:last-child td{border-bottom:none;}
+    .compare-table tr:nth-child(even) td{background:var(--bg2);}
+    .dot-pos{color:var(--green);font-weight:700;}
+    .dot-neg{color:var(--red);}
+
+    .callout{border-radius:10px;padding:20px 24px;margin:28px 0;border-left:4px solid;}
+    .callout.tip{background:#f0fdf4;border-color:var(--green);}
+    .callout.info{background:#eff6ff;border-color:var(--blue);}
+    .callout.warning{background:#fff5f5;border-color:var(--red);}
+    .callout.accent{background:rgba(201,84,30,.05);border-color:var(--accent);}
+    .callout-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+    .callout.tip .callout-label{color:var(--green);}
+    .callout.info .callout-label{color:var(--blue);}
+    .callout.warning .callout-label{color:var(--red);}
+    .callout.accent .callout-label{color:var(--accent);}
+    .callout p{margin:0;font-size:15px;line-height:1.8;color:var(--text-dim);}
+    .callout p strong{color:var(--text);}
+
+    mark{background:rgba(201,84,30,.1);color:#a83e10;padding:1px 4px;border-radius:3px;}
+
+    .divider{display:flex;align-items:center;gap:14px;margin:64px 0;color:var(--text-mute);font-size:12px;}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+    .summary-box{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:32px;margin:40px 0;}
+    .summary-box h4{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:18px;}
+    .summary-box ul{list-style:none;display:flex;flex-direction:column;gap:12px;}
+    .summary-box li{display:flex;align-items:flex-start;gap:12px;font-size:15px;line-height:1.7;}
+    .summary-box li::before{content:'→';color:var(--accent);font-weight:700;min-width:16px;}
+
+    .chapter-nav{display:flex;justify-content:space-between;margin-top:96px;padding-top:32px;border-top:1px solid var(--border);}
+    .nav-btn{display:inline-flex;flex-direction:column;gap:4px;text-decoration:none;padding:16px 24px;border-radius:10px;border:1px solid var(--border);transition:all .2s;}
+    .nav-btn:hover{border-color:var(--accent);background:var(--bg3);}
+    .nav-btn.next{text-align:right;}
+    .nav-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-mute);}
+    .nav-title{font-size:14px;font-weight:700;color:var(--text);}
+
+    @media(max-width:860px){.toc-sidebar{display:none;}.main{margin-left:0;padding:40px 24px 80px;}.progress-bar{left:0;}.type-grid{grid-template-columns:1fr;}.eq-tree-item{grid-template-columns:120px 1fr;}.vintage-year{font-size:20px;}}
+    ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg2);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  </style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="toc-sidebar">
+  <div class="book-title">EQ 테크닉 바이블</div>
+  <h2>목차</h2>
+  <ul>
+    <div class="toc-chapter">Chapter 10</div>
+    <li><a href="#eq-types">이퀄라이저 종류 체계</a></li>
+    <li><a href="#type-detail">종류별 특성 심층 정리</a></li>
+    <li><a href="#phase">위상 특성: 미니멀 vs 리니어</a></li>
+    <li><a href="#vintage-intro">빈티지 이퀄라이저란</a></li>
+    <li><a href="#timeline">시대별 빈티지 EQ 가이드</a></li>
+    <li><a href="#plugins">플러그인 에뮬레이션 가이드</a></li>
+    <li><a href="#summary">정리</a></li>
+    <div class="toc-chapter">다른 챕터</div>
+    <li><a href="chapter9.html">← 9장. AI 이퀄라이저</a></li>
+    <li><a href="index.html">전체 목차</a></li>
+  </ul>
+</nav>
+
+<main class="main">
+  <header class="chapter-header">
+    <div class="chapter-label">Chapter 10</div>
+    <h1>이퀄라이저 종류 &<br/><em>빈티지 EQ 가이드</em></h1>
+    <p class="chapter-intro">
+      이퀄라이저는 하나가 아니다. 수십 가지 종류가 있고, 각각 다른 소리를 낸다.<br/>
+      70년 역사 속 명기들이 지금도 플러그인으로 살아 있는 이유를 이해한다.
+    </p>
+  </header>
+
+  <!-- 1. EQ 종류 체계 -->
+  <section class="section" id="eq-types">
+    <h2><span class="num">01</span>이퀄라이저 종류 체계</h2>
+
+    <p>
+      이퀄라이저는 회로 방식, 기능, 위상 특성에 따라 여러 방식으로 분류된다.
+      이 체계를 이해하면 수백 개의 플러그인 중에서 <mark>상황에 맞는 도구를 선택하는 능력</mark>이 생긴다.
+    </p>
+
+    <div class="eq-tree">
+      <div class="eq-tree-root">🎛️ 이퀄라이저 분류 체계</div>
+      <div class="eq-tree-branch">
+        <div class="eq-tree-item">
+          <div class="eq-tree-label">회로 방식</div>
+          <div class="eq-tree-desc">패시브(수동) · 액티브(능동) · 디지털</div>
+        </div>
+        <div class="eq-tree-item">
+          <div class="eq-tree-label">조작 방식</div>
+          <div class="eq-tree-desc">파라메트릭 · 그래픽 · 셸빙 · 필터</div>
+        </div>
+        <div class="eq-tree-item">
+          <div class="eq-tree-label">위상 특성</div>
+          <div class="eq-tree-desc">미니멀 페이즈(최소 위상) · 리니어 페이즈(선형 위상)</div>
+        </div>
+        <div class="eq-tree-item">
+          <div class="eq-tree-label">처리 방식</div>
+          <div class="eq-tree-desc">정적(Static) · 다이나믹 · AI(지능형)</div>
+        </div>
+        <div class="eq-tree-item">
+          <div class="eq-tree-label">채널 구성</div>
+          <div class="eq-tree-desc">L/R (스테레오) · M/S (미드/사이드)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 2. 종류별 특성 -->
+  <section class="section" id="type-detail">
+    <h2><span class="num">02</span>종류별 특성 심층 정리</h2>
+
+    <div class="type-grid">
+
+      <div class="type-card highlight">
+        <div class="type-tag analog">아날로그 / 디지털</div>
+        <h4>파라메트릭 이퀄라이저</h4>
+        <p>FREQ·GAIN·Q 세 파라미터를 자유롭게 설정하는 방식. 원하는 주파수 포인트에 정확히 접근할 수 있어 스튜디오 믹싱의 표준 도구다. 밴드 수는 보통 4~8개.</p>
+        <p>세미 파라메트릭: FREQ와 GAIN만 조절, Q 고정. 하드웨어 콘솔의 채널 EQ가 대부분 이 방식이다.</p>
+        <div class="type-usecase"><strong>적합한 상황:</strong> 믹싱 전반, 악기별 정밀 보정, 문제 주파수 제거</div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-tag analog">아날로그 / 디지털</div>
+        <h4>그래픽 이퀄라이저</h4>
+        <p>고정된 주파수 대역에 슬라이더를 올리고 내리는 방식. 조작이 직관적이고 빠르며, 슬라이더 위치 자체가 주파수 커브의 시각적 표현이다.</p>
+        <p>10밴드(1옥타브)~31밴드(⅓옥타브)까지 다양. 인접 밴드 간 상호 영향 주의.</p>
+        <div class="type-usecase"><strong>적합한 상황:</strong> PA 현장, 룸 어쿠스틱 보정, 빠른 전체 보정</div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-tag analog">아날로그</div>
+        <h4>패시브 이퀄라이저</h4>
+        <p>코일(인덕터)과 콘덴서로만 이루어진 수동 회로. 증폭 소자가 없어 신호가 자연스럽게 처리되고, 독특한 위상 특성과 포화감이 더해진다. 신호 감쇠가 발생해 후단 증폭기가 필요하다.</p>
+        <p>대표 기기: <strong>Pultec EQP-1A</strong>. 부스트와 컷을 동시에 거는 독특한 테크닉으로 유명하다.</p>
+        <div class="type-usecase"><strong>적합한 상황:</strong> 컬러(색채)가 필요한 처리, 저역 조형, 빈티지 느낌</div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-tag digital">디지털</div>
+        <h4>다이나믹 이퀄라이저</h4>
+        <p>신호 레벨에 따라 반응하는 EQ. 임계값(Threshold) 이상일 때만 EQ가 동작하며, 어택·릴리즈로 반응 속도를 조절한다. 멀티밴드 컴프레서와 파라메트릭 EQ의 중간 형태.</p>
+        <p>치찰음, 공진음처럼 "가끔 튀는" 문제에 최적. 항상 걸려 있는 정적 EQ와 달리 필요할 때만 동작한다.</p>
+        <div class="type-usecase"><strong>적합한 상황:</strong> 치찰음 제거, 드럼 공진 억제, 다이나믹 저역 처리</div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-tag digital">디지털</div>
+        <h4>리니어 페이즈 이퀄라이저</h4>
+        <p>위상을 변화시키지 않고 주파수만 처리하는 방식. 모든 주파수가 동일한 지연(Delay)을 가지므로 위상 왜곡이 없다. CPU 부하가 높고 처리 지연(Latency)이 발생한다.</p>
+        <p>병렬 EQ 작업이나 마스터링에서 주로 사용. 싱글 트랙 믹싱에는 미니멀 페이즈가 더 자연스럽다.</p>
+        <div class="type-usecase"><strong>적합한 상황:</strong> 마스터링, 패럴렐 EQ, 위상 정합이 중요한 멀티마이크 처리</div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-tag hybrid">아날로그 / 디지털</div>
+        <h4>셸빙 이퀄라이저</h4>
+        <p>설정 주파수 이상(하이 셸빙) 또는 이하(로우 셸빙) 전체 대역을 같은 양으로 처리한다. 광대역이라 자연스러운 음색 변화가 가능하다.</p>
+        <p>Baxandall 방식이 가장 흔한 셸빙 회로로, 가정용 오디오 톤 컨트롤의 기초이기도 하다.</p>
+        <div class="type-usecase"><strong>적합한 상황:</strong> 전체 저역/고역 밝기 조정, 마스터 버스 컬러링</div>
+      </div>
+
+      <div class="type-card">
+        <div class="type-tag analog">아날로그 / 디지털</div>
+        <h4>필터 (HPF / LPF)</h4>
+        <p>설정 주파수 이하(HPF) 또는 이상(LPF)을 완전히 차단하는 방식. 슬로프(기울기)는 6dB/oct, 12dB/oct, 18dB/oct 등으로 선택한다. 기울기가 가파를수록 차단이 급격하다.</p>
+        <p>믹싱의 첫 번째 단계. 거의 모든 악기에 HPF를 걸어 불필요한 저역을 정리하는 것이 기본이다.</p>
+        <div class="type-usecase"><strong>적합한 상황:</strong> 저역 잡음 제거, 악기 간 주파수 공간 확보</div>
+      </div>
+
+      <div class="type-card highlight">
+        <div class="type-tag digital">디지털 / AI</div>
+        <h4>AI 이퀄라이저</h4>
+        <p>머신러닝으로 입력 신호를 분석해 최적의 EQ 커브를 자동 제안한다. 악기별·장르별 프로파일, 레퍼런스 트랙 매칭 등의 기능을 갖춘다.</p>
+        <p>대표 제품: SONIBLE Smart:EQ 4. AI가 시작점을 잡아주고 엔지니어가 방향을 결정하는 협업 방식이다.</p>
+        <div class="type-usecase"><strong>적합한 상황:</strong> 빠른 믹스 시작점 설정, 트랙 간 마스킹 해소, 레퍼런스 매칭</div>
+      </div>
+
+    </div>
+
+    <h3>한눈에 비교하기</h3>
+
+    <table class="compare-table">
+      <thead>
+        <tr><th>종류</th><th>조작 정밀도</th><th>음색 색채</th><th>CPU 부하</th><th>주 용도</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>파라메트릭</td><td class="dot-pos">★★★★★</td><td>중간~낮음</td><td>낮음</td><td>믹싱 전반</td></tr>
+        <tr><td>그래픽</td><td>★★★☆☆</td><td>낮음</td><td>낮음</td><td>PA·룸 보정</td></tr>
+        <tr><td>패시브</td><td>★★★☆☆</td><td class="dot-pos">★★★★★</td><td>없음(HW)</td><td>컬러링·저역</td></tr>
+        <tr><td>다이나믹</td><td>★★★★☆</td><td>낮음</td><td>중간</td><td>치찰음·공진 제거</td></tr>
+        <tr><td>리니어 페이즈</td><td>★★★★★</td><td>없음(투명)</td><td class="dot-neg">높음</td><td>마스터링·패럴렐</td></tr>
+        <tr><td>셸빙</td><td>★★☆☆☆</td><td>중간</td><td>낮음</td><td>광대역 컬러링</td></tr>
+        <tr><td>AI</td><td>★★★☆☆</td><td>낮음</td><td>중간</td><td>자동 시작점·그루핑</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 3. 위상 특성 -->
+  <section class="section" id="phase">
+    <h2><span class="num">03</span>위상 특성 — 미니멀 vs 리니어 페이즈</h2>
+
+    <p>
+      디지털 EQ에서 가장 자주 묻는 질문 중 하나가 미니멀 페이즈와 리니어 페이즈의 차이다.
+      두 방식의 원리와 적합한 상황을 이해하면 플러그인 선택이 명확해진다.
+    </p>
+
+    <div class="type-grid">
+      <div class="type-card">
+        <div class="type-tag analog">미니멀 페이즈 (최소 위상)</div>
+        <h4>일반 EQ의 기본 방식</h4>
+        <p>EQ 처리 시 주파수별로 위상이 약간씩 달라진다. 아날로그 회로와 동일한 방식이라 자연스럽고 "살아있는" 느낌이다.</p>
+        <p>처리 지연(Latency)이 없어 실시간 모니터링과 레코딩에 사용 가능하다. 단일 트랙 믹싱에 가장 적합하다.</p>
+        <div class="type-usecase"><strong>언제:</strong> 일반 믹싱, 실시간 모니터링, 트랙별 EQ 처리</div>
+      </div>
+      <div class="type-card">
+        <div class="type-tag digital">리니어 페이즈</div>
+        <h4>위상 왜곡이 없는 투명한 처리</h4>
+        <p>모든 주파수를 동일한 지연으로 처리해 위상 왜곡이 없다. "프리링(Pre-ringing)" 현상이 생길 수 있다 — 타격음 앞에 미세한 아티팩트.</p>
+        <p>CPU 부하가 높고 수십~수백 ms의 레이턴시가 발생해 실시간 사용에 부적합하다.</p>
+        <div class="type-usecase"><strong>언제:</strong> 마스터링, 패럴렐 EQ, 멀티마이크 드럼 처리</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-label">실전 선택 기준</div>
+      <p>
+        <strong>믹싱 단계:</strong> 미니멀 페이즈를 기본으로 쓴다. 더 자연스럽고 CPU 효율적이다.<br/>
+        <strong>마스터링 단계:</strong> 리니어 페이즈를 쓰면 여러 밴드를 처리해도 위상 왜곡이 없다.<br/>
+        <strong>패럴렐 EQ:</strong> 원본과 병렬 처리 시 위상 정합이 중요하므로 리니어 페이즈가 유리하다.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 4. 빈티지 EQ 소개 -->
+  <section class="section" id="vintage-intro">
+    <h2><span class="num">04</span>빈티지 이퀄라이저란 무엇인가</h2>
+
+    <p>
+      1950~80년대에 제작된 아날로그 이퀄라이저들이 지금도 스튜디오에서,
+      그리고 플러그인 에뮬레이션으로 광범위하게 사용되고 있다.
+      왜 70년이 지난 설계가 아직도 쓰이는가.
+    </p>
+
+    <p>
+      답은 단순하다. <mark>그 시대의 회로 특성이 만들어내는 소리가 아름답기 때문이다.</mark>
+      트랜스포머, 코일, 증폭 회로의 비선형 특성 — 이른바 "회로의 색채(Color)" — 가
+      신호에 더해져 단순한 주파수 조정을 넘어서는 음악적 결과를 만든다.
+    </p>
+
+    <div class="callout accent">
+      <div class="callout-label">빈티지 EQ의 음색이 생기는 이유</div>
+      <p>
+        <strong>트랜스포머 포화:</strong> 신호가 크면 약간의 고조파(배음)가 더해져 따뜻하고 두터운 느낌.<br/>
+        <strong>코일 특성:</strong> 이상적인 인덕터가 아닌 실제 코일의 비선형성이 독특한 주파수 응답을 만든다.<br/>
+        <strong>컴포넌트 공차:</strong> 같은 모델이라도 개체마다 조금씩 달라 "그 기기만의 소리"가 생긴다.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 5. 시대별 빈티지 EQ 가이드 -->
+  <section class="section" id="timeline">
+    <h2><span class="num">05</span>시대별 빈티지 EQ 가이드</h2>
+
+    <div class="timeline">
+
+      <!-- 1951: Pultec -->
+      <div class="timeline-item highlight">
+        <div class="timeline-dot"></div>
+        <div class="timeline-era">1951 — 패시브 이퀄라이저의 탄생</div>
+        <div class="vintage-card">
+          <div class="vintage-header">
+            <div>
+              <div class="vintage-name">Pultec EQP-1A</div>
+              <div class="vintage-maker">Pulse Techniques (미국)</div>
+            </div>
+            <div class="vintage-year">1951</div>
+          </div>
+          <div class="vintage-spec">
+            <span class="spec-tag">패시브 EQ</span>
+            <span class="spec-tag">저역 셸빙 + 고역 피킹/셸빙</span>
+            <span class="spec-tag">3밴드</span>
+            <span class="spec-tag">트랜스포머 구동</span>
+          </div>
+          <div class="vintage-desc">
+            세계 최초의 패시브 프로그램 이퀄라이저. 반세기 넘게 스튜디오 현장에서 사용되어 온 전설적인 기기다. 코일과 콘덴서만으로 구성된 수동 회로가 독특한 위상 특성과 따뜻한 포화감을 만들어낸다.<br/><br/>
+            가장 유명한 사용법은 <strong>Pultec 테크닉</strong> — 같은 저역 주파수를 동시에 부스트하고 컷하면, 두 커브가 겹치며 펀치 있고 깔끔한 저역이 만들어진다. 디지털 EQ에서는 정확히 재현되지 않는 아날로그 특유의 현상이다.
+          </div>
+          <div class="vintage-sound">
+            <strong>음색:</strong> 따뜻하고 두터운 저역, 공기감 있는 고역. "음악적(Musical)"이라는 표현이 가장 잘 어울리는 EQ. 컷보다 부스트에서 真價가 드러난다.
+          </div>
+          <div class="vintage-plugins">
+            <div class="vintage-plugins-label">대표 플러그인 에뮬레이션</div>
+            <div class="plugin-list">
+              <span class="plugin-tag">UAD Pultec EQP-1A</span>
+              <span class="plugin-tag">Waves PuigTec EQP-1A</span>
+              <span class="plugin-tag">Softube Tube-Tech PE 1C</span>
+              <span class="plugin-tag">IK Multimedia T-RackS Pultec</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1967~71: API 550 -->
+      <div class="timeline-item highlight">
+        <div class="timeline-dot"></div>
+        <div class="timeline-era">1967~1971 — 미국 록 사운드의 탄생</div>
+        <div class="vintage-card">
+          <div class="vintage-header">
+            <div>
+              <div class="vintage-name">API 550A / 550B</div>
+              <div class="vintage-maker">Automated Processes Inc. (미국)</div>
+            </div>
+            <div class="vintage-year">1967</div>
+          </div>
+          <div class="vintage-spec">
+            <span class="spec-tag">세미 파라메트릭</span>
+            <span class="spec-tag">3밴드 (550A) / 4밴드 (550B)</span>
+            <span class="spec-tag">±12dB</span>
+            <span class="spec-tag">Proportional Q</span>
+          </div>
+          <div class="vintage-desc">
+            설계자 Saul Walker가 개발한 API 2520 디스크리트 OP-AMP를 기반으로 한 액티브 EQ. "클래식 아메리칸 사운드"라 불리며 1970~80년대 미국 록, 팝 레코딩의 핵심이었다.<br/><br/>
+            <strong>Proportional Q</strong> 방식: 게인을 많이 줄수록 Q가 좁아지고, 적게 줄수록 Q가 넓어진다. 자연스럽게 큰 부스트는 정밀하게, 작은 부스트는 넓게 작동한다.
+          </div>
+          <div class="vintage-sound">
+            <strong>음색:</strong> 공격적이고 선명한 중역, 펀치 있는 저역. "크고 두드러지는(Big and Present)" 소리. 드럼, 기타, 보컬에 걸면 앞으로 튀어나오는 느낌이 강하다.
+          </div>
+          <div class="vintage-plugins">
+            <div class="vintage-plugins-label">대표 플러그인 에뮬레이션</div>
+            <div class="plugin-list">
+              <span class="plugin-tag">UAD API 550A/550B</span>
+              <span class="plugin-tag">Waves API 550A/550B</span>
+              <span class="plugin-tag">Plugin Alliance bx_api550</span>
+              <span class="plugin-tag">Neve 1073 (비교 대상)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1970: Neve 1073 -->
+      <div class="timeline-item highlight">
+        <div class="timeline-dot"></div>
+        <div class="timeline-era">1970 — 영국 사운드의 기준</div>
+        <div class="vintage-card">
+          <div class="vintage-header">
+            <div>
+              <div class="vintage-name">Neve 1073</div>
+              <div class="vintage-maker">Rupert Neve Designs (영국)</div>
+            </div>
+            <div class="vintage-year">1970</div>
+          </div>
+          <div class="vintage-spec">
+            <span class="spec-tag">세미 파라메트릭</span>
+            <span class="spec-tag">3밴드 + HPF</span>
+            <span class="spec-tag">±18dB</span>
+            <span class="spec-tag">트랜스포머 결합</span>
+          </div>
+          <div class="vintage-desc">
+            런던 Wessex Studios의 콘솔을 위해 Rupert Neve가 설계한 채널 모듈. "영국 소리(British Sound)"의 기준이 된 EQ로, 록, 팝, R&B 등 수많은 명반에 사용됐다.<br/><br/>
+            넓고 음악적인 필터 커브와 트랜스포머가 만드는 포화감이 특징. 저역은 두텁고 따뜻하게, 고역은 공기감 있게 들어올린다. 주파수 포인트 수가 적어(고정 주파수 선택) 정밀도보다 느낌이 우선인 EQ다.
+          </div>
+          <div class="vintage-sound">
+            <strong>음색:</strong> 따뜻하고 두텁고 풍성한 소리. API보다 부드럽고 인클로즈드(enclosed)한 느낌. 보컬, 드럼 오버헤드, 기타에서 진가를 발휘한다.
+          </div>
+          <div class="vintage-plugins">
+            <div class="vintage-plugins-label">대표 플러그인 에뮬레이션</div>
+            <div class="plugin-list">
+              <span class="plugin-tag">UAD Neve 1073</span>
+              <span class="plugin-tag">Waves Neve 1073</span>
+              <span class="plugin-tag">Slate Digital VCC Neve</span>
+              <span class="plugin-tag">Softube Neve 1073</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1972: Neve 1081 -->
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-era">1972 — 정밀함을 더한 브리티시</div>
+        <div class="vintage-card">
+          <div class="vintage-header">
+            <div>
+              <div class="vintage-name">Neve 1081</div>
+              <div class="vintage-maker">Rupert Neve Designs (영국)</div>
+            </div>
+            <div class="vintage-year">1972</div>
+          </div>
+          <div class="vintage-spec">
+            <span class="spec-tag">세미 파라메트릭</span>
+            <span class="spec-tag">4밴드 + HPF/LPF</span>
+            <span class="spec-tag">±18dB</span>
+            <span class="spec-tag">더 많은 주파수 선택지</span>
+          </div>
+          <div class="vintage-desc">
+            1073보다 밴드가 많고 주파수 선택지가 다양해진 모델. 1073의 따뜻한 음색은 유지하면서 더 정밀한 처리가 가능하다. 미드밴드 처리가 특히 강력해 보컬 녹음 및 믹싱에서 높은 평가를 받는다.
+          </div>
+          <div class="vintage-sound">
+            <strong>음색:</strong> 1073와 유사하지만 중역 대역 처리가 더 선명하다. 두터우면서도 세밀한 처리가 가능한 균형잡힌 모델.
+          </div>
+          <div class="vintage-plugins">
+            <div class="vintage-plugins-label">대표 플러그인 에뮬레이션</div>
+            <div class="plugin-list">
+              <span class="plugin-tag">UAD Neve 1081</span>
+              <span class="plugin-tag">Waves Neve 1081</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1979/1987: SSL -->
+      <div class="timeline-item highlight">
+        <div class="timeline-dot"></div>
+        <div class="timeline-era">1979 / 1987 — 80년대 팝의 사운드</div>
+        <div class="vintage-card">
+          <div class="vintage-header">
+            <div>
+              <div class="vintage-name">SSL 4000 E / G Channel EQ</div>
+              <div class="vintage-maker">Solid State Logic (영국)</div>
+            </div>
+            <div class="vintage-year">1979</div>
+          </div>
+          <div class="vintage-spec">
+            <span class="spec-tag">파라메트릭</span>
+            <span class="spec-tag">4밴드 + HPF/LPF</span>
+            <span class="spec-tag">±18dB</span>
+            <span class="spec-tag">E Series / G Series</span>
+          </div>
+          <div class="vintage-desc">
+            SSL 4000 콘솔의 채널 스트립 EQ. E 시리즈(1979)와 G 시리즈(1987)는 음색이 달라 각각 팬이 있다. "80년대 팝 사운드를 정의한 EQ"라는 평가를 받는다.<br/><br/>
+            <strong>E Series:</strong> 밝고 예리하며 조금 거친 느낌. 록, 얼터너티브에 어울린다.<br/>
+            <strong>G Series:</strong> 더 부드럽고 클린하다. 팝, R&B, 상업 음악에 적합하다.
+          </div>
+          <div class="vintage-sound">
+            <strong>음색:</strong> 밝고 선명한 고역, 빠르고 빡빡한 저역. Neve보다 훨씬 클린하고 현대적인 소리. "위기(Bright and Clear)"라는 표현이 잘 맞는다.
+          </div>
+          <div class="vintage-plugins">
+            <div class="vintage-plugins-label">대표 플러그인 에뮬레이션</div>
+            <div class="plugin-list">
+              <span class="plugin-tag">Waves SSL E-Channel</span>
+              <span class="plugin-tag">UAD SSL 4000 E</span>
+              <span class="plugin-tag">Slate Digital VCC SSL</span>
+              <span class="plugin-tag">SSL Native Channel Strip</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 1985: Focusrite ISA -->
+      <div class="timeline-item">
+        <div class="timeline-dot"></div>
+        <div class="timeline-era">1985 — 투명함의 추구</div>
+        <div class="vintage-card">
+          <div class="vintage-header">
+            <div>
+              <div class="vintage-name">Focusrite ISA 110</div>
+              <div class="vintage-maker">Focusrite (영국)</div>
+            </div>
+            <div class="vintage-year">1985</div>
+          </div>
+          <div class="vintage-spec">
+            <span class="spec-tag">파라메트릭</span>
+            <span class="spec-tag">4밴드 + HPF/LPF</span>
+            <span class="spec-tag">±18dB</span>
+            <span class="spec-tag">트랜스포머 구동</span>
+          </div>
+          <div class="vintage-desc">
+            George Martin(비틀즈 프로듀서)의 요청으로 설계된 콘솔 AIR Montserrat에 탑재된 채널 EQ. Neve보다 더 투명하고 클린한 음색으로 "소리를 물들이지 않는 EQ"를 목표로 했다. 정확하면서도 음악적인 처리가 가능해 높은 평가를 받는다.
+          </div>
+          <div class="vintage-sound">
+            <strong>음색:</strong> 투명하고 정교하다. 색채는 적지만 처리한 부분이 자연스럽게 들어올려진다. "EQ했는지 모르게 EQ한다"는 표현에 가장 잘 맞는 빈티지 EQ.
+          </div>
+          <div class="vintage-plugins">
+            <div class="vintage-plugins-label">대표 플러그인 에뮬레이션</div>
+            <div class="plugin-list">
+              <span class="plugin-tag">UAD Focusrite ISA 110</span>
+              <span class="plugin-tag">Focusrite ISA (하드웨어 현행 제품)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 6. 플러그인 에뮬레이션 가이드 -->
+  <section class="section" id="plugins">
+    <h2><span class="num">06</span>빈티지 EQ 플러그인 — 무엇을 어떻게 쓸 것인가</h2>
+
+    <p>
+      하드웨어 원본은 수백만 원~수천만 원이지만, 플러그인 에뮬레이션으로 유사한 음색을 저렴하게 경험할 수 있다.
+      단, 에뮬레이션은 완벽한 복제가 아니다. <mark>음색의 "방향성"을 참고하는 도구</mark>로 활용하는 것이 현실적이다.
+    </p>
+
+    <h3>상황별 추천 빈티지 EQ 타입</h3>
+
+    <table class="compare-table">
+      <thead>
+        <tr><th>상황</th><th>추천 타입</th><th>이유</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>킥·베이스 저역 강화</td>
+          <td>Pultec EQP-1A</td>
+          <td>동시 부스트+컷 테크닉으로 펀치 있는 저역 조형</td>
+        </tr>
+        <tr>
+          <td>드럼 전체 파워감</td>
+          <td>API 550A/B</td>
+          <td>공격적인 중역과 빡빡한 저역으로 박력 있는 드럼</td>
+        </tr>
+        <tr>
+          <td>보컬 따뜻함·존재감</td>
+          <td>Neve 1073</td>
+          <td>트랜스포머 포화로 자연스러운 두께와 공기감 추가</td>
+        </tr>
+        <tr>
+          <td>80년대 팝 사운드</td>
+          <td>SSL G Channel</td>
+          <td>밝고 클린한 고역, 현대적인 선명함</td>
+        </tr>
+        <tr>
+          <td>투명한 믹싱 EQ</td>
+          <td>Focusrite ISA / 현대 파라메트릭</td>
+          <td>색채 없이 정확한 주파수 처리</td>
+        </tr>
+        <tr>
+          <td>마스터링</td>
+          <td>Pultec (저역) + 리니어 페이즈 (전체)</td>
+          <td>컬러링은 Pultec으로, 정밀 보정은 리니어 페이즈로</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout info">
+      <div class="callout-label">빈티지 EQ 플러그인 사용 팁</div>
+      <p>
+        빈티지 EQ 에뮬레이션의 진가는 <strong>처리 전후를 비교</strong>할 때 드러난다.
+        단순히 주파수를 바꾸는 것이 아니라, 트랜스포머 포화와 회로 색채가 어떻게 소리를 바꾸는지 귀로 확인하자.
+        처음에는 투명한 파라메트릭 EQ로 목표 주파수를 설정하고,
+        그 위에 빈티지 EQ로 색채를 더하는 레이어드 방식도 효과적이다.
+      </p>
+    </div>
+
+    <h3>무료로 시작하는 빈티지 EQ 경험</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>플러그인</th><th>모델링 대상</th><th>비용</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Tokyo Dawn TDR Prism</td><td>현대 파라메트릭 (레퍼런스)</td><td>무료</td></tr>
+        <tr><td>Analog Obsession PREDD</td><td>Pultec EQP-1A 스타일</td><td>무료</td></tr>
+        <tr><td>Analog Obsession LALA</td><td>LA-2A + EQ 조합</td><td>무료</td></tr>
+        <tr><td>Ignite Amps PTEq-X</td><td>Pultec 스타일</td><td>무료</td></tr>
+        <tr><td>Waves SSL E-Channel</td><td>SSL 4000 E</td><td>유료 (세일 상시)</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 정리 -->
+  <section class="section" id="summary">
+    <h2><span class="num">07</span>정리</h2>
+
+    <div class="summary-box">
+      <h4>Chapter 10 핵심 요약</h4>
+      <ul>
+        <li>이퀄라이저는 회로 방식·조작 방식·위상 특성·처리 방식에 따라 분류된다. 각각의 특성을 이해해야 상황에 맞는 도구를 선택할 수 있다.</li>
+        <li>패시브 EQ: 코일과 콘덴서만으로 색채 있는 처리. 대표: Pultec EQP-1A.</li>
+        <li>미니멀 페이즈(일반 EQ)는 믹싱에, 리니어 페이즈는 마스터링·패럴렐 EQ에 적합하다.</li>
+        <li>Pultec(1951): 따뜻한 저역·공기감. API 550(1967): 공격적이고 선명함. Neve 1073(1970): 따뜻하고 풍성함. SSL 4000(1979/87): 밝고 클린하고 현대적.</li>
+        <li>빈티지 EQ의 음색은 트랜스포머 포화, 코일 비선형성, 개체 공차에서 비롯된다.</li>
+        <li>플러그인 에뮬레이션은 완벽한 복제가 아닌 "음색의 방향성"을 경험하는 도구다.</li>
+        <li>무료 플러그인으로도 빈티지 EQ의 방향성을 경험할 수 있다. Analog Obsession PREDD(Pultec 스타일)가 좋은 시작점이다.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section style="margin:48px 0 0;">
+    <div style="background:var(--bg2);border:1.5px solid var(--border);border-radius:14px;padding:28px 32px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;">✏️ 실습해보기</div>
+      <p style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 16px;">이 챕터를 읽었다면, 바로 DAW에서 해보세요.</p>
+      <ol style="list-style:none;display:flex;flex-direction:column;gap:10px;margin:0;padding:0;">
+        <li style="display:flex;gap:12px;align-items:flex-start;"><span style="min-width:22px;height:22px;background:var(--accent);color:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;">1</span><span style="font-size:14px;color:var(--text-dim);line-height:1.7;">Pultec 에뮬레이션 플러그인(Analog Obsession PREDD 무료)을 킥 드럼에 삽입하고, 60Hz를 동시에 부스트(+4~6dB)하고 컷(-2~4dB)해보세요. Pultec 테크닉이 저역을 어떻게 바꾸는지 확인합니다.</span></li>
+        <li style="display:flex;gap:12px;align-items:flex-start;"><span style="min-width:22px;height:22px;background:var(--accent);color:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;">2</span><span style="font-size:14px;color:var(--text-dim);line-height:1.7;">같은 트랙에 Neve 스타일 EQ와 API 스타일 EQ를 각각 적용해보고 음색 차이를 비교해보세요. "따뜻함 vs 공격적임"의 차이를 귀로 느껴봅니다.</span></li>
+        <li style="display:flex;gap:12px;align-items:flex-start;"><span style="min-width:22px;height:22px;background:var(--accent);color:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;">3</span><span style="font-size:14px;color:var(--text-dim);line-height:1.7;">같은 EQ 처리를 미니멀 페이즈 모드와 리니어 페이즈 모드로 각각 적용해보세요. 드럼 어택처럼 타격감 있는 소리에서 두 모드의 차이(프리링 여부)를 확인합니다.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <nav class="chapter-nav">
+    <a href="chapter9.html" class="nav-btn">
+      <span class="nav-label">이전 챕터</span>
+      <span class="nav-title">← 9장. AI 이퀄라이저</span>
+    </a>
+    <a href="index.html" class="nav-btn next">
+      <span class="nav-label">목차</span>
+      <span class="nav-title">전체 목차 →</span>
+    </a>
+  </nav>
+</main>
+
+<script>
+  window.addEventListener('scroll',()=>{
+    const doc=document.documentElement;
+    document.getElementById('progressFill').style.width=(doc.scrollTop/(doc.scrollHeight-doc.clientHeight)*100)+'%';
+  });
+  document.querySelectorAll('section[id]').forEach(s=>{
+    const link=document.querySelector(`.toc-sidebar a[href="#${s.id}"]`);
+    if(!link)return;
+    const obs=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting)document.querySelectorAll('.toc-sidebar a').forEach(a=>a.classList.remove('active'));
+        if(e.isIntersecting)link.classList.add('active');
+      });
+    },{rootMargin:'-30% 0px -60% 0px'});
+    obs.observe(s);
+  });
+</script>
+</body>
+</html>
