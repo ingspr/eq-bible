@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EQ 테크닉 바이블 — 7장</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;700&display=swap');
+    :root {
+      --bg:#ffffff; --bg2:#f8f8f6; --bg3:#f2f1ee; --surface:#ebe9e4;
+      --border:#d8d5ce; --accent:#c9541e; --blue:#2563eb; --green:#16a34a;
+      --red:#dc2626; --text:#1a1a18; --text-dim:#5a5a54; --text-mute:#a8a8a0;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-weight:400;line-height:1.85;font-size:16px;}
+
+    .toc-sidebar{position:fixed;top:0;left:0;width:256px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);padding:40px 24px;overflow-y:auto;z-index:100;}
+    .toc-sidebar .book-title{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:6px;}
+    .toc-sidebar h2{font-size:14px;font-weight:700;margin-bottom:28px;}
+    .toc-sidebar ul{list-style:none;}
+    .toc-sidebar li{margin-bottom:2px;}
+    .toc-sidebar a{display:block;padding:7px 12px;border-radius:6px;color:var(--text-dim);text-decoration:none;font-size:13px;transition:all .2s;}
+    .toc-sidebar a:hover,.toc-sidebar a.active{background:var(--surface);color:var(--accent);}
+    .toc-chapter{font-size:10px;letter-spacing:.1em;color:var(--text-mute);font-weight:700;margin:20px 0 6px 12px;text-transform:uppercase;}
+
+    .progress-bar{position:fixed;top:0;left:256px;right:0;height:3px;background:var(--border);z-index:200;}
+    .progress-fill{height:100%;background:var(--accent);width:0%;transition:width .1s;}
+
+    .main{margin-left:256px;max-width:820px;padding:80px 64px 120px;}
+
+    .chapter-header{margin-bottom:72px;}
+    .chapter-label{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:18px;}
+    .chapter-label::before{content:'';display:block;width:28px;height:2px;background:var(--accent);}
+    .chapter-header h1{font-family:'Noto Serif KR',serif;font-size:clamp(30px,5vw,50px);font-weight:700;line-height:1.3;margin-bottom:24px;}
+    .chapter-header h1 em{color:var(--accent);font-style:normal;}
+    .chapter-intro{font-size:17px;line-height:1.95;color:var(--text-dim);border-left:3px solid var(--border);padding-left:20px;}
+
+    .section{margin-bottom:72px;}
+    h2{font-family:'Noto Serif KR',serif;font-size:24px;font-weight:700;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+    h2 .num{color:var(--accent);margin-right:10px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;}
+    h3{font-size:17px;font-weight:700;margin:40px 0 14px;}
+    h3::before{content:'▍';color:var(--accent);margin-right:8px;}
+    p{margin-bottom:18px;font-size:16px;line-height:1.95;}
+
+    /* 비교 카드 */
+    .compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:28px 0;}
+    .compare-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px 26px;}
+    .compare-card h4{font-size:15px;font-weight:700;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+    .compare-card h4 span{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.1em;background:var(--accent);color:#fff;padding:2px 8px;border-radius:4px;margin-left:8px;vertical-align:middle;}
+    .compare-card ul{list-style:none;display:flex;flex-direction:column;gap:8px;}
+    .compare-card li{font-size:14px;color:var(--text-dim);line-height:1.65;padding-left:14px;position:relative;}
+    .compare-card li::before{content:'·';position:absolute;left:0;color:var(--accent);font-weight:700;}
+
+    /* 파라미터 표 */
+    .param-table{width:100%;border-collapse:collapse;margin:24px 0;font-size:13px;}
+    .param-table th{background:var(--text);color:#fff;font-size:11px;letter-spacing:.06em;padding:11px 14px;text-align:left;font-weight:700;}
+    .param-table td{padding:11px 14px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text-dim);line-height:1.65;}
+    .param-table td:first-child{font-weight:700;color:var(--text);white-space:nowrap;}
+    .param-table tr:last-child td{border-bottom:none;}
+    .param-table tr:nth-child(even) td{background:var(--bg2);}
+
+    /* callout */
+    .callout{border-radius:10px;padding:20px 24px;margin:28px 0;border-left:4px solid;}
+    .callout.tip{background:#f0fdf4;border-color:var(--green);}
+    .callout.info{background:#eff6ff;border-color:var(--blue);}
+    .callout.warning{background:#fff5f5;border-color:var(--red);}
+    .callout.accent{background:rgba(201,84,30,.05);border-color:var(--accent);}
+    .callout-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+    .callout.tip .callout-label{color:var(--green);}
+    .callout.info .callout-label{color:var(--blue);}
+    .callout.warning .callout-label{color:var(--red);}
+    .callout.accent .callout-label{color:var(--accent);}
+    .callout p{margin:0;font-size:15px;line-height:1.8;color:var(--text-dim);}
+    .callout p strong{color:var(--text);}
+
+    mark{background:rgba(201,84,30,.1);color:#a83e10;padding:1px 4px;border-radius:3px;}
+
+    .divider{display:flex;align-items:center;gap:14px;margin:64px 0;color:var(--text-mute);font-size:12px;}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+    /* tip-list */
+    .tip-list{display:flex;flex-direction:column;gap:0;margin:24px 0;counter-reset:tip;}
+    .tip-item{display:grid;grid-template-columns:40px 1fr;gap:16px;padding:18px 0;border-bottom:1px solid var(--border);}
+    .tip-item:last-child{border-bottom:none;}
+    .tip-num{width:40px;height:40px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;margin-top:2px;}
+    .tip-item-content{padding-top:4px;}
+    .tip-item-title{font-size:15px;font-weight:700;margin-bottom:6px;}
+    .tip-item-desc{font-size:14px;color:var(--text-dim);line-height:1.75;margin:0;}
+
+    .summary-box{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:32px;margin:40px 0;}
+    .summary-box h4{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:18px;}
+    .summary-box ul{list-style:none;display:flex;flex-direction:column;gap:12px;}
+    .summary-box li{display:flex;align-items:flex-start;gap:12px;font-size:15px;line-height:1.7;}
+    .summary-box li::before{content:'→';color:var(--accent);font-weight:700;min-width:16px;}
+
+    .chapter-nav{display:flex;justify-content:space-between;margin-top:96px;padding-top:32px;border-top:1px solid var(--border);}
+    .nav-btn{display:inline-flex;flex-direction:column;gap:4px;text-decoration:none;padding:16px 24px;border-radius:10px;border:1px solid var(--border);transition:all .2s;}
+    .nav-btn:hover{border-color:var(--accent);background:var(--bg3);}
+    .nav-btn.next{text-align:right;}
+    .nav-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-mute);}
+    .nav-title{font-size:14px;font-weight:700;color:var(--text);}
+
+    @media(max-width:860px){.toc-sidebar{display:none;}.main{margin-left:0;padding:40px 24px 80px;}.progress-bar{left:0;}.compare-grid{grid-template-columns:1fr;}}
+    ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg2);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  </style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="toc-sidebar">
+  <div class="book-title">EQ 테크닉 바이블</div>
+  <h2>목차</h2>
+  <ul>
+    <div class="toc-chapter">Chapter 7</div>
+    <li><a href="#ms-intro">M/S EQ 개요</a></li>
+    <li><a href="#ms-mid">Mid 채널 EQ</a></li>
+    <li><a href="#ms-side">Side 채널 EQ</a></li>
+    <li><a href="#mastering-eq">마스터링 EQ</a></li>
+    <li><a href="#pultec">Pultec 테크닉</a></li>
+    <li><a href="#summary">정리</a></li>
+    <div class="toc-chapter">다른 챕터</div>
+    <li><a href="chapter6.html">← 6장. 프로의 EQ 철학</a></li>
+    <li><a href="index.html">전체 목차</a></li>
+  </ul>
+</nav>
+
+<main class="main">
+  <header class="chapter-header">
+    <div class="chapter-label">Chapter 07</div>
+    <h1>M/S EQ &<br/><em>마스터링 EQ</em></h1>
+    <p class="chapter-intro">
+      스테레오 필드를 이해하면 EQ의 차원이 달라진다.<br/>
+      마스터링 단계에서 쓰는 EQ는 믹싱과 접근이 완전히 다르다.
+    </p>
+  </header>
+
+  <!-- 1. M/S EQ란 무엇인가 -->
+  <section class="section" id="ms-intro">
+    <h2><span class="num">01</span>M/S EQ란 무엇인가</h2>
+
+    <p>
+      M/S(Mid/Side) 처리는 스테레오 신호를 두 가지 다른 성분으로 분리해 다루는 방식이다.
+      일반적인 EQ가 좌우 채널을 동시에 같은 양만큼 처리한다면,
+      <mark>M/S EQ</mark>는 Mid와 Side 각각을 독립적으로 처리할 수 있다.
+    </p>
+
+    <h3>Mid 채널과 Side 채널</h3>
+    <p>
+      <strong>Mid 채널 = 스테레오 좌우 합산(L+R)</strong>으로 만들어지는 모노 신호다.
+      보컬, 킥, 베이스처럼 센터에 배치된 악기들이 여기에 집중된다.
+      <strong>Side 채널 = 좌우 차이(L−R)</strong>로 스테레오 폭 정보를 담는다.
+      리버브, 코러스, 공간감이 여기에 들어 있다.
+    </p>
+    <p>
+      일반 EQ는 L/R을 동시에 같은 양만큼 처리하므로 스테레오 이미지 자체를
+      바꾸기 어렵다. M/S EQ는 Mid와 Side를 따로 처리할 수 있어 스테레오 폭과
+      중앙 밀도를 정밀하게 조절할 수 있다.
+    </p>
+
+    <div class="compare-grid">
+      <div class="compare-card">
+        <h4>일반 EQ <span>L/R</span></h4>
+        <ul>
+          <li>좌우 채널을 동일하게 처리</li>
+          <li>스테레오 이미지 변경이 어려움</li>
+          <li>믹싱·마스터링 전반에 사용</li>
+          <li>조작이 직관적이고 빠르다</li>
+        </ul>
+      </div>
+      <div class="compare-card">
+        <h4>M/S EQ <span>Mid/Side</span></h4>
+        <ul>
+          <li>Mid(센터)와 Side(폭)를 독립 처리</li>
+          <li>스테레오 폭·중앙 밀도를 정밀 조절</li>
+          <li>마스터링·보컬 처리·버스 처리에 최적</li>
+          <li>모노 호환성 확보에 직접적으로 활용</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">플러그인 지원</div>
+      <p>
+        M/S EQ 기능은 <strong>FabFilter Pro-Q 3, iZotope Ozone, TDR Nova</strong> 등 주요 플러그인에 기본 탑재되어 있습니다.
+        Pro-Q 3의 경우 각 밴드를 'Mid', 'Side', 'Left', 'Right' 모드로 개별 설정할 수 있습니다.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 2. Mid 채널 EQ -->
+  <section class="section" id="ms-mid">
+    <h2><span class="num">02</span>Mid 채널 EQ — 센터를 다듬는다</h2>
+
+    <p>
+      Mid 채널은 믹스의 중앙, 즉 모노 성분을 담고 있다.
+      여기에 EQ를 적용하면 스테레오 공간감에 영향을 주지 않고
+      센터 악기들의 밀도와 밸런스를 조절할 수 있다.
+    </p>
+
+    <h3>저역 정리 (80~200Hz)</h3>
+    <p>
+      킥과 베이스는 대부분 센터에 배치되어 Mid 채널에 집중된다.
+      Mid 채널에서 HPF나 컷으로 저역을 정리하면 <mark>스테레오 필드에 영향 없이</mark>
+      저역만 처리할 수 있다. 특히 <strong>200~350Hz의 "흙탕물 같은" 뭉침</strong>을
+      Mid에서만 컷하면 믹스가 눈에 띄게 선명해진다.
+    </p>
+
+    <h3>보컬 존재감 강화 (2~5kHz)</h3>
+    <p>
+      보컬은 센터에 위치하므로 Mid 채널의 2~5kHz를 부스트하면
+      스테레오 공간감을 해치지 않고 보컬만 앞으로 끌어낼 수 있다.
+      사이드 채널을 건드리지 않으므로 리버브와 배경의 스테레오 질감은 그대로 유지된다.
+    </p>
+
+    <h3>Mid 저역 HPF (마스터링)</h3>
+    <p>
+      마스터링 시 Mid 채널에 <strong>60~80Hz HPF</strong>를 적용하면 초저역 에너지를
+      모노 호환 상태로 유지할 수 있다. 초저역 에너지가 모노(Mid)에 집중되면
+      다양한 재생 환경에서 일관된 저역을 들려줄 수 있다.
+    </p>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 3. Side 채널 EQ -->
+  <section class="section" id="ms-side">
+    <h2><span class="num">03</span>Side 채널 EQ — 공간감을 조형한다</h2>
+
+    <p>
+      Side 채널은 스테레오 폭과 공간감의 핵심이다.
+      리버브, 코러스, 앰비언스가 여기에 들어 있으며, Side 채널을 EQ로 다루면
+      스테레오 이미지 자체를 조형할 수 있다.
+    </p>
+
+    <h3>Side 저역 제거 (HPF)</h3>
+    <p>
+      Side에 저역이 남아 있으면 모노 재생 시 위상 문제가 발생하고 저역이 좁아 보인다.
+      Side 채널에 <strong>120~200Hz HPF</strong>를 설정하면 저역은 항상 모노(Mid)로,
+      중고역만 스테레오로 재생된다. 이 처리 하나로 믹스의 저역이 훨씬 단단하고
+      모노 호환성도 크게 향상된다.
+    </p>
+
+    <h3>Side 고역 부스트 (10kHz 셸빙)</h3>
+    <p>
+      Side의 10kHz 이상을 <strong>+1~2dB 셸빙 부스트</strong>하면 리버브와 악기의
+      스테레오 공간감이 자연스럽게 넓어진다. 단, 과도하면 인위적이고
+      귀가 피곤해지는 느낌이 나므로 최대 +2dB까지만 사용한다.
+    </p>
+
+    <h3>Side 중역 컷 (500Hz~2kHz)</h3>
+    <p>
+      Side 중역이 지나치게 강하면 소리가 "퍼진다"는 느낌이 생긴다.
+      이 대역을 살짝 컷하면 스테레오 이미지가 정돈되고 믹스가 더 응집력 있게 들린다.
+    </p>
+
+    <div class="callout tip">
+      <div class="callout-label">모노 체크 필수</div>
+      <p>
+        <strong>Side 채널 EQ를 적용하기 전에 반드시 모노로 접어서(Mono Sum) 확인하세요.</strong>
+        위상 차이로 인해 모노에서 사라지는 소리가 있을 수 있습니다.
+        Side 처리 전후 모두 모노 체크를 거치는 것이 안전합니다.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 4. 마스터링 EQ -->
+  <section class="section" id="mastering-eq">
+    <h2><span class="num">04</span>마스터링 EQ — 믹싱과 다른 논리</h2>
+
+    <p>
+      마스터링 EQ는 믹싱 EQ와 같은 도구를 쓰더라도 접근 방식이 근본적으로 다르다.
+      개별 트랙을 다듬는 것이 아니라 완성된 믹스 전체의 밸런스와 밀도를 조정하기 때문에
+      모든 판단이 훨씬 신중해야 한다.
+    </p>
+
+    <div class="tip-list">
+      <div class="tip-item">
+        <div class="tip-num">1</div>
+        <div class="tip-item-content">
+          <div class="tip-item-title">처리량이 극히 작다</div>
+          <p class="tip-item-desc">±0.5~1.5dB가 표준이다. 2dB 이상이 필요하다고 느껴진다면 마스터링 EQ를 더 올리는 것이 아니라 믹스를 재검토해야 한다는 신호다.</p>
+        </div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">2</div>
+        <div class="tip-item-content">
+          <div class="tip-item-title">광대역(넓은 Q)을 사용한다</div>
+          <p class="tip-item-desc">좁은 Q로 특정 주파수를 찌르는 방식은 마스터링에서 거의 쓰지 않는다. Q 0.3~0.7의 넓은 커브로 전체 밀도와 색감을 조절하는 것이 원칙이다.</p>
+        </div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">3</div>
+        <div class="tip-item-content">
+          <div class="tip-item-title">레퍼런스 트랙과 비교한다</div>
+          <p class="tip-item-desc">마스터링의 목표 주파수 응답은 "플랫"이 아니라 "장르에 맞는 응답"이다. 같은 장르의 레퍼런스 트랙과 주파수 분포를 비교하며 방향을 잡는다.</p>
+        </div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">4</div>
+        <div class="tip-item-content">
+          <div class="tip-item-title">EQ 전후 볼륨 매칭</div>
+          <p class="tip-item-desc">EQ 후 소리가 더 크게 느껴지면 자연히 좋게 들린다. 볼륨을 매칭한 상태에서 A/B 비교해야 EQ의 실제 효과를 객관적으로 판단할 수 있다.</p>
+        </div>
+      </div>
+      <div class="tip-item">
+        <div class="tip-num">5</div>
+        <div class="tip-item-content">
+          <div class="tip-item-title">디지털 클리핑 여백 확인</div>
+          <p class="tip-item-desc">마스터 EQ 이후에는 반드시 0dBFS 초과 여부를 확인한다. 특히 저역을 부스트한 경우 트루 피크가 올라가 있을 수 있으니 미터를 체크한다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 5. Pultec 테크닉 -->
+  <section class="section" id="pultec">
+    <h2><span class="num">05</span>Pultec 테크닉 — 동시 부스트 &amp; 컷</h2>
+
+    <p>
+      Pultec EQP-1A는 1950년대 아날로그 빈티지 EQ다. 이 기기에는 독특한 특성이 있다.
+      <mark>같은 주파수를 동시에 부스트하고 컷할 수 있다</mark>.
+      디지털 EQ라면 두 조작이 정확히 상쇄되겠지만, 아날로그 회로에서는
+      부스트와 컷의 커브 모양이 달라서 독특한 주파수 셰이프가 만들어진다.
+    </p>
+
+    <p>
+      대표적인 적용 방법은 <strong>저역 부스트 + 저역 컷을 동시에 사용</strong>하는 것이다.
+      결과적으로 킥의 펀치감이 극대화되면서 저역 뭉침은 제거된다.
+      고역에서도 같은 원리로 밝고 공기감 있으면서도 치찰음이 억제된 특유의 고역 질감을 만들 수 있다.
+    </p>
+
+    <p>
+      플러그인 버전으로는 UAD, Waves의 Pultec EQP-1A 에뮬레이션과
+      무료 플러그인 PT EQ-1 등이 있다.
+    </p>
+
+    <h3>실제 세팅 예시</h3>
+
+    <table class="param-table">
+      <thead>
+        <tr>
+          <th>대역</th>
+          <th>처리</th>
+          <th>수치</th>
+          <th>효과</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Low Boost (60Hz)</td>
+          <td>부스트</td>
+          <td>+4~6dB</td>
+          <td>저역 두께·웜함 추가</td>
+        </tr>
+        <tr>
+          <td>Low Atten (60Hz)</td>
+          <td>컷</td>
+          <td>-2~4dB</td>
+          <td>저역 뭉침 제거</td>
+        </tr>
+        <tr>
+          <td>결과</td>
+          <td>—</td>
+          <td>—</td>
+          <td>펀치 있고 깔끔한 저역</td>
+        </tr>
+        <tr>
+          <td>HF Boost (10kHz)</td>
+          <td>부스트</td>
+          <td>+2~3dB</td>
+          <td>고역 공기감·광택</td>
+        </tr>
+        <tr>
+          <td>HF Atten (10kHz)</td>
+          <td>컷</td>
+          <td>-1~2dB</td>
+          <td>과도한 치찰음 억제</td>
+        </tr>
+        <tr>
+          <td>결과</td>
+          <td>—</td>
+          <td>—</td>
+          <td>밝고 부드러운 고역</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout accent">
+      <div class="callout-label">디지털에서의 재현</div>
+      <p>
+        <strong>Pultec 테크닉은 디지털 EQ에서 정확히 재현되지 않습니다.</strong>
+        부스트와 컷이 정확히 상쇄되어버리기 때문입니다. 아날로그 에뮬레이션 플러그인을 사용하거나,
+        두 개의 서로 다른 EQ 플러그인(하나는 부스트, 하나는 컷)을 직렬 연결해 흉내낼 수 있습니다.
+      </p>
+    </div>
+  </section>
+
+  <div class="divider">· · ·</div>
+
+  <!-- 정리 -->
+  <section class="section" id="summary">
+    <h2><span class="num">06</span>정리</h2>
+
+    <div class="summary-box">
+      <h4>Chapter 7 핵심 요약</h4>
+      <ul>
+        <li>M/S EQ는 Mid(센터)와 Side(스테레오 폭)를 독립적으로 처리한다.</li>
+        <li>Side 저역 HPF(120~200Hz)는 모노 호환성과 저역 단단함을 동시에 해결한다.</li>
+        <li>마스터링 EQ는 ±1.5dB 이내, 넓은 Q, 레퍼런스 비교가 원칙이다.</li>
+        <li>Pultec 테크닉: 같은 주파수 부스트+컷으로 아날로그 특유의 커브를 만든다.</li>
+        <li>M/S EQ 적용 후엔 반드시 모노 체크로 위상 문제를 확인한다.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section style="margin:48px 0 0;">
+    <div style="background:var(--bg2);border:1.5px solid var(--border);border-radius:14px;padding:28px 32px;">
+      <div style="font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;">✏️ 실습해보기</div>
+      <p style="font-size:15px;font-weight:700;color:var(--text);margin:0 0 16px;">이 챕터를 읽었다면, 바로 DAW에서 해보세요.</p>
+      <ol style="list-style:none;display:flex;flex-direction:column;gap:10px;margin:0;padding:0;">
+        <li style="display:flex;gap:12px;align-items:flex-start;"><span style="min-width:22px;height:22px;background:var(--accent);color:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;">1</span><span style="font-size:14px;color:var(--text-dim);line-height:1.7;">M/S EQ를 지원하는 플러그인(FabFilter Pro-Q 3, TDR Nova 등)에서 밴드 하나를 Side 모드로 설정하고 150Hz 이하에 HPF를 걸어보세요. 모노로 접어 저역이 더 탄탄해졌는지 확인합니다.</span></li>
+        <li style="display:flex;gap:12px;align-items:flex-start;"><span style="min-width:22px;height:22px;background:var(--accent);color:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;">2</span><span style="font-size:14px;color:var(--text-dim);line-height:1.7;">Side 채널의 10kHz 이상을 +1.5dB 셸빙 부스트해보세요. 스테레오 공간감이 넓어지는 것을 느낀 뒤, 다시 모노로 접어 위상 문제가 없는지 체크합니다.</span></li>
+        <li style="display:flex;gap:12px;align-items:flex-start;"><span style="min-width:22px;height:22px;background:var(--accent);color:#fff;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0;margin-top:2px;">3</span><span style="font-size:14px;color:var(--text-dim);line-height:1.7;">Pultec 에뮬레이션 플러그인(또는 두 개의 EQ를 직렬 연결)으로 60Hz를 동시에 부스트(+4dB)하고 컷(-2dB)해보세요. 킥과 베이스의 저역 느낌이 어떻게 달라지는지 확인합니다.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <nav class="chapter-nav">
+    <a href="chapter6.html" class="nav-btn">
+      <span class="nav-label">이전 챕터</span>
+      <span class="nav-title">← 6장. 프로의 EQ 철학</span>
+    </a>
+    <a href="index.html" class="nav-btn next">
+      <span class="nav-label">목차</span>
+      <span class="nav-title">전체 목차 →</span>
+    </a>
+  </nav>
+</main>
+
+<script>
+  window.addEventListener('scroll',()=>{
+    const doc=document.documentElement;
+    document.getElementById('progressFill').style.width=(doc.scrollTop/(doc.scrollHeight-doc.clientHeight)*100)+'%';
+  });
+  document.querySelectorAll('section[id]').forEach(s=>{
+    const link=document.querySelector(`.toc-sidebar a[href="#${s.id}"]`);
+    if(!link)return;
+    const obs=new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting)document.querySelectorAll('.toc-sidebar a').forEach(a=>a.classList.remove('active'));
+        if(e.isIntersecting)link.classList.add('active');
+      });
+    },{rootMargin:'-30% 0px -60% 0px'});
+    obs.observe(s);
+  });
+</script>
+</body>
+</html>
