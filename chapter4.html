@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EQ 테크닉 바이블 — 4장</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;700&display=swap');
+    :root {
+      --bg:#ffffff; --bg2:#f8f8f6; --bg3:#f2f1ee; --surface:#ebe9e4;
+      --border:#d8d5ce; --accent:#c9541e; --blue:#2563eb; --green:#16a34a;
+      --red:#dc2626; --text:#1a1a18; --text-dim:#5a5a54; --text-mute:#a8a8a0;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-weight:400;line-height:1.85;font-size:16px;}
+
+    .toc-sidebar{position:fixed;top:0;left:0;width:256px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);padding:40px 24px;overflow-y:auto;z-index:100;}
+    .toc-sidebar .book-title{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:6px;}
+    .toc-sidebar h2{font-size:14px;font-weight:700;margin-bottom:28px;}
+    .toc-sidebar ul{list-style:none;}
+    .toc-sidebar li{margin-bottom:2px;}
+    .toc-sidebar a{display:block;padding:7px 12px;border-radius:6px;color:var(--text-dim);text-decoration:none;font-size:13px;transition:all .2s;}
+    .toc-sidebar a:hover,.toc-sidebar a.active{background:var(--surface);color:var(--accent);}
+    .toc-chapter{font-size:10px;letter-spacing:.1em;color:var(--text-mute);font-weight:700;margin:20px 0 6px 12px;text-transform:uppercase;}
+
+    .progress-bar{position:fixed;top:0;left:256px;right:0;height:3px;background:var(--border);z-index:200;}
+    .progress-fill{height:100%;background:var(--accent);width:0%;transition:width .1s;}
+
+    .main{margin-left:256px;max-width:820px;padding:80px 64px 120px;}
+
+    .chapter-header{margin-bottom:72px;}
+    .chapter-label{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:18px;}
+    .chapter-label::before{content:'';display:block;width:28px;height:2px;background:var(--accent);}
+    .chapter-header h1{font-family:'Noto Serif KR',serif;font-size:clamp(30px,5vw,50px);font-weight:700;line-height:1.3;margin-bottom:24px;}
+    .chapter-header h1 em{color:var(--accent);font-style:normal;}
+    .chapter-intro{font-size:17px;line-height:1.95;color:var(--text-dim);border-left:3px solid var(--border);padding-left:20px;}
+
+    .section{margin-bottom:72px;}
+    h2{font-family:'Noto Serif KR',serif;font-size:24px;font-weight:700;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+    h2 .num{color:var(--accent);margin-right:10px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;}
+    h3{font-size:17px;font-weight:700;margin:40px 0 14px;}
+    h3::before{content:'▍';color:var(--accent);margin-right:8px;}
+    p{margin-bottom:18px;font-size:16px;line-height:1.95;}
+
+    /* 악기 카드 */
+    .instrument-block{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:32px;margin:32px 0;}
+    .instrument-block .inst-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;}
+    .inst-icon{font-size:28px;}
+    .inst-title{font-size:20px;font-weight:700;color:var(--text);}
+    .inst-sub{font-size:13px;color:var(--text-mute);margin-top:2px;}
+    .eq-steps{display:flex;flex-direction:column;gap:10px;margin:16px 0;}
+    .eq-step{display:grid;grid-template-columns:110px 1fr;gap:12px;align-items:start;padding:12px 16px;background:var(--bg);border:1px solid var(--border);border-radius:8px;}
+    .eq-freq{font-size:13px;font-weight:700;color:var(--accent);}
+    .eq-action{font-size:14px;color:var(--text-dim);line-height:1.65;}
+    .eq-action strong{color:var(--text);}
+
+    /* 팁 박스 */
+    .inst-tip{margin-top:18px;padding:16px 20px;background:rgba(201,84,30,.06);border-radius:8px;font-size:14px;color:var(--text-dim);line-height:1.7;}
+    .inst-tip strong{color:var(--accent);}
+
+    .callout{border-radius:10px;padding:20px 24px;margin:28px 0;border-left:4px solid;}
+    .callout.tip{background:#f0fdf4;border-color:var(--green);}
+    .callout.info{background:#eff6ff;border-color:var(--blue);}
+    .callout.warning{background:#fff5f5;border-color:var(--red);}
+    .callout-label{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+    .callout.tip .callout-label{color:var(--green);}
+    .callout.info .callout-label{color:var(--blue);}
+    .callout.warning .callout-label{color:var(--red);}
+    .callout p{margin:0;font-size:15px;line-height:1.8;color:var(--text-dim);}
+    .callout p strong{color:var(--text);}
+
+    mark{background:rgba(201,84,30,.1);color:#a83e10;padding:1px 4px;border-radius:3px;}
+
+    .divider{display:flex;align-items:center;gap:14px;margin:64px 0;color:var(--text-mute);font-size:12px;}
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+    .summary-box{background:var(--bg3);border:1px solid var(--border);border-radius:14px;padding:32px;margin:40px 0;}
+    .summary-box h4{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:18px;}
+    .summary-box ul{list-style:none;display:flex;flex-direction:column;gap:12px;}
+    .summary-box li{display:flex;align-items:flex-start;gap:12px;font-size:15px;line-height:1.7;}
+    .summary-box li::before{content:'→';color:var(--accent);font-weight:700;min-width:16px;}
+
+    .chapter-nav{display:flex;justify-content:space-between;margin-top:96px;padding-top:32px;border-top:1px solid var(--border);}
+    .nav-btn{display:inline-flex;flex-direction:column;gap:4px;text-decoration:none;padding:16px 24px;border-radius:10px;border:1px solid var(--border);transition:all .2s;}
+    .nav-btn:hover{border-color:var(--accent);background:var(--bg3);}
+    .nav-btn.next{text-align:right;}
+    .nav-label{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-mute);}
+    .nav-title{font-size:14px;font-weight:700;color:var(--text);}
+
+    @media(max-width:860px){.toc-sidebar{display:none;}.main{margin-left:0;padding:40px 24px 80px;}.progress-bar{left:0;}.eq-step{grid-template-columns:1fr;}}
+    ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg2);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  </style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="toc-sidebar">
+  <div class="book-title">EQ 테크닉 바이블</div>
+  <h2>목차</h2>
+  <ul>
+    <div class="toc-chapter">Chapter 4</div>
+    <li><a href="#kick">킥 드럼</a></li>
+    <li><a href="#snare">스네어</a></li>
+    <li><a href="#hihat">하이햇</a></li>
+    <li><a href="#bass">베이스</a></li>
+    <li><a href="#parallel">패럴렐 EQ</a></li>
+    <li><a href="#summary">정리</a></li>
+    <div class="toc-chapter">다른 챕터</div>
+    <li><a href="chapter3.html">← 3장. 부스트와 컷</a></li>
+    <li><a href="index.html">목차로 돌아가기</a></li>
+  </ul>
+</nav>
+
+<main class="main">
+  <header class="chapter-header">
+    <div class="chapter-label">Chapter 04</div>
+    <h1>드럼과 베이스<br/><em>실전 EQ</em></h1>
+    <p class="chapter-intro">
+      리듬 섹션의 EQ는 믹스 전체의 토대를 결정한다.<br/>
+      킥과 베이스가 제자리를 잡으면 나머지 악기의 자리도 자연스럽게 열린다.
+    </p>
+  </header>
+
+  <section class="section" id="kick">
+    <h2><span class="num">01</span>킥 드럼</h2>
+
+    <p>킥은 믹스의 가장 낮은 곳을 지탱하는 악기다. 저역의 두께감과 어택의 선명도, 두 가지를 동시에 잡는 것이 킥 EQ의 핵심이다. 이 둘은 서로 충돌하는 경향이 있기 때문에, 어디에 비중을 둘지 먼저 결정하고 접근해야 한다.</p>
+
+    <div class="instrument-block">
+      <div class="inst-header">
+        <div class="inst-icon">🥁</div>
+        <div>
+          <div class="inst-title">킥 드럼 EQ 접근법</div>
+          <div class="inst-sub">바디감과 어택을 동시에 잡는다</div>
+        </div>
+      </div>
+      <div class="eq-steps">
+        <div class="eq-step">
+          <div class="eq-freq">50~80Hz</div>
+          <div class="eq-action"><strong>바디감 조정.</strong> 이 대역이 킥의 두께를 결정한다. 너무 올리면 무겁고 뭉치고, 너무 낮추면 킥이 빈약해진다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">300~500Hz</div>
+          <div class="eq-action"><strong>컷 권장.</strong> 대부분의 킥에서 이 대역이 불필요하게 뭉친다. 2~4dB 컷만으로 선명도가 크게 개선된다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">1kHz 전후</div>
+          <div class="eq-action"><strong>어택 조정.</strong> 비터(스틱)가 헤드를 치는 딱 소리가 여기에 있다. 올리면 펀치감이 강해진다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">3~5kHz</div>
+          <div class="eq-action"><strong>클릭감 조정.</strong> 킥이 믹스 안에서 존재감을 드러내는 고역 어택. 작은 스피커에서도 킥이 들리게 하려면 이 대역을 살린다.</div>
+        </div>
+      </div>
+      <div class="inst-tip">
+        <strong>팁:</strong> 솔로로 들었을 때 텅 빈 것 같아도, 믹스 안에서 딱 맞아 떨어지는 경우가 많다. 킥 EQ는 항상 전체 믹스 안에서 최종 판단하라.
+      </div>
+    </div>
+
+    <div class="callout info">
+      <div class="callout-label">베이스와의 관계</div>
+      <p>킥과 베이스는 같은 저역 공간을 공유한다. 킥의 핵심 주파수(예: 60Hz)와 베이스의 핵심 주파수(예: 80Hz)를 <strong>서로 다른 지점</strong>에 배치하면 둘이 공존할 수 있다.</p>
+    </div>
+  </section>
+
+  <div class="divider">✦</div>
+
+  <section class="section" id="snare">
+    <h2><span class="num">02</span>스네어</h2>
+
+    <p>스네어는 그루브의 중심이다. 탁 치는 어택감과 스네어 울림(스내피)의 밸런스가 스네어 사운드의 핵심이다. 어느 쪽을 더 강조할지에 따라 접근이 달라진다.</p>
+
+    <div class="instrument-block">
+      <div class="inst-header">
+        <div class="inst-icon">🪘</div>
+        <div>
+          <div class="inst-title">스네어 EQ 접근법</div>
+          <div class="inst-sub">어택과 스내피의 밸런스</div>
+        </div>
+      </div>
+      <div class="eq-steps">
+        <div class="eq-step">
+          <div class="eq-freq">200~250Hz</div>
+          <div class="eq-action"><strong>바디감.</strong> 이 대역이 스네어의 통통한 두께를 만든다. 과하면 뭉치고, 부족하면 얇아진다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">400~600Hz</div>
+          <div class="eq-action"><strong>컷 검토.</strong> 이 대역이 쌓이면 스네어가 플라스틱처럼 딱딱하게 들린다. 1~3dB 컷으로 정리하면 자연스러워진다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">1~2kHz</div>
+          <div class="eq-action"><strong>스냅·크랙.</strong> 스틱이 헤드를 치는 순간의 선명도. 올리면 어택이 또렷해진다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">5~8kHz</div>
+          <div class="eq-action"><strong>스내피(울림줄).</strong> 이 대역이 스네어 특유의 '칫' 하는 울림을 만든다. 장르에 따라 강조하거나 억제한다.</div>
+        </div>
+      </div>
+      <div class="inst-tip">
+        <strong>팁:</strong> 스네어 바텀 마이크를 함께 쓸 경우, 하이햇 소리가 섞여 들어오는 경우가 있다. DAW 오토메이션으로 스네어가 연주되지 않는 구간의 고역 부스트를 자동으로 줄이면 깔끔하게 정리된다.
+      </div>
+    </div>
+  </section>
+
+  <div class="divider">✦</div>
+
+  <section class="section" id="hihat">
+    <h2><span class="num">03</span>하이햇</h2>
+
+    <p>하이햇은 전체 믹스에서 고역의 공간을 차지한다. 너무 날카롭거나 너무 묻히지 않도록 밸런스를 잡는 것이 핵심이다.</p>
+
+    <div class="instrument-block">
+      <div class="inst-header">
+        <div class="inst-icon">🎵</div>
+        <div>
+          <div class="inst-title">하이햇 EQ 접근법</div>
+          <div class="inst-sub">밝기와 날카로움의 균형</div>
+        </div>
+      </div>
+      <div class="eq-steps">
+        <div class="eq-step">
+          <div class="eq-freq">200Hz 이하</div>
+          <div class="eq-action"><strong>하이패스 필터 필수.</strong> 하이햇의 저역은 전부 불필요하다. 과감하게 잘라낸다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">500~800Hz</div>
+          <div class="eq-action"><strong>컷 검토.</strong> 이 대역이 많으면 하이햇이 탁하고 금속성이 과하게 느껴진다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">5~8kHz</div>
+          <div class="eq-action"><strong>'쟈잘' 소리 조정.</strong> 하이햇 특유의 재잘거리는 질감이 이 대역에 있다. 장르 특성에 맞게 조정한다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">10~12kHz</div>
+          <div class="eq-action"><strong>밝기·공기감.</strong> 오픈 하이햇의 산뜻한 느낌을 살리거나, 너무 날카롭다면 여기를 낮춘다.</div>
+        </div>
+      </div>
+      <div class="inst-tip">
+        <strong>팁:</strong> 하이햇의 고역을 과하게 올리면 믹스 전체가 날카롭고 피곤하게 들린다. 10~12kHz 부스트는 소량(1~2dB)으로 절제하는 것이 좋다.
+      </div>
+    </div>
+  </section>
+
+  <div class="divider">✦</div>
+
+  <section class="section" id="bass">
+    <h2><span class="num">04</span>베이스 기타</h2>
+
+    <p>베이스는 킥과 함께 믹스의 저역을 담당한다. 두께와 윤곽, 어택감을 동시에 갖춰야 작은 스피커에서도 존재감이 살아난다.</p>
+
+    <div class="instrument-block">
+      <div class="inst-header">
+        <div class="inst-icon">🎸</div>
+        <div>
+          <div class="inst-title">베이스 EQ 접근법</div>
+          <div class="inst-sub">두께 + 윤곽 + 어택의 삼박자</div>
+        </div>
+      </div>
+      <div class="eq-steps">
+        <div class="eq-step">
+          <div class="eq-freq">60~100Hz</div>
+          <div class="eq-action"><strong>두께 조정.</strong> 베이스의 바디감이 여기에 있다. 킥과 겹치지 않도록 킥의 핵심 주파수와 간격을 유지한다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">200~400Hz</div>
+          <div class="eq-action"><strong>컷 검토.</strong> 이 대역이 과하면 베이스가 뭉치고 탁해진다. 믹스 안에서 저역이 꽉 막히는 느낌이 들면 여기를 먼저 확인한다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">800Hz~1kHz</div>
+          <div class="eq-action"><strong>윤곽 조정.</strong> 베이스의 음정이 또렷하게 들리는 대역. 너무 낮추면 베이스가 뭉개지고, 올리면 선명해진다.</div>
+        </div>
+        <div class="eq-step">
+          <div class="eq-freq">3~5kHz</div>
+          <div class="eq-action"><strong>어택·핑거노이즈.</strong> 픽 또는 손가락으로 튕기는 어택감. 작은 스피커에서 베이스가 들리게 하려면 이 대역을 살린다.</div>
+        </div>
+      </div>
+      <div class="inst-tip">
+        <strong>팁:</strong> 베이스는 헤드폰보다 스피커로 확인할 때 훨씬 정확하다. 반드시 여러 환경(이어폰, 차량 스피커 등)에서 저역이 어떻게 들리는지 확인하자.
+      </div>
+    </div>
+  </section>
+
+  <div class="divider">✦</div>
+
+  <section class="section" id="parallel">
+    <h2><span class="num">05</span>패럴렐 EQ — 원음을 살리면서 특성을 더하는 방법</h2>
+
+    <p>강한 EQ를 적용하면 원음의 자연스러운 특성이 손상되는 경우가 있다. <mark>패럴렐 EQ</mark>는 이 문제를 해결하는 기법이다.</p>
+
+    <h3>작동 원리</h3>
+    <p>원본 트랙과 EQ를 강하게 적용한 트랙을 나란히 두고, 두 트랙의 비율을 믹스해서 사용한다. 원본의 자연스러운 저역과 다이나믹을 유지하면서, EQ 처리된 트랙에서 원하는 특성(어택감, 윤곽, 밝기)만 적당히 더하는 방식이다.</p>
+
+    <h3>베이스에 적용하는 방법</h3>
+    <div class="eq-steps">
+      <div class="eq-step">
+        <div class="eq-freq">1단계</div>
+        <div class="eq-action">베이스 트랙을 복사해 두 개의 트랙으로 만든다.</div>
+      </div>
+      <div class="eq-step">
+        <div class="eq-freq">2단계</div>
+        <div class="eq-action">복사한 트랙에 강한 EQ를 적용한다. 3~5kHz를 8~10dB 부스트해 어택을 극단적으로 강조한다.</div>
+      </div>
+      <div class="eq-step">
+        <div class="eq-freq">3단계</div>
+        <div class="eq-action">두 트랙의 페이더를 조정해 원본:EQ 트랙 비율을 원하는 만큼 혼합한다. 70:30 또는 80:20이 일반적인 출발점이다.</div>
+      </div>
+    </div>
+
+    <div class="callout tip">
+      <div class="callout-label">활용 팁</div>
+      <p>패럴렐 EQ는 베이스 외에도 드럼 버스, 보컬 등에 넓게 응용할 수 있다. 강한 EQ를 써야 할 것 같은 상황에서 먼저 시도해보자.</p>
+    </div>
+  </section>
+
+  <div class="divider">✦</div>
+
+  <section class="section" id="summary">
+    <h2><span class="num">06</span>4장 정리</h2>
+    <div class="summary-box">
+      <h4>핵심 요약</h4>
+      <ul>
+        <li>킥은 바디(50~80Hz)와 어택(1kHz, 3~5kHz)의 균형이 핵심. 300~500Hz는 대부분 컷 대상이다.</li>
+        <li>스네어는 바디(200~250Hz)와 스냅(1~2kHz)을 살리고, 400~600Hz 뭉침을 정리한다.</li>
+        <li>하이햇은 저역을 과감히 자르고, 고역 부스트는 소량으로 절제한다.</li>
+        <li>베이스는 킥과 핵심 주파수가 겹치지 않도록 배치해 저역 공간을 나눈다.</li>
+        <li>강한 EQ가 필요할 때는 패럴렐 EQ로 원음을 보존하면서 특성을 더한다.</li>
+      </ul>
+    </div>
+  </section>
+
+  <nav class="chapter-nav">
+    <a href="chapter3.html" class="nav-btn">
+      <span class="nav-label">이전 챕터</span>
+      <span class="nav-title">← 3장. 부스트와 컷</span>
+    </a>
+    <a href="index.html" class="nav-btn next">
+      <span class="nav-label">목차</span>
+      <span class="nav-title">전체 목차 →</span>
+    </a>
+  </nav>
+</main>
+
+<script>
+  window.addEventListener('scroll',()=>{
+    const doc=document.documentElement;
+    document.getElementById('progressFill').style.width=(doc.scrollTop/(doc.scrollHeight-doc.clientHeight)*100)+'%';
+  });
+  document.querySelectorAll('section[id]').forEach(s=>{
+    new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        if(e.isIntersecting){
+          document.querySelectorAll('.toc-sidebar a[href^="#"]').forEach(l=>l.classList.remove('active'));
+          const l=document.querySelector(`.toc-sidebar a[href="#${e.target.id}"]`);
+          if(l)l.classList.add('active');
+        }
+      });
+    },{rootMargin:'-30% 0px -60% 0px'}).observe(s);
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EQ 테크닉 바이블</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700;900&family=Noto+Serif+KR:wght@700&display=swap');
+
+    :root {
+      --accent: #c9541e;
+      --text:   #1a1a18;
+      --dim:    #5a5a54;
+      --border: #d8d5ce;
+      --bg:     #f8f8f6;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    /* 배경 워터마크 */
+    body::before {
+      content: 'EQ';
+      position: fixed;
+      font-size: 480px;
+      font-weight: 900;
+      color: #d8d5ce;
+      opacity: .25;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      font-family: 'Noto Serif KR', serif;
+      user-select: none;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 420px;
+      padding: 56px 48px;
+      text-align: center;
+    }
+
+    .lock-icon {
+      width: 56px; height: 56px;
+      background: rgba(201,84,30,.08);
+      border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 28px;
+      font-size: 26px;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 4px 12px;
+      border: 1.5px solid var(--accent);
+      border-radius: 20px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      font-family: 'Noto Serif KR', serif;
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.35;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--dim);
+      margin-bottom: 40px;
+      line-height: 1.7;
+    }
+
+    /* 입력 */
+    .input-wrap {
+      position: relative;
+      margin-bottom: 14px;
+    }
+
+    input[type="password"] {
+      width: 100%;
+      padding: 15px 48px 15px 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 16px;
+      font-family: 'Noto Sans KR', sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      outline: none;
+      transition: border-color .2s;
+      letter-spacing: .08em;
+    }
+
+    input[type="password"]:focus {
+      border-color: var(--accent);
+      background: #fff;
+    }
+
+    .toggle-pw {
+      position: absolute;
+      right: 14px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      cursor: pointer; padding: 4px;
+      color: var(--dim); font-size: 18px;
+      line-height: 1;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 15px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Noto Sans KR', sans-serif;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+      margin-top: 4px;
+    }
+    .btn:hover { background: #a83e10; }
+    .btn:active { transform: scale(.98); }
+
+    /* 에러 */
+    .error {
+      margin-top: 14px;
+      font-size: 13px;
+      color: #dc2626;
+      height: 18px;
+      transition: opacity .2s;
+      opacity: 0;
+    }
+    .error.show { opacity: 1; }
+
+    /* 흔들기 애니메이션 */
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%      { transform: translateX(-8px); }
+      40%      { transform: translateX(8px); }
+      60%      { transform: translateX(-5px); }
+      80%      { transform: translateX(5px); }
+    }
+    .shake { animation: shake .4s ease; }
+
+    /* 성공 */
+    .success-overlay {
+      position: fixed; inset: 0;
+      background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      z-index: 999;
+      opacity: 0; pointer-events: none;
+      transition: opacity .4s;
+    }
+    .success-overlay.show { opacity: 1; pointer-events: all; }
+    .success-overlay span { font-size: 32px; }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="lock-icon">🔒</div>
+  <div class="tag">Private Access</div>
+  <h1>EQ 테크닉<br/>바이블</h1>
+  <p class="subtitle">비밀번호를 입력하면<br/>전자책이 열립니다.</p>
+
+  <div class="input-wrap">
+    <input type="password" id="pw" placeholder="비밀번호 입력"
+           autocomplete="current-password"
+           onkeydown="if(event.key==='Enter') unlock()" />
+    <button class="toggle-pw" onclick="togglePw()" tabindex="-1" title="비밀번호 보기">👁</button>
+  </div>
+
+  <button class="btn" onclick="unlock()">열기</button>
+  <div class="error" id="err">비밀번호가 맞지 않습니다.</div>
+</div>
+
+<!-- 성공 오버레이 -->
+<div class="success-overlay" id="overlay">
+  <span>✅</span>
+</div>
+
+<script>
+  // ✏️ 여기서 비밀번호를 바꾸세요
+  const PASSWORD = 'eq2024';
+
+  function unlock() {
+    const val = document.getElementById('pw').value;
+    const err = document.getElementById('err');
+    const card = document.querySelector('.card');
+
+    if (val === PASSWORD) {
+      document.getElementById('overlay').classList.add('show');
+      setTimeout(() => { window.location.href = 'index.html'; }, 600);
+    } else {
+      err.classList.add('show');
+      card.classList.remove('shake');
+      void card.offsetWidth; // reflow
+      card.classList.add('shake');
+      document.getElementById('pw').value = '';
+      document.getElementById('pw').focus();
+      setTimeout(() => err.classList.remove('show'), 2500);
+    }
+  }
+
+  function togglePw() {
+    const input = document.getElementById('pw');
+    input.type = input.type === 'password' ? 'text' : 'password';
+  }
+
+  document.getElementById('pw').focus();
+</script>
+</body>
+</html>

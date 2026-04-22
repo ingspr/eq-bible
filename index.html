@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EQ 테크닉 바이블</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;700;900&display=swap');
+    :root {
+      --bg:#ffffff; --bg2:#f8f8f6; --bg3:#f2f1ee;
+      --border:#d8d5ce; --accent:#c9541e; --accent2:#a83e10;
+      --text:#1a1a18; --text-dim:#5a5a54; --text-mute:#a8a8a0;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-weight:400;line-height:1.85;}
+
+    /* 커버 */
+    .cover{
+      min-height:100vh;
+      display:flex;flex-direction:column;justify-content:center;align-items:center;
+      text-align:center;padding:80px 40px;
+      background:var(--bg2);
+      border-bottom:1px solid var(--border);
+      position:relative;overflow:hidden;
+    }
+    .cover::before{
+      content:'EQ';
+      position:absolute;font-size:480px;font-weight:900;
+      color:var(--border);opacity:.35;
+      font-family:'Noto Serif KR',serif;
+      top:50%;left:50%;transform:translate(-50%,-50%);
+      pointer-events:none;user-select:none;letter-spacing:-.05em;
+      white-space:nowrap;
+    }
+    .cover-tag{
+      display:inline-block;padding:6px 16px;border:1.5px solid var(--accent);
+      border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.16em;
+      text-transform:uppercase;color:var(--accent);margin-bottom:28px;
+      position:relative;z-index:1;
+    }
+    .cover h1{
+      font-family:'Noto Serif KR',serif;
+      font-size:clamp(40px,7vw,80px);font-weight:900;
+      line-height:1.15;color:var(--text);
+      position:relative;z-index:1;margin-bottom:16px;
+    }
+    .cover h1 em{color:var(--accent);font-style:normal;}
+    .cover-sub{
+      font-size:18px;color:var(--text-dim);
+      position:relative;z-index:1;margin-bottom:48px;line-height:1.7;
+    }
+    .cover-cta{
+      display:inline-block;padding:16px 36px;
+      background:var(--accent);color:#fff;border-radius:10px;
+      text-decoration:none;font-weight:700;font-size:15px;
+      position:relative;z-index:1;transition:background .2s;
+    }
+    .cover-cta:hover{background:var(--accent2);}
+
+    /* 목차 섹션 */
+    .toc-section{max-width:760px;margin:0 auto;padding:96px 40px 120px;}
+    .section-label{
+      font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+      color:var(--accent);margin-bottom:12px;
+    }
+    .section-label::before{content:'';display:inline-block;width:24px;height:2px;background:var(--accent);margin-right:10px;vertical-align:middle;}
+    .toc-section h2{
+      font-family:'Noto Serif KR',serif;font-size:clamp(24px,4vw,36px);
+      font-weight:700;color:var(--text);margin-bottom:56px;
+    }
+
+    /* 챕터 카드 */
+    .chapter-list{display:flex;flex-direction:column;gap:16px;}
+    .chapter-card{
+      display:grid;grid-template-columns:64px 1fr auto;
+      align-items:center;gap:24px;
+      padding:28px 32px;
+      background:var(--bg2);border:1px solid var(--border);border-radius:14px;
+      text-decoration:none;color:inherit;
+      transition:border-color .2s,box-shadow .2s,transform .15s;
+    }
+    .chapter-card:hover{
+      border-color:var(--accent);
+      box-shadow:0 4px 20px rgba(201,84,30,.1);
+      transform:translateY(-2px);
+    }
+    .chapter-num{
+      font-size:13px;font-weight:700;letter-spacing:.1em;
+      text-transform:uppercase;color:var(--accent);
+      background:rgba(201,84,30,.08);border-radius:8px;
+      padding:10px 0;text-align:center;
+    }
+    .chapter-num span{display:block;font-size:22px;font-weight:900;letter-spacing:0;}
+    .chapter-info h3{font-size:18px;font-weight:700;color:var(--text);margin-bottom:6px;}
+    .chapter-info p{font-size:14px;color:var(--text-dim);margin:0;line-height:1.6;}
+    .chapter-arrow{font-size:20px;color:var(--text-mute);transition:color .2s,transform .2s;}
+    .chapter-card:hover .chapter-arrow{color:var(--accent);transform:translateX(4px);}
+
+    /* 태그 리스트 */
+    .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+    .tag{display:inline-block;padding:2px 9px;border-radius:4px;font-size:11px;font-weight:700;background:var(--bg3);color:var(--text-mute);}
+
+    /* 푸터 */
+    footer{text-align:center;padding:48px 24px;border-top:1px solid var(--border);color:var(--text-mute);font-size:13px;}
+
+    @media(max-width:600px){
+      .chapter-card{grid-template-columns:48px 1fr;gap:16px;padding:20px;}
+      .chapter-arrow{display:none;}
+    }
+    ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg2);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  </style>
+</head>
+<body>
+
+  <!-- 커버 -->
+  <section class="cover">
+    <div class="cover-tag">전자책</div>
+    <h1>EQ 테크닉<br/><em>바이블</em></h1>
+    <p class="cover-sub">
+      "대충"에서 벗어나 귀로 듣고 손으로 이해하는<br/>
+      믹싱 엔지니어의 EQ 완전 가이드
+    </p>
+    <a href="#toc" class="cover-cta">읽기 시작하기 →</a>
+  </section>
+
+  <!-- 목차 -->
+  <section class="toc-section" id="toc">
+    <div class="section-label">Table of Contents</div>
+    <h2>목차</h2>
+
+    <div class="chapter-list">
+
+      <a href="chapter1.html" class="chapter-card">
+        <div class="chapter-num">CH<span>01</span></div>
+        <div class="chapter-info">
+          <h3>EQ를 켜기 전에</h3>
+          <p>EQ가 필요한 순간과 아닌 순간을 구분하고, 목표 음색을 정하는 법</p>
+          <div class="tags">
+            <span class="tag">마인드셋</span>
+            <span class="tag">사전 준비</span>
+            <span class="tag">체크리스트</span>
+          </div>
+        </div>
+        <div class="chapter-arrow">→</div>
+      </a>
+
+      <a href="chapter2.html" class="chapter-card">
+        <div class="chapter-num">CH<span>02</span></div>
+        <div class="chapter-info">
+          <h3>EQ 기본 개념</h3>
+          <p>FREQ · GAIN · Q의 역할, 커브 종류, Q값에 따른 차이, 플러그인마다 소리가 다른 이유</p>
+          <div class="tags">
+            <span class="tag">파라미터</span>
+            <span class="tag">피킹·셸빙</span>
+            <span class="tag">Q값</span>
+          </div>
+        </div>
+        <div class="chapter-arrow">→</div>
+      </a>
+
+      <a href="chapter3.html" class="chapter-card">
+        <div class="chapter-num">CH<span>03</span></div>
+        <div class="chapter-info">
+          <h3>부스트와 컷, 제대로 쓰는 법</h3>
+          <p>원하는 대역을 찾는 탐색법, 악기별 주파수 가이드, EQ 적용 순서</p>
+          <div class="tags">
+            <span class="tag">부스트</span>
+            <span class="tag">컷</span>
+            <span class="tag">주파수 대역</span>
+          </div>
+        </div>
+        <div class="chapter-arrow">→</div>
+      </a>
+
+      <a href="chapter4.html" class="chapter-card">
+        <div class="chapter-num">CH<span>04</span></div>
+        <div class="chapter-info">
+          <h3>드럼과 베이스 실전 EQ</h3>
+          <p>킥 · 스네어 · 하이햇 · 베이스 각각의 접근법, 패럴렐 EQ 기법</p>
+          <div class="tags">
+            <span class="tag">드럼</span>
+            <span class="tag">베이스</span>
+            <span class="tag">패럴렐 EQ</span>
+          </div>
+        </div>
+        <div class="chapter-arrow">→</div>
+      </a>
+
+    </div>
+  </section>
+
+  <footer>
+    EQ 테크닉 바이블 &nbsp;·&nbsp; 믹싱 엔지니어를 위한 완전 가이드
+  </footer>
+
+</body>
+</html>
