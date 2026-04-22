@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EQ 테크닉 바이블 — 13장</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;700&display=swap');
+    :root {
+      --bg:#ffffff; --bg2:#f8f8f6; --bg3:#f2f1ee; --surface:#ebe9e4;
+      --border:#d8d5ce; --accent:#c9541e; --blue:#2563eb; --green:#16a34a;
+      --red:#dc2626; --gold:#9a7200; --text:#1a1a18; --text-dim:#5a5a54; --text-mute:#a8a8a0;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-weight:400;line-height:1.85;font-size:16px;}
+
+    .toc-sidebar{position:fixed;top:0;left:0;width:256px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);padding:40px 24px;overflow-y:auto;z-index:100;}
+    .toc-sidebar .book-title{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:6px;}
+    .toc-sidebar h2{font-size:14px;font-weight:700;margin-bottom:28px;}
+    .toc-sidebar ul{list-style:none;}
+    .toc-sidebar li{margin-bottom:2px;}
+    .toc-sidebar a{display:block;padding:7px 12px;border-radius:6px;color:var(--text-dim);text-decoration:none;font-size:13px;transition:all .2s;}
+    .toc-sidebar a:hover,.toc-sidebar a.active{background:var(--surface);color:var(--accent);}
+    .toc-chapter{font-size:10px;letter-spacing:.1em;color:var(--text-mute);font-weight:700;margin:20px 0 6px 12px;text-transform:uppercase;}
+
+    .progress-bar{position:fixed;top:0;left:256px;right:0;height:3px;background:var(--border);z-index:200;}
+    .progress-fill{height:100%;background:var(--accent);width:0%;transition:width .1s;}
+
+    .main{margin-left:256px;max-width:820px;padding:80px 64px 120px;}
+
+    .chapter-header{margin-bottom:72px;}
+    .chapter-label{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:18px;}
+    .chapter-label::before{content:'';display:block;width:28px;height:2px;background:var(--accent);}
+    .chapter-header h1{font-family:'Noto Serif KR',serif;font-size:clamp(30px,5vw,50px);font-weight:700;line-height:1.3;margin-bottom:24px;}
+    .chapter-header h1 em{color:var(--accent);font-style:normal;}
+    .chapter-intro{font-size:17px;line-height:1.95;color:var(--text-dim);border-left:3px solid var(--border);padding-left:20px;}
+
+    .section{margin-bottom:72px;}
+    h2{font-family:'Noto Serif KR',serif;font-size:24px;font-weight:700;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+    h2 .num{color:var(--accent);margin-right:10px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;}
+    h3{font-size:17px;font-weight:700;margin:40px 0 14px;}
+    h3::before{content:'▍';color:var(--accent);margin-right:8px;}
+    p{margin-bottom:18px;font-size:16px;line-height:1.95;}
+
+    /* 거장 카드 */
+    .master-card{background:var(--bg2);border:1px solid var(--border);border-radius:20px;padding:36px;margin:28px 0;position:relative;overflow:hidden;}
+    .master-card::after{content:'';position:absolute;top:0;right:0;width:120px;height:120px;background:radial-gradient(circle at top right, rgba(201,84,30,.08), transparent 70%);pointer-events:none;}
+    .master-header{display:flex;align-items:flex-start;gap:20px;margin-bottom:24px;}
+    .master-avatar{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--surface),var(--bg3));border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+    .master-info h3{font-size:20px;font-weight:700;margin:0 0 4px;line-height:1.2;}
+    .master-info h3::before{display:none;}
+    .master-credits{font-size:13px;color:var(--text-mute);line-height:1.6;margin:0;}
+    .master-philosophy{font-size:16px;line-height:1.9;color:var(--text-dim);margin-bottom:24px;padding:16px 20px;background:var(--bg3);border-radius:10px;border-left:3px solid var(--accent);}
+
+    /* 비기 박스 */
+    .secret-list{display:flex;flex-direction:column;gap:14px;}
+    .secret-item{display:flex;gap:16px;align-items:flex-start;}
+    .secret-icon{width:32px;height:32px;background:rgba(201,84,30,.1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;margin-top:2px;}
+    .secret-content{flex:1;}
+    .secret-title{font-size:15px;font-weight:700;margin-bottom:4px;}
+    .secret-desc{font-size:14px;color:var(--text-dim);line-height:1.7;}
+
+    /* 인용문 */
+    .quote-block{background:linear-gradient(135deg,rgba(201,84,30,.06),rgba(201,84,30,.02));border-radius:14px;padding:28px 32px;margin:24px 0;position:relative;}
+    .quote-block::before{content:'"';font-size:80px;line-height:1;color:rgba(201,84,30,.15);position:absolute;top:10px;left:20px;font-family:'Noto Serif KR',serif;}
+    .quote-text{font-size:17px;font-style:italic;line-height:1.9;color:var(--text);padding-left:24px;position:relative;z-index:1;}
+    .quote-attr{font-size:13px;color:var(--text-mute);margin-top:12px;padding-left:24px;font-weight:600;}
+
+    /* 테크닉 카드 그리드 */
+    .technique-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0;}
+    .technique-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:24px;}
+    .technique-card.featured{border-color:rgba(201,84,30,.4);background:rgba(201,84,30,.03);}
+    .tech-name{font-size:15px;font-weight:700;margin-bottom:4px;color:var(--text);}
+    .tech-origin{font-size:12px;color:var(--accent);font-weight:700;margin-bottom:10px;}
+    .tech-desc{font-size:14px;color:var(--text-dim);line-height:1.7;}
+    .tech-how{margin-top:12px;font-size:13px;background:var(--bg3);padding:10px 14px;border-radius:6px;color:var(--text-dim);}
+    .tech-how strong{color:var(--text);display:block;margin-bottom:4px;}
+
+    /* 비교 테이블 */
+    .compare-table{width:100%;border-collapse:collapse;margin:24px 0;font-size:14px;}
+    .compare-table th{background:var(--bg3);font-weight:700;padding:12px 16px;text-align:left;border-bottom:2px solid var(--border);font-size:13px;}
+    .compare-table td{padding:11px 16px;border-bottom:1px solid var(--border);vertical-align:top;}
+    .compare-table tr:hover td{background:var(--bg2);}
+    .compare-table .hl{background:rgba(201,84,30,.04);}
+
+    /* 팁/경고 박스 */
+    .tip-box{background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:10px;padding:20px 24px;margin:20px 0;font-size:15px;line-height:1.8;}
+    .tip-box strong{color:var(--blue);}
+    .gold-box{background:rgba(154,114,0,.06);border:1px solid rgba(154,114,0,.25);border-radius:10px;padding:20px 24px;margin:20px 0;font-size:15px;line-height:1.8;}
+    .gold-box strong{color:var(--gold);}
+
+    /* 실습 박스 */
+    .practice-box{background:linear-gradient(135deg,rgba(201,84,30,.06) 0%,rgba(201,84,30,.02) 100%);border:1.5px solid rgba(201,84,30,.25);border-radius:14px;padding:32px;margin:48px 0;}
+    .practice-box h3{font-size:16px;font-weight:700;color:var(--accent);margin-bottom:16px;}
+    .practice-box h3::before{display:none;}
+    .practice-steps{counter-reset:step;display:flex;flex-direction:column;gap:12px;}
+    .step{counter-increment:step;display:flex;gap:14px;align-items:flex-start;font-size:15px;}
+    .step::before{content:counter(step);min-width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;margin-top:2px;}
+
+    .chapter-nav{display:flex;justify-content:space-between;margin-top:96px;padding-top:32px;border-top:1px solid var(--border);}
+    .nav-btn{display:inline-flex;flex-direction:column;gap:4px;text-decoration:none;padding:16px 24px;border-radius:10px;border:1px solid var(--border);transition:all .2s;}
+    .nav-btn:hover{border-color:var(--accent);background:var(--bg3);}
+    .nav-btn.next{text-align:right;}
+    .nav-label{font-size:11px;color:var(--text-mute);font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+    .nav-title{font-size:15px;font-weight:700;color:var(--text);}
+
+    @media(max-width:900px){
+      .toc-sidebar{display:none;}
+      .progress-bar{left:0;}
+      .main{margin-left:0;padding:48px 28px 80px;}
+      .technique-grid{grid-template-columns:1fr;}
+    }
+    ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg2);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  </style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="toc-sidebar">
+  <div class="book-title">EQ 테크닉 바이블</div>
+  <h2>Chapter 13</h2>
+  <ul>
+    <li><a href="#philosophy">거장들의 공통 철학</a></li>
+    <li><a href="#clearmountain">Bob Clearmountain</a></li>
+    <li><a href="#schmitt">Al Schmitt</a></li>
+    <li><a href="#cla">Chris Lord-Alge</a></li>
+    <li><a href="#scheps">Andrew Scheps</a></li>
+    <li><a href="#manny">Manny Marroquin</a></li>
+    <li><a href="#serban">Serban Ghenea</a></li>
+    <li><a href="#pensado">Dave Pensado</a></li>
+    <li><a href="#swedien">Bruce Swedien</a></li>
+    <li><a href="#techniques">거장들의 공통 비기 10가지</a></li>
+    <li><a href="#summary">정리</a></li>
+    <div class="toc-chapter">다른 챕터</div>
+    <li><a href="chapter12.html">← 12장. 장르별 EQ 전략</a></li>
+    <li><a href="index.html">전체 목차</a></li>
+  </ul>
+</nav>
+
+<main class="main">
+  <header class="chapter-header">
+    <div class="chapter-label">Chapter 13</div>
+    <h1>거장들의<br/><em>EQ 비기 & 실전 팁</em></h1>
+    <p class="chapter-intro">
+      수십 년간 차트를 지배한 레코딩들 뒤에는 EQ에 대한 명확한 철학을 가진 엔지니어들이 있었다. 그들의 방법론은 플러그인이나 하드웨어가 아니라 <strong>사고방식</strong>에서 출발한다. 이 챕터에서는 세계 정상급 믹싱·레코딩 엔지니어들의 EQ 접근법, 실전 팁, 그리고 현장에서 검증된 비기들을 모아 정리한다.
+    </p>
+  </header>
+
+  <!-- 공통 철학 -->
+  <section class="section" id="philosophy">
+    <h2><span class="num">01</span>거장들의 공통 철학 — 먼저 들어라</h2>
+    <p>
+      수십 명의 거장 엔지니어 인터뷰를 분석하면 놀랍도록 일관된 EQ 철학이 등장한다. 플러그인이 다르고, 장르가 다르고, 시대가 달라도 핵심 원칙은 수렴한다.
+    </p>
+
+    <div class="quote-block">
+      <p class="quote-text">EQ를 사용하기 전에 먼저 물어라. "이 소리가 정말 이퀄라이저 문제인가, 아니면 마이킹·연주·공간의 문제인가?" EQ는 마지막 수단이다.</p>
+      <div class="quote-attr">— 거장들의 공통된 조언</div>
+    </div>
+
+    <table class="compare-table">
+      <thead>
+        <tr><th>철학</th><th>설명</th></tr>
+      </thead>
+      <tbody>
+        <tr class="hl">
+          <td><strong>컷 먼저, 부스트 나중</strong></td>
+          <td>문제 주파수를 제거한 후, 필요한 경우에만 부스트. 대부분의 "부스트하고 싶은 욕구"는 다른 대역을 컷하면 해결된다.</td>
+        </tr>
+        <tr>
+          <td><strong>작을수록 강하다</strong></td>
+          <td>1–2dB 조정이 실제 믹스에서 더 큰 효과. 6dB 이상 조정이 필요하다면 소스 문제를 먼저 해결해야 한다.</td>
+        </tr>
+        <tr class="hl">
+          <td><strong>단독이 아닌 앙상블</strong></td>
+          <td>솔로로 들을 때 최적인 EQ가 풀 믹스에서는 틀릴 수 있다. 항상 믹스 안에서 판단.</td>
+        </tr>
+        <tr>
+          <td><strong>주파수는 공간이다</strong></td>
+          <td>각 악기에게 고유한 주파수 공간을 주는 것. 모든 악기가 모든 주파수를 점유하면 아무것도 들리지 않는다.</td>
+        </tr>
+        <tr class="hl">
+          <td><strong>EQ ≠ 색감</strong></td>
+          <td>EQ로 음색을 만들려 하지 말라. 색감은 마이크·프리앰프·컴프레서가 담당한다. EQ는 균형을 잡는 도구다. (단, 아날로그 에뮬레이션 EQ는 예외)</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Bob Clearmountain -->
+  <section class="section" id="clearmountain">
+    <h2><span class="num">02</span>Bob Clearmountain</h2>
+
+    <div class="master-card">
+      <div class="master-header">
+        <div class="master-avatar">🎚</div>
+        <div class="master-info">
+          <h3>Bob Clearmountain</h3>
+          <p class="master-credits">Bruce Springsteen · Bryan Adams · Rolling Stones · David Bowie · INXS · Roxy Music<br/>
+          <em style="color:var(--accent);">"Born to Run", "Reckless", "Start Me Up" 등 수백 장의 클래식 앨범</em></p>
+        </div>
+      </div>
+
+      <div class="master-philosophy">
+        "나는 SSL 콘솔 EQ로 대부분의 작업을 한다. Neve의 색감도 좋지만 SSL의 투명함이 내 믹스 철학에 맞다. 가장 중요한 것은 — 믹스에서 모든 악기가 자신만의 집을 갖도록 만드는 것이다."
+      </div>
+
+      <div class="secret-list">
+        <div class="secret-item">
+          <div class="secret-icon">✂️</div>
+          <div class="secret-content">
+            <div class="secret-title">HPF는 모든 악기에, 예외 없이</div>
+            <div class="secret-desc">킥과 베이스를 제외한 모든 트랙에 HPF를 적용한다. 보컬은 80–120Hz, 기타는 100Hz, 현악기는 80Hz. "저역이 깨끗해야 킥과 베이스가 산다."</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">☀️</div>
+          <div class="secret-content">
+            <div class="secret-title">고역 셸빙 — 모든 것을 밝게</div>
+            <div class="secret-desc">거의 모든 트랙에 10–12kHz 고역 셸빙 +1–3dB를 적용한다. "음악을 활기차고 생동감 있게 만드는 비결 중 하나." 마지막 믹스 버스에도 12kHz 셸빙 +1dB.</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">🥁</div>
+          <div class="secret-content">
+            <div class="secret-title">스네어의 "존재감" 만들기</div>
+            <div class="secret-desc">스네어 톱 마이크: 200Hz 컷(탁함 제거) → 1kHz 피크 +2dB(크랙) → 8–10kHz 셸빙 +2dB(공기). 바텀 마이크: 900Hz 부근 +3dB(사이드 치직거림).</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">🎸</div>
+          <div class="secret-content">
+            <div class="secret-title">전기 기타의 두 가지 역할 분리</div>
+            <div class="secret-desc">리듬 기타: 400Hz 컷 + 중역 중심 → 코드 역할. 리드 기타: 400Hz 이하 대폭 컷 + 2–4kHz 부스트 → 솔로 존재감. 같은 기타라도 EQ로 역할을 구분.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Al Schmitt -->
+  <section class="section" id="schmitt">
+    <h2><span class="num">03</span>Al Schmitt</h2>
+
+    <div class="master-card">
+      <div class="master-header">
+        <div class="master-avatar">🎙</div>
+        <div class="master-info">
+          <h3>Al Schmitt</h3>
+          <p class="master-credits">Frank Sinatra · Diana Krall · Paul McCartney · Henry Mancini · Steely Dan<br/>
+          <em style="color:var(--accent);">그래미 어워드 20회 수상 — 레코딩 엔지니어 중 최다 기록</em></p>
+        </div>
+      </div>
+
+      <div class="master-philosophy">
+        "내가 레코딩에서 쓰는 EQ는 매우 적다. 마이크와 프리앰프를 올바르게 선택하고, 뮤지션을 올바른 공간에 배치하면 EQ는 거의 필요 없다. EQ가 많이 필요하다는 것은 레코딩 단계에서 무언가 잘못되었다는 신호다."
+      </div>
+
+      <div class="secret-list">
+        <div class="secret-item">
+          <div class="secret-icon">🎹</div>
+          <div class="secret-content">
+            <div class="secret-title">피아노 — 닫지 않는다</div>
+            <div class="secret-desc">그랜드 피아노 리드를 올릴 때 뚜껑을 최대한 열어 자연 어쿠스틱을 최대화. 마이크 포지션만으로 소리를 만든 후 EQ는 250Hz 공명 제거 정도에만 사용. "피아노는 EQ가 아니라 공간이 만든다."</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">🎵</div>
+          <div class="secret-content">
+            <div class="secret-title">보컬에 EQ를 거의 쓰지 않는다</div>
+            <div class="secret-desc">최고의 마이크(U47·C12·251 등)와 최고의 프리앰프를 사용해 소스를 최대화. 믹싱 시 HPF 80Hz + 치찰음 구간 1dB 컷 정도가 전부. "마이크가 맞으면 EQ는 필요 없다."</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">🎷</div>
+          <div class="secret-content">
+            <div class="secret-title">브라스 섹션의 공기감 보존</div>
+            <div class="secret-desc">금관악기의 배음을 죽이지 않기 위해 Q를 매우 넓게(0.3 이하) 설정. "좁은 Q로 브라스를 EQ하면 사람이 아닌 기계 소리가 된다." 필요하면 0.5dB씩 조금씩 건드린다.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="quote-block" style="margin-top:24px;">
+        <p class="quote-text">EQ로 소리를 "고친다"는 생각을 버려라. 소스가 좋으면 EQ는 방해가 된다. 소스가 나쁘면 EQ로 구할 수 없다.</p>
+        <div class="quote-attr">— Al Schmitt</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chris Lord-Alge -->
+  <section class="section" id="cla">
+    <h2><span class="num">04</span>Chris Lord-Alge (CLA)</h2>
+
+    <div class="master-card">
+      <div class="master-header">
+        <div class="master-avatar">⚡</div>
+        <div class="master-info">
+          <h3>Chris Lord-Alge</h3>
+          <p class="master-credits">Green Day · Muse · Paramore · Pink · Blink-182 · My Chemical Romance<br/>
+          <em style="color:var(--accent);">록·팝 펑크 믹싱의 절대 강자 — SSL 9000 콘솔의 왕</em></p>
+        </div>
+      </div>
+
+      <div class="master-philosophy">
+        "나는 SSL 9000을 중심으로 작업한다. 공격적이고 in-your-face 사운드가 목표다. EQ는 악기가 믹스에서 앞으로 튀어나오게 만들어야 한다. 저역이 무거우면 컷하고, 고역이 탁하면 컷한다. 그리고 원하는 것만 남긴다."
+      </div>
+
+      <div class="secret-list">
+        <div class="secret-item">
+          <div class="secret-icon">🔊</div>
+          <div class="secret-content">
+            <div class="secret-title">킥 드럼 — "두 개의 EQ" 기법</div>
+            <div class="secret-desc">킥에 EQ를 두 개 삽입: 첫 번째 EQ로 60Hz 저역 부스트 + 400Hz 머드 컷, 두 번째 EQ로 2–3kHz 비터 강조 + 10kHz 위쪽 고역 제거. 두 EQ의 역할을 완전히 분리해 더 정밀한 컨트롤.</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">🎤</div>
+          <div class="secret-content">
+            <div class="secret-title">보컬 "관통력" 만들기</div>
+            <div class="secret-desc">보컬에 3.5–4kHz 피크 부스트(+3–4dB, Q=1.0). 록 믹스에서 기타가 꽉 찬 상태에서도 보컬이 관통해 들리도록. "관통력(presence)이 없으면 보컬이 기타 뒤에 숨는다."</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">🎸</div>
+          <div class="secret-content">
+            <div class="secret-title">기타 "Mid Scoop" 역설</div>
+            <div class="secret-desc">디스토션 기타의 400–500Hz를 –4~–6dB 컷(mid scoop). 혼자 들으면 비어 보이지만 믹스 안에서 보컬·드럼이 앉을 공간이 생겨 전체가 더 선명해진다. CLA 시그니처 기법 중 하나.</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">🏔</div>
+          <div class="secret-content">
+            <div class="secret-title">패럴렐 이퀄라이저 — "뼈대" 레이어</div>
+            <div class="secret-desc">원본 신호와 병렬로, 극단적인 EQ(저역만 또는 고역만)를 걸어 보내고 두 신호를 블렌딩. 원본의 자연스러움 + 극단적 EQ의 개성이 합쳐져 독특한 질감 형성.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Andrew Scheps -->
+  <section class="section" id="scheps">
+    <h2><span class="num">05</span>Andrew Scheps</h2>
+
+    <div class="master-card">
+      <div class="master-header">
+        <div class="master-avatar">🎛</div>
+        <div class="master-info">
+          <h3>Andrew Scheps</h3>
+          <p class="master-credits">Jay-Z · Red Hot Chili Peppers · Adele · Metallica · U2 · Lana Del Rey<br/>
+          <em style="color:var(--accent);">박스의 믹서 — 하드웨어 없이 ITB(In The Box)로 세계 최정상급 결과물</em></p>
+        </div>
+      </div>
+
+      <div class="master-philosophy">
+        "나는 EQ를 거의 사용하지 않으려고 노력한다. 레벨과 패닝만으로 80%는 해결된다. EQ를 사용할 때는 매우 적게, 매우 신중하게. 그리고 항상 풀 믹스 안에서 판단한다."
+      </div>
+
+      <div class="secret-list">
+        <div class="secret-item">
+          <div class="secret-icon">🔕</div>
+          <div class="secret-content">
+            <div class="secret-title">"Less is More" — EQ 최소주의</div>
+            <div class="secret-desc">모든 트랙에 EQ를 삽입하지 않는다. 필요하다고 느껴질 때만, 그것도 0.5–1dB부터 시작. "10개 트랙에 각각 2dB를 조정하면 믹스 전체의 색이 변한다."</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">🔴</div>
+          <div class="secret-content">
+            <div class="secret-title">"Scheps 병렬 압축"과 EQ 순서</div>
+            <div class="secret-desc">패럴렐 컴프레서 체인에서 EQ를 컴프레서 앞에 배치. 컴프가 EQ된 신호를 처리하므로 더 일관된 다이나믹 반응. "EQ 후 컴프"가 아닌 "EQ 전 컴프"를 패럴렐에서 사용하는 독특한 방식.</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">📻</div>
+          <div class="secret-content">
+            <div class="secret-title">레퍼런스를 다양한 스피커로</div>
+            <div class="secret-desc">믹스를 NS10, 오디오필 모니터, 블루투스 스피커, 이어폰 등 여러 기기에서 반복 확인. "EQ 결정은 한 가지 모니터로 하면 안 된다. 모든 기기에서 동작해야 한다."</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="quote-block" style="margin-top:24px;">
+        <p class="quote-text">믹스가 완성됐다고 느낄 때 모든 EQ를 끄고 들어봐라. 그 차이가 느껴지지 않는다면, 당신이 한 EQ는 옳았다. 차이가 크게 느껴진다면 너무 많이 한 것이다.</p>
+        <div class="quote-attr">— Andrew Scheps</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Manny Marroquin -->
+  <section class="section" id="manny">
+    <h2><span class="num">06</span>Manny Marroquin</h2>
+
+    <div class="master-card">
+      <div class="master-header">
+        <div class="master-avatar">🌟</div>
+        <div class="master-info">
+          <h3>Manny Marroquin</h3>
+          <p class="master-credits">Rihanna · Kanye West · Maroon 5 · The Weeknd · John Legend · Alicia Keys<br/>
+          <em style="color:var(--accent);">현대 팝·R&B 사운드의 설계자 — 그래미 수상 10회 이상</em></p>
+        </div>
+      </div>
+
+      <div class="master-philosophy">
+        "나는 보컬에 집착한다. 믹스의 모든 것은 보컬을 위해 존재한다. EQ 결정의 90%는 '이게 보컬에 공간을 만드는가?'라는 질문으로 귀결된다."
+      </div>
+
+      <div class="secret-list">
+        <div class="secret-item">
+          <div class="secret-icon">🎤</div>
+          <div class="secret-content">
+            <div class="secret-title">보컬에 세 개의 EQ 레이어</div>
+            <div class="secret-desc">①투명한 이퀄라이저(Pro-Q)로 문제 주파수 제거 → ②아날로그 에뮬(Neve)로 따뜻한 색감 추가 → ③에어 이퀄라이저(Pultec 스타일 12–16kHz)로 존재감 마무리. 단일 EQ가 아닌 레이어드 접근법.</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">🔁</div>
+          <div class="secret-content">
+            <div class="secret-title">킥-베이스 "주파수 교환"</div>
+            <div class="secret-desc">킥이 강한 주파수에서 베이스를 약하게, 베이스가 강한 주파수에서 킥을 약하게 — 둘이 교대로 저역을 점유하도록 EQ. "킥이 60Hz를 가지면 베이스는 80–100Hz를, 반대면 반대로."</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">✨</div>
+          <div class="secret-content">
+            <div class="secret-title">"에어" 버스 기법</div>
+            <div class="secret-desc">모든 보컬·악기를 보내는 "Air Bus"를 만들고, 16kHz 이상 고역 셸빙 +3–6dB 적용. 이 버스를 조금씩 혼합해 믹스 전체에 공기감 추가. "EQ를 직접 걸지 않고 버스를 통해 간접적으로."</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">📊</div>
+          <div class="secret-content">
+            <div class="secret-title">다이나믹 EQ로 보컬 일관성 유지</div>
+            <div class="secret-desc">보컬의 치찰음(6–8kHz)과 공명음(300–500Hz 개인별 다름)을 정적 EQ가 아닌 다이나믹 EQ로 처리. "노래하는 내내 변하는 소리를 고정 EQ로 다루는 것은 한계가 있다."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Serban Ghenea -->
+  <section class="section" id="serban">
+    <h2><span class="num">07</span>Serban Ghenea</h2>
+
+    <div class="master-card">
+      <div class="master-header">
+        <div class="master-avatar">💎</div>
+        <div class="master-info">
+          <h3>Serban Ghenea</h3>
+          <p class="master-credits">Taylor Swift · The Weeknd · Lady Gaga · Katy Perry · Justin Timberlake · Beyoncé<br/>
+          <em style="color:var(--accent);">현대 팝 사운드의 "스탠다드" — 차트 레코드 보유</em></p>
+        </div>
+      </div>
+
+      <div class="master-philosophy">
+        "나는 매우 디지털한 방식으로 작업한다. FabFilter Pro-Q가 핵심 도구다. 정밀하게, 그리고 최소한으로. 스펙트럼 애널라이저를 보며 작업하지만, 최종 판단은 항상 귀가 한다."
+      </div>
+
+      <div class="secret-list">
+        <div class="secret-item">
+          <div class="secret-icon">🎯</div>
+          <div class="secret-content">
+            <div class="secret-title">스윕으로 찾고, 좁게 컷</div>
+            <div class="secret-desc">문제 주파수를 찾을 때 +6dB 부스트로 스윕 → 가장 불쾌하게 들리는 포인트 발견 → –2~–3dB, 좁은 Q로 컷. "부스트는 탐색 도구, 컷이 실제 처방이다."</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">🔄</div>
+          <div class="secret-content">
+            <div class="secret-title">EQ 매칭으로 빠른 초안</div>
+            <div class="secret-desc">Pro-Q 3의 EQ Match 기능으로 레퍼런스 트랙의 스펙트럼을 분석 → 50% 강도로 적용 → 귀로 세밀 조정. "빠른 출발점. 100% 적용은 절대 금지."</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">🌈</div>
+          <div class="secret-content">
+            <div class="secret-title">고역 "존재감" 트리플 레이어</div>
+            <div class="secret-desc">10kHz 셸빙 + 12kHz 피크 + 16kHz 셸빙을 각각 소량(+0.5~+1dB) 적용. 단일 고역 부스트보다 더 자연스럽고 넓은 에어감. "한 번에 크게보다 여러 번 조금씩."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Dave Pensado -->
+  <section class="section" id="pensado">
+    <h2><span class="num">08</span>Dave Pensado</h2>
+
+    <div class="master-card">
+      <div class="master-header">
+        <div class="master-avatar">🚀</div>
+        <div class="master-info">
+          <h3>Dave Pensado</h3>
+          <p class="master-credits">Beyoncé · Christina Aguilera · Kesha · Mary J. Blige<br/>
+          <em style="color:var(--accent);">"Pensado's Place" 호스트 — 믹싱 교육의 아이콘</em></p>
+        </div>
+      </div>
+
+      <div class="master-philosophy">
+        "EQ는 공간을 만드는 도구다. 더하는 것이 아니라 비우는 것. 아무도 단독으로 듣지 않는다 — 항상 다른 악기들과 함께 들린다는 것을 잊지 말라."
+      </div>
+
+      <div class="secret-list">
+        <div class="secret-item">
+          <div class="secret-icon">👻</div>
+          <div class="secret-content">
+            <div class="secret-title">"Ghost Track" 기법</div>
+            <div class="secret-desc">레퍼런스 트랙을 믹스 세션에 임포트해 볼륨을 –10dB로 낮추고, 믹스와 나란히 재생. "유령처럼 낮게 깔린 레퍼런스"와 믹스를 빠르게 A/B. 의식하지 않고 무의식적으로 느끼는 차이가 실질적인 개선점을 알려준다.</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">🌅</div>
+          <div class="secret-content">
+            <div class="secret-title">16kHz 이상 "초고역 에어"</div>
+            <div class="secret-desc">Pultec 스타일 이퀄라이저나 전용 "air" 이퀄라이저(Maag EQ4의 AIR 밴드 등)로 16kHz 이상을 +2–4dB 셸빙. "보컬이 레코딩 부스 밖으로 나와서 청자 앞에 서 있는 것처럼 들린다."</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">↩️</div>
+          <div class="secret-content">
+            <div class="secret-title">"Pensado Flip" — 위상 반전 이퀄라이저</div>
+            <div class="secret-desc">원본 채널과 위상 반전된 채널에 각각 다른 EQ를 걸어 믹싱. 중간 주파수가 상쇄되어 독특한 음색 형성. 일렉 기타·드럼 버스에 특히 효과적. "EQ만으로 만들 수 없는 독특한 질감."</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">📻</div>
+          <div class="secret-content">
+            <div class="secret-title">모노 체크 이퀄라이저 보정</div>
+            <div class="secret-desc">믹스를 모노로 들어가며 사라지는 요소 확인. 모노에서 사라지는 것은 위상 문제. M/S EQ로 사이드 채널 과잉 에너지를 줄이면 모노 호환성 향상. "모노에서 좋게 들리면 스테레오는 더 좋다."</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Bruce Swedien -->
+  <section class="section" id="swedien">
+    <h2><span class="num">09</span>Bruce Swedien</h2>
+
+    <div class="master-card">
+      <div class="master-header">
+        <div class="master-avatar">🏆</div>
+        <div class="master-info">
+          <h3>Bruce Swedien</h3>
+          <p class="master-credits">Michael Jackson (Thriller, Bad, Off the Wall) · Quincy Jones · Paul McCartney<br/>
+          <em style="color:var(--accent);">"Thriller" — 역사상 가장 많이 팔린 앨범의 사운드를 만든 인물</em></p>
+        </div>
+      </div>
+
+      <div class="master-philosophy">
+        "나는 EQ를 거의 쓰지 않는다. Neve 8078 콘솔에서 약간의 셸빙 정도. 진정한 사운드는 레코딩 순간에 만들어진다. 최고의 마이크, 최고의 뮤지션, 최고의 공간 — 그것이 내 EQ다."
+      </div>
+
+      <div class="secret-list">
+        <div class="secret-item">
+          <div class="secret-icon">🎙</div>
+          <div class="secret-content">
+            <div class="secret-title">보컬 레코딩 EQ — "아무것도 안 하기"</div>
+            <div class="secret-desc">MJ의 보컬을 레코딩할 때 EQ를 거의 사용하지 않았다. Neumann U47 마이크 → 고품질 프리앰프 → 테이프. "EQ를 추가하면 MJ의 독특한 배음 구조가 변색된다."</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">🥁</div>
+          <div class="secret-content">
+            <div class="secret-title">킥 드럼 — 모래주머니 마이킹과 EQ</div>
+            <div class="secret-desc">킥 드럼 안에 모래주머니를 놓아 공명을 물리적으로 제어한 후 마이크로 레코딩. EQ에서 할 일을 레코딩 단계에서 해결. "EQ보다 물리적 처리가 항상 먼저다."</div>
+          </div>
+        </div>
+        <div class="secret-item">
+          <div class="secret-icon">🎼</div>
+          <div class="secret-content">
+            <div class="secret-title">오케스트라 — 절대 중역을 건드리지 않는다</div>
+            <div class="secret-desc">스트링·브라스·목관의 중역(1–4kHz)은 EQ로 건드리지 않는 철칙. "그 대역은 음악가들이 수십 년 동안 훈련해서 얻은 소리다. 내가 EQ로 바꿀 수 있는 권한이 없다."</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="quote-block" style="margin-top:24px;">
+        <p class="quote-text">좋은 레코딩에는 EQ가 필요 없다. EQ가 많이 필요한 믹스는 레코딩이 잘못된 것이다. 믹싱에서 시간을 낭비하기 전에 레코딩으로 돌아가라.</p>
+        <div class="quote-attr">— Bruce Swedien</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 거장들의 공통 비기 10가지 -->
+  <section class="section" id="techniques">
+    <h2><span class="num">10</span>거장들의 공통 비기 10가지</h2>
+    <p>
+      장르와 스타일이 달라도 세계 정상급 엔지니어들이 반복해서 사용하는 EQ 기법들이 있다.
+    </p>
+
+    <div class="technique-grid">
+
+      <div class="technique-card featured">
+        <div class="tech-name">Pultec 저역 트릭</div>
+        <div class="tech-origin">Bob Clearmountain, Manny Marroquin 등</div>
+        <div class="tech-desc">Pultec EQP-1A에서 같은 주파수(예: 60Hz)를 동시에 부스트+컷. 저역 에너지는 살리되 탁함은 제거.</div>
+        <div class="tech-how">
+          <strong>방법</strong>
+          60Hz: BOOST +4dB / CUT +3dB 동시 적용. 컷 포인트가 부스트보다 약간 높아져 타이트한 저역 완성.
+        </div>
+      </div>
+
+      <div class="technique-card featured">
+        <div class="tech-name">HPF 공격적 적용</div>
+        <div class="tech-origin">Bob Clearmountain, CLA</div>
+        <div class="tech-desc">킥·베이스를 제외한 모든 트랙에 예외 없이 HPF. 저역이 깨끗해야 저역 악기가 산다.</div>
+        <div class="tech-how">
+          <strong>기준점</strong>
+          보컬: 80–120Hz / 기타: 80–100Hz / 피아노: 60–80Hz / 신스·패드: 150–300Hz
+        </div>
+      </div>
+
+      <div class="technique-card">
+        <div class="tech-name">에어 셸빙 레이어</div>
+        <div class="tech-origin">Serban Ghenea, Dave Pensado</div>
+        <div class="tech-desc">10kHz·12kHz·16kHz 세 지점에 각각 작은 셸빙 부스트를 쌓아 자연스러운 공기감 형성.</div>
+        <div class="tech-how">
+          <strong>방법</strong>
+          각 밴드 +0.5~+1.5dB. 세 밴드 합산해도 총합이 3dB를 넘지 않도록. 단일 부스트보다 훨씬 자연스럽다.
+        </div>
+      </div>
+
+      <div class="technique-card">
+        <div class="tech-name">Mid Scoop 기타</div>
+        <div class="tech-origin">Chris Lord-Alge</div>
+        <div class="tech-desc">디스토션 기타의 400–500Hz를 –4~–6dB 컷. 솔로로 들으면 비어 보이지만 믹스 안에서 보컬 공간이 탄생.</div>
+        <div class="tech-how">
+          <strong>주의</strong>
+          Q를 너무 좁게 하면 부자연스러움. Q=0.7–1.0으로 부드럽게. 반드시 풀 믹스에서 확인.
+        </div>
+      </div>
+
+      <div class="technique-card">
+        <div class="tech-name">패럴렐 EQ</div>
+        <div class="tech-origin">CLA, Manny Marroquin</div>
+        <div class="tech-desc">원본 + 극단적 EQ(저역만, 또는 고역만) 채널을 병렬로 섞어 독특한 질감과 밀도 생성.</div>
+        <div class="tech-how">
+          <strong>활용</strong>
+          드럼 버스: 원본 + 300Hz 이하만 살린 채널 10–20% 블렌드 → 저역 두께 증가.
+        </div>
+      </div>
+
+      <div class="technique-card">
+        <div class="tech-name">EQ 오토메이션 "보컬 공간"</div>
+        <div class="tech-origin">거장들 공통</div>
+        <div class="tech-desc">보컬이 등장하는 구간에서 기타·신스의 2–4kHz를 –2~–3dB 자동화 컷. 보컬 레벨을 올리지 않고 공간 확보.</div>
+        <div class="tech-how">
+          <strong>방법</strong>
+          기타/신스 트랙 EQ의 2–4kHz 게인을 자동화. 보컬 시작 1~2박 전에 페이드 다운, 보컬 후 복귀.
+        </div>
+      </div>
+
+      <div class="technique-card">
+        <div class="tech-name">모노 저역 고정</div>
+        <div class="tech-origin">Serban Ghenea, Dave Pensado</div>
+        <div class="tech-desc">M/S EQ로 200Hz 이하 사이드(Side) 채널을 완전 컷. 저역을 모노로 고정해 클럽·차량 등 어디서나 저역이 일관되게.</div>
+        <div class="tech-how">
+          <strong>방법</strong>
+          bx_digital V3 또는 Pro-Q 3 M/S 모드: Side 채널에 200Hz LPF 적용. 마스터링에서도 필수 기법.
+        </div>
+      </div>
+
+      <div class="technique-card">
+        <div class="tech-name">스윕 탐색 후 좁은 컷</div>
+        <div class="tech-origin">거장들 공통</div>
+        <div class="tech-desc">+6~+8dB로 부스트하며 스윕해 가장 불쾌한 주파수 발견 → 같은 자리에 좁은 Q로 –2~–4dB 컷.</div>
+        <div class="tech-how">
+          <strong>원칙</strong>
+          탐색은 크게(+6dB), 처방은 작게(–2~–3dB). 찾기 위해 과장하고, 고치기는 조심스럽게.
+        </div>
+      </div>
+
+      <div class="technique-card">
+        <div class="tech-name">킥-베이스 주파수 교환</div>
+        <div class="tech-origin">Manny Marroquin</div>
+        <div class="tech-desc">킥의 펀치 주파수와 베이스의 두께 주파수가 겹치지 않도록 한쪽이 강하면 다른 쪽을 약하게.</div>
+        <div class="tech-how">
+          <strong>기준</strong>
+          킥: 60Hz 중심. 베이스: 80–120Hz 중심. 또는 반대. 둘 중 하나가 저역을 리드하는 구조를 명확히.
+        </div>
+      </div>
+
+      <div class="technique-card">
+        <div class="tech-name">Ghost Track 레퍼런스</div>
+        <div class="tech-origin">Dave Pensado</div>
+        <div class="tech-desc">레퍼런스 트랙을 –10dB로 믹스에 섞어 재생. 의식하지 않은 상태에서 느끼는 차이가 진짜 개선점을 알려준다.</div>
+        <div class="tech-how">
+          <strong>방법</strong>
+          레퍼런스 트랙을 임포트 → –10dB 설정 → 믹스와 동시 재생하며 작업. "유령처럼 낮게" 인식 없이 비교.
+        </div>
+      </div>
+
+    </div>
+
+    <div class="gold-box" style="margin-top:28px;">
+      <strong>거장들이 공통으로 강조하는 단 하나의 원칙:</strong> 플러그인이나 기법보다 귀를 훈련하라. 수천 개의 좋은 레코딩을 분석적으로 들으면, EQ 파라미터를 보지 않고도 무엇이 필요한지 들린다. 도구는 그 다음이다.
+    </div>
+  </section>
+
+  <!-- 정리 -->
+  <section class="section" id="summary">
+    <h2><span class="num">11</span>정리 — 거장들에게 배우는 EQ의 본질</h2>
+
+    <table class="compare-table">
+      <thead>
+        <tr><th>엔지니어</th><th>핵심 철학</th><th>시그니처 기법</th><th>대표 작품</th></tr>
+      </thead>
+      <tbody>
+        <tr class="hl">
+          <td><strong>Bob Clearmountain</strong></td>
+          <td>모든 악기에 고유한 집</td>
+          <td>HPF 철저, 고역 셸빙 전체 적용</td>
+          <td>Born to Run, Reckless</td>
+        </tr>
+        <tr>
+          <td><strong>Al Schmitt</strong></td>
+          <td>EQ는 최후의 수단</td>
+          <td>마이킹으로 EQ 대체, Q 넓게</td>
+          <td>Diana Krall 전 앨범</td>
+        </tr>
+        <tr class="hl">
+          <td><strong>Chris Lord-Alge</strong></td>
+          <td>공격적 존재감</td>
+          <td>Mid Scoop, 패럴렐 EQ</td>
+          <td>American Idiot, Black Holes</td>
+        </tr>
+        <tr>
+          <td><strong>Andrew Scheps</strong></td>
+          <td>최소주의 — 레벨이 먼저</td>
+          <td>EQ 거의 안 씀, 패럴렐 순서</td>
+          <td>Loud, Californication</td>
+        </tr>
+        <tr class="hl">
+          <td><strong>Manny Marroquin</strong></td>
+          <td>모든 것은 보컬을 위해</td>
+          <td>3단계 보컬 EQ, 킥-베이스 교환</td>
+          <td>Rihanna, Kanye 앨범들</td>
+        </tr>
+        <tr>
+          <td><strong>Serban Ghenea</strong></td>
+          <td>디지털 정밀 + 최소화</td>
+          <td>에어 트리플 레이어, EQ 매칭</td>
+          <td>Taylor Swift, The Weeknd</td>
+        </tr>
+        <tr class="hl">
+          <td><strong>Dave Pensado</strong></td>
+          <td>공간을 비워라</td>
+          <td>Ghost Track, 16kHz 에어, 모노 체크</td>
+          <td>Beyoncé, Christina Aguilera</td>
+        </tr>
+        <tr>
+          <td><strong>Bruce Swedien</strong></td>
+          <td>좋은 레코딩엔 EQ가 없다</td>
+          <td>EQ 최소화, 물리적 선처리</td>
+          <td>Thriller, Bad</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="quote-block">
+      <p class="quote-text">EQ는 당신이 무엇을 듣고 싶은지 알고 있을 때만 의미가 있다. 먼저 음악을 이해하고, 그 다음에 파라미터를 움직여라.</p>
+      <div class="quote-attr">— 거장들의 공통된 교훈</div>
+    </div>
+  </section>
+
+  <div class="practice-box">
+    <h3>🎧 실습해보기 — 거장의 기법을 내 믹스에</h3>
+    <div class="practice-steps">
+      <div class="step">Clearmountain 기법: 자신의 믹스에서 킥·베이스를 제외한 모든 트랙에 HPF를 추가한다. 저역이 얼마나 깨끗해지는지, 킥과 베이스가 얼마나 선명해지는지 확인한다.</div>
+      <div class="step">Pultec 트릭: 버스 또는 킥 트랙에 Pultec 에뮬레이터를 삽입하고 60Hz를 BOOST +3dB / CUT +2dB 동시 적용. 저역이 타이트해지는 효과를 체감한다.</div>
+      <div class="step">Scheps 검증: 모든 EQ를 바이패스하고 믹스를 들어본다. 어떤 부분이 가장 불편한지 메모하고, 그 부분만 최소한으로 EQ 처리한다.</div>
+      <div class="step">Pensado Ghost Track: 좋아하는 레퍼런스 트랙을 –10dB로 현재 믹스에 추가해 동시 재생. 30분간 작업하며 "유령 레퍼런스"가 알려주는 EQ 차이를 느껴본다.</div>
+      <div class="step">Serban 에어 레이어: 보컬 트랙에 10kHz +1dB / 12kHz +0.8dB / 16kHz +1dB 세 레이어의 셸빙 부스트를 순차로 추가하며 공기감 변화를 관찰한다.</div>
+    </div>
+  </div>
+
+  <nav class="chapter-nav">
+    <a href="chapter12.html" class="nav-btn">
+      <span class="nav-label">이전 챕터</span>
+      <span class="nav-title">← 12장. 장르별 EQ 전략</span>
+    </a>
+    <a href="index.html" class="nav-btn next">
+      <span class="nav-label">목차</span>
+      <span class="nav-title">전체 목차 →</span>
+    </a>
+  </nav>
+</main>
+
+<script>
+  window.addEventListener('scroll',()=>{
+    const doc=document.documentElement;
+    document.getElementById('progressFill').style.width=(doc.scrollTop/(doc.scrollHeight-doc.clientHeight)*100)+'%';
+  });
+  document.querySelectorAll('section[id]').forEach(s=>{
+    new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        const a=document.querySelector(`.toc-sidebar a[href="#${s.id}"]`);
+        if(a) a.classList.toggle('active',e.isIntersecting);
+      });
+    },{threshold:.25}).observe(s);
+  });
+</script>
+</body>
+</html>
