@@ -535,6 +535,99 @@
         Layer 3 → 리듬 기타, 베이스
       </p>
     </div>
+
+    <h3>3가지 처리 모드 — track / track+group / group</h3>
+    <p>
+      Smart:EQ 4 그루핑에서 각 트랙은 <mark>AI가 어떻게 처리할지를 결정하는 3가지 모드</mark> 중 하나를 선택할 수 있다. 이 모드가 다르면 같은 그루핑 세팅이라도 결과가 크게 달라진다.
+    </p>
+
+    <table class="diff-table">
+      <thead>
+        <tr><th>모드</th><th>동작 방식</th><th>적합한 용도</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>track</strong></td>
+          <td>해당 트랙만 단독 분석. 다른 그룹 트랙의 주파수 간섭을 무시</td>
+          <td>독립적으로 존재해야 하는 악기 (솔로 바이올린, 리드 보컬 등)</td>
+        </tr>
+        <tr>
+          <td><strong>track+group</strong></td>
+          <td>단독 분석 + 그룹 우선순위 양쪽을 균형 있게 반영 — <strong>기본값(default)</strong></td>
+          <td>대부분의 트랙. 개성과 앙상블 균형을 동시에 유지</td>
+        </tr>
+        <tr>
+          <td><strong>group</strong></td>
+          <td>그룹 내 우선순위를 최우선으로 반영. Back 배치 시 상대적으로 존재감이 낮아지는 EQ 적용</td>
+          <td>배경으로 물러나야 하는 신스·패드·스트링 레이어</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="callout tip">
+      <div class="callout-label">Front / Middle / Back 배치의 실제 의미</div>
+      <p>
+        그룹 화면에서 트랙을 배치하는 위치(Front·Middle·Back)는 단순한 레이어 번호가 아니다.<br/><br/>
+        <strong>Front:</strong> 가장 앞에 들려야 하는 트랙. AI가 다른 트랙을 이 트랙에서 물러서게 조정한다.<br/>
+        <strong>Back:</strong> 배경에서 받쳐주는 트랙. 기본값(default). 상대적으로 덜 두드러지는 EQ.<br/>
+        <strong>Middle:</strong> Front와 Back의 중간. 두 번째 존재감을 가지는 트랙에 적합.<br/><br/>
+        예: 솔로 바이올린을 Front에 → 나머지 스트링스는 자동으로 양보. 킥을 돋보이게 하려면 Front 배치.
+      </p>
+    </div>
+
+    <h3>실전 워크플로 — 스트링스 전체 그루핑 예시</h3>
+    <p>
+      현역 레코딩 엔지니어·작곡가인 Nagie(ANANT-GARDE EYES)가 실제 믹스 세션에서 활용한 방법을 기반으로 구성한 예시다.
+    </p>
+
+    <div class="workflow">
+      <div class="workflow-step">
+        <div class="workflow-num">1</div>
+        <div class="workflow-content">
+          <div class="workflow-title">섹션 전체에 smart:EQ 4 삽입</div>
+          <p class="workflow-desc">바이올린·비올라·첼로·베이스 등 스트링스 파트 트랙 전체에 smart:EQ 4를 삽입한다. 각 악기별 프로파일 선택.</p>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-num">2</div>
+        <div class="workflow-content">
+          <div class="workflow-title">add to group → 그룹명 입력 → 그룹 생성</div>
+          <p class="workflow-desc">어느 하나의 smart:EQ 4를 열어 "add to group" 버튼 클릭 → 임의의 그룹명 입력 → create 클릭. 그룹 화면 2로 전환되며 이 트랙이 리스트에 표시된다.</p>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-num">3</div>
+        <div class="workflow-content">
+          <div class="workflow-title">나머지 트랙 add instance로 추가</div>
+          <p class="workflow-desc">다른 스트링 트랙의 smart:EQ 4에서 add instance(노란 테두리)를 클릭해 같은 그룹에 추가. 최대 10트랙까지 배치 가능.</p>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-num">4</div>
+        <div class="workflow-content">
+          <div class="workflow-title">Front / Middle / Back 배치 결정</div>
+          <p class="workflow-desc">솔로 악기는 Front, 반주 역할은 Back, 중간은 Middle. 특별히 돋보이게 하고 싶은 악기는 Front로 이동.</p>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-num">5</div>
+        <div class="workflow-content">
+          <div class="workflow-title">Learn All 클릭 → DAW 재생</div>
+          <p class="workflow-desc">녹색 버튼 Learn All 클릭 후 DAW 재생. AI가 모든 트랙을 동시에 분석하고 자동으로 EQ를 설정. 자동 설정 후에는 아날로그 감성의 소리가 된다.</p>
+        </div>
+      </div>
+      <div class="workflow-step">
+        <div class="workflow-num">6</div>
+        <div class="workflow-content">
+          <div class="workflow-title">프로파일 세밀 조정 (선택)</div>
+          <p class="workflow-desc">각 트랙의 프로파일을 2분할해 대역별로 다른 강도 적용 가능. EQ 포인트를 더블클릭하면 수동으로 직접 미세 조정도 가능하다.</p>
+        </div>
+      </div>
+    </div>
+
+    <p style="font-size:14px;color:var(--text-mute);margin-top:8px;">
+      ※ 보컬·신스·드럼·베이스 등 다른 섹션도 같은 방식으로 별도 그룹 생성 → 마스터 AUX에도 smart:EQ 4를 삽입해 전체 믹스를 통합 관리하면 더 효율적이다.
+    </p>
   </section>
 
   <div class="divider">· · ·</div>
@@ -562,6 +655,42 @@
         <p><strong>다이나믹 EQ 적용 (Smart:EQ 4)</strong> — 치찰음, 공진음, 다이나믹한 저역 문제가 남아있으면 해당 밴드를 다이나믹 모드로 전환.</p>
       </div>
     </div>
+
+    <h3>Adaptive 파라미터 — 음악에 따라 실시간으로 변하는 EQ</h3>
+    <p>
+      Smart:EQ 4에만 있는 기능. <mark>Adaptive</mark>를 활성화하면 EQ가 재생 중인 음악의 내용에 따라 동적으로 변한다. 단순히 레벨에 반응하는 다이나믹 EQ와는 다르다 — 음악적 맥락을 파악해 필요한 순간에만 필요한 만큼 처리한다.
+    </p>
+    <p>
+      예: 특정 음정에서만 유독 피키하게 울리는 바이올린 → Adaptive가 그 음정이 연주될 때만 해당 주파수를 억제하고, 다른 음정에서는 원래 EQ 커브를 유지한다. 정적 EQ나 일반 다이나믹 EQ로는 구현하기 까다로운 "음악을 이해하는 EQ"다.
+    </p>
+
+    <table class="diff-table">
+      <thead>
+        <tr><th>처리 방식</th><th>동작 원리</th><th>적합한 상황</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>정적 EQ (Static)</strong></td>
+          <td>항상 동일한 커브 적용</td>
+          <td>일관된 음색 조형, 예측 가능한 처리</td>
+        </tr>
+        <tr>
+          <td><strong>다이나믹 EQ</strong></td>
+          <td>레벨 임계값에 따라 반응</td>
+          <td>치찰음, 특정 레벨 이상의 공진 제거</td>
+        </tr>
+        <tr>
+          <td><strong>Adaptive</strong></td>
+          <td>음악적 맥락(음정·음색 변화)에 따라 실시간 변화</td>
+          <td>피키한 바이올린, 음정별 배음 불균형, 자연스러운 다이나믹 처리</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>주파수 애널라이저 전후 전환</h3>
+    <p>
+      Smart:EQ 4는 EQ 처리 <strong>전</strong>과 <strong>후</strong>의 스펙트럼을 화면에서 전환해 볼 수 있다. 단순히 EQ 커브만 보는 것이 아니라, 처리 전후 스펙트럼을 직접 비교하면서 어느 대역이 얼마나 변했는지 시각적으로 확인할 수 있다. 귀와 눈을 함께 활용해 판단 정확도를 높이는 기능.
+    </p>
 
     <h3>오토 게인 보상 활용</h3>
     <p>
@@ -627,8 +756,9 @@
       <ul>
         <li>AI 이퀄라이저는 "알아서 해주는 도구"가 아니라 "시작점을 빠르게 잡아주는 도구"다.</li>
         <li>Smart:EQ 3: 악기별 프로파일 + 러닝 + 웨이팅 커브 + 그루핑(최대 6트랙, 3레이어).</li>
-        <li>Smart:EQ 4의 핵심 추가 기능: 다이나믹 EQ, 장르 프로파일(22개), 레퍼런스 트랙 매칭, 원격 제어 그루핑(최대 10트랙), 오토 게인 보상.</li>
-        <li>다이나믹 EQ는 신호 레벨에 따라 반응하는 EQ. 치찰음, 공진음 제거에 특히 강력하다.</li>
+        <li>Smart:EQ 4의 핵심 추가 기능: 다이나믹 EQ, Adaptive 파라미터, 장르 프로파일(22개), 레퍼런스 트랙 매칭, 원격 제어 그루핑(최대 10트랙), 오토 게인 보상, 스펙트럼 전후 전환.</li>
+        <li>다이나믹 EQ는 레벨에 따라 반응. Adaptive는 음악적 맥락(음정·음색)에 따라 실시간 변화 — 더 지능적인 처리.</li>
+        <li>그루핑 3가지 처리 모드: track(단독 분석) / track+group(기본값, 균형) / group(우선순위 최우선). Front·Middle·Back 배치로 트랙 존재감 결정.</li>
         <li>웨이팅 커브를 역방향으로 쓰면 AI의 제안을 창의적 도구로 활용할 수 있다.</li>
         <li>오토 게인 보상은 항상 켜두고 작업해야 볼륨 편향 없는 A/B 비교가 가능하다.</li>
         <li>AI를 제대로 쓰려면 귀 훈련이 더 필요하다. 판단은 언제나 엔지니어가 한다.</li>
