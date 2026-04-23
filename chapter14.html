@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EQ 테크닉 바이블 — 14장</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;700&display=swap');
+    :root {
+      --bg:#ffffff; --bg2:#f8f8f6; --bg3:#f2f1ee; --surface:#ebe9e4;
+      --border:#d8d5ce; --accent:#c9541e; --blue:#2563eb; --green:#16a34a;
+      --red:#dc2626; --gold:#9a7200; --text:#1a1a18; --text-dim:#5a5a54; --text-mute:#a8a8a0;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-weight:400;line-height:1.85;font-size:16px;}
+
+    .toc-sidebar{position:fixed;top:0;left:0;width:256px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);padding:40px 24px;overflow-y:auto;z-index:100;}
+    .toc-sidebar .book-title{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:6px;}
+    .toc-sidebar h2{font-size:14px;font-weight:700;margin-bottom:28px;}
+    .toc-sidebar ul{list-style:none;}
+    .toc-sidebar li{margin-bottom:2px;}
+    .toc-sidebar a{display:block;padding:7px 12px;border-radius:6px;color:var(--text-dim);text-decoration:none;font-size:13px;transition:all .2s;}
+    .toc-sidebar a:hover,.toc-sidebar a.active{background:var(--surface);color:var(--accent);}
+    .toc-chapter{font-size:10px;letter-spacing:.1em;color:var(--text-mute);font-weight:700;margin:20px 0 6px 12px;text-transform:uppercase;}
+
+    .progress-bar{position:fixed;top:0;left:256px;right:0;height:3px;background:var(--border);z-index:200;}
+    .progress-fill{height:100%;background:var(--accent);width:0%;transition:width .1s;}
+
+    .main{margin-left:256px;max-width:820px;padding:80px 64px 120px;}
+
+    .chapter-header{margin-bottom:72px;}
+    .chapter-label{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:18px;}
+    .chapter-label::before{content:'';display:block;width:28px;height:2px;background:var(--accent);}
+    .chapter-header h1{font-family:'Noto Serif KR',serif;font-size:clamp(30px,5vw,50px);font-weight:700;line-height:1.3;margin-bottom:24px;}
+    .chapter-header h1 em{color:var(--accent);font-style:normal;}
+    .chapter-intro{font-size:17px;line-height:1.95;color:var(--text-dim);border-left:3px solid var(--border);padding-left:20px;}
+
+    .section{margin-bottom:72px;}
+    h2{font-family:'Noto Serif KR',serif;font-size:24px;font-weight:700;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+    h2 .num{color:var(--accent);margin-right:10px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;}
+    h3{font-size:17px;font-weight:700;margin:36px 0 14px;}
+    h3::before{content:'▍';color:var(--accent);margin-right:8px;}
+    p{margin-bottom:18px;font-size:16px;line-height:1.95;}
+
+    /* 소스 배지 */
+    .source-badge{display:inline-flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:8px 16px;font-size:12px;color:var(--text-mute);margin-bottom:32px;}
+    .source-badge strong{color:var(--text-dim);}
+
+    /* 기재 헤더 */
+    .gear-header{background:linear-gradient(135deg,#1a1a18 0%,#2d2d2a 100%);border-radius:20px;padding:40px;margin-bottom:32px;position:relative;overflow:hidden;}
+    .gear-header::before{content:'';position:absolute;top:-30px;right:-30px;width:180px;height:180px;border-radius:50%;background:rgba(201,84,30,.12);pointer-events:none;}
+    .gear-label{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(201,84,30,.8);margin-bottom:10px;}
+    .gear-name{font-family:'Noto Serif KR',serif;font-size:clamp(28px,5vw,44px);font-weight:700;color:#fff;line-height:1.2;margin-bottom:14px;}
+    .gear-desc{font-size:14px;color:rgba(255,255,255,.55);line-height:1.85;}
+    .gear-tagline{font-size:18px;font-weight:700;color:rgba(255,255,255,.85);margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);}
+
+    /* 스펙 칩 */
+    .gear-specs{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;}
+    .spec-chip{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);}
+
+    /* 엔지니어 발언 카드 */
+    .voice-section{display:flex;flex-direction:column;gap:20px;margin:24px 0;}
+    .voice-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:28px;position:relative;}
+    .voice-card.featured{border-color:rgba(201,84,30,.3);background:rgba(201,84,30,.03);}
+    .voice-who{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+    .voice-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;border:2px solid var(--border);}
+    .av-yonetsu{background:linear-gradient(135deg,#1e3a8a,#3b82f6);}
+    .av-onishi{background:linear-gradient(135deg,#166534,#22c55e);}
+    .av-morimoto{background:linear-gradient(135deg,#7c2d12,#f97316);}
+    .voice-name{font-size:14px;font-weight:700;}
+    .voice-role{font-size:11px;color:var(--text-mute);margin-top:1px;}
+    .voice-text{font-size:15px;line-height:1.95;color:var(--text-dim);}
+    .voice-text em{color:var(--text);font-style:normal;font-weight:600;}
+
+    /* 세팅 박스 */
+    .setting-box{background:var(--bg3);border-radius:12px;padding:20px 24px;margin:16px 0;}
+    .setting-title{font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:14px;}
+    .setting-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+    .setting-item{text-align:center;}
+    .setting-freq{font-size:13px;font-weight:700;color:var(--text-mute);margin-bottom:4px;}
+    .setting-val{font-size:20px;font-weight:900;color:var(--accent);}
+    .setting-type{font-size:11px;color:var(--text-mute);margin-top:2px;}
+
+    /* 포인트 카드 */
+    .point-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:24px 0;}
+    .point-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px;}
+    .point-icon{font-size:22px;margin-bottom:10px;}
+    .point-title{font-size:14px;font-weight:700;margin-bottom:6px;}
+    .point-desc{font-size:13px;color:var(--text-dim);line-height:1.7;}
+
+    /* 비교 테이블 */
+    .compare-table{width:100%;border-collapse:collapse;margin:24px 0;font-size:14px;}
+    .compare-table th{background:var(--bg3);font-weight:700;padding:12px 16px;text-align:left;border-bottom:2px solid var(--border);font-size:13px;}
+    .compare-table td{padding:11px 16px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.7;}
+    .compare-table tr:hover td{background:var(--bg2);}
+    .compare-table .hl{background:rgba(201,84,30,.04);}
+
+    /* 골든 팁 */
+    .gold-box{background:rgba(154,114,0,.06);border:1px solid rgba(154,114,0,.25);border-radius:12px;padding:22px 26px;margin:24px 0;font-size:15px;line-height:1.85;}
+    .gold-box strong{color:var(--gold);}
+
+    /* 실습 박스 */
+    .practice-box{background:linear-gradient(135deg,rgba(201,84,30,.06) 0%,rgba(201,84,30,.02) 100%);border:1.5px solid rgba(201,84,30,.25);border-radius:14px;padding:32px;margin:48px 0;}
+    .practice-box h3{font-size:16px;font-weight:700;color:var(--accent);margin-bottom:16px;}
+    .practice-box h3::before{display:none;}
+    .practice-steps{counter-reset:step;display:flex;flex-direction:column;gap:12px;}
+    .step{counter-increment:step;display:flex;gap:14px;align-items:flex-start;font-size:15px;}
+    .step::before{content:counter(step);min-width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;margin-top:2px;}
+
+    .chapter-nav{display:flex;justify-content:space-between;margin-top:96px;padding-top:32px;border-top:1px solid var(--border);}
+    .nav-btn{display:inline-flex;flex-direction:column;gap:4px;text-decoration:none;padding:16px 24px;border-radius:10px;border:1px solid var(--border);transition:all .2s;}
+    .nav-btn:hover{border-color:var(--accent);background:var(--bg3);}
+    .nav-btn.next{text-align:right;}
+    .nav-label{font-size:11px;color:var(--text-mute);font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+    .nav-title{font-size:15px;font-weight:700;color:var(--text);}
+
+    @media(max-width:900px){
+      .toc-sidebar{display:none;}
+      .progress-bar{left:0;}
+      .main{margin-left:0;padding:48px 28px 80px;}
+      .setting-grid{grid-template-columns:repeat(2,1fr);}
+      .point-grid{grid-template-columns:1fr;}
+    }
+    ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg2);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  </style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="toc-sidebar">
+  <div class="book-title">EQ 테크닉 바이블</div>
+  <h2>Chapter 14</h2>
+  <ul>
+    <li><a href="#intro">프로가 말하는 빈티지 EQ</a></li>
+    <li><a href="#neve1073">NEVE 1073</a></li>
+    <li><a href="#neve1081">NEVE 1081</a></li>
+    <li><a href="#pultec">Pultec EQP-1A3</a></li>
+    <li><a href="#api">API 550A & 560</a></li>
+    <li><a href="#summary">총정리</a></li>
+    <div class="toc-chapter">다른 챕터</div>
+    <li><a href="chapter13.html">← 13장. 거장들의 EQ 비기</a></li>
+    <li><a href="index.html">전체 목차</a></li>
+  </ul>
+</nav>
+
+<main class="main">
+  <header class="chapter-header">
+    <div class="chapter-label">Chapter 14</div>
+    <h1>프로 엔지니어가 말하는<br/><em>빈티지 EQ 실전 사용법</em></h1>
+    <p class="chapter-intro">
+      같은 NEVE 1073이라도 엔지니어마다 사용법이 다르다. 수치로 배울 수 없는 감각 — "통과시키는 것만으로 소리가 변한다", "좋은 소리가 나면 거기서 손을 멈춘다" — 현역 프로들의 생생한 현장 발언을 통해 빈티지 EQ의 본질에 접근한다.
+    </p>
+  </header>
+
+  <!-- 인트로 -->
+  <section class="section" id="intro">
+    <h2><span class="num">00</span>이 챕터에 등장하는 엔지니어</h2>
+
+    <div class="source-badge">
+      📖 <strong>출처:</strong> Sound &amp; Recording Magazine 2018년 5월호 특집 「스튜디오 기재의 소리를 알다」— prime sound studio form 소속 엔지니어 3인의 실사용 인터뷰
+    </div>
+
+    <table class="compare-table">
+      <thead>
+        <tr><th>엔지니어</th><th>경력</th><th>주요 작업</th></tr>
+      </thead>
+      <tbody>
+        <tr class="hl">
+          <td><strong>🔵 요네즈 유지로<br/>(米津裕二郎)</strong></td>
+          <td>BS&amp;T Studio → form 소속</td>
+          <td>대위성, 대화, CN BLUE, CM 음악 다수</td>
+        </tr>
+        <tr>
+          <td><strong>🟢 오니시 요시아키<br/>(大西慶明)</strong></td>
+          <td>SONATA CLUB → equalize → TinyVoice → form 소속</td>
+          <td>URU, 레인보우 등 대형 아티스트</td>
+        </tr>
+        <tr class="hl">
+          <td><strong>🟠 모리모토 코지<br/>(森元浩二)</strong></td>
+          <td>2002년 form 설립 시 수석 엔지니어 취임</td>
+          <td>AAA, E-girls, 갑옷밴드, 장르 불문 활약</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>세 엔지니어는 같은 스튜디오에서 같은 기재를 사용하지만, 각자의 귀와 철학에 따라 완전히 다른 접근법을 보여준다. 수치 세팅보다 그 배경에 있는 <strong>사고방식과 감각</strong>에 주목하라.</p>
+  </section>
+
+  <!-- NEVE 1073 -->
+  <section class="section" id="neve1073">
+    <h2><span class="num">01</span>NEVE 1073</h2>
+
+    <div class="gear-header">
+      <div class="gear-label">Equalizer — 1970</div>
+      <div class="gear-name">NEVE 1073</div>
+      <div class="gear-desc">
+        Wessex A88 콘솔용 모듈로 1970년에 발표된 프리앰프+3밴드 EQ. NEVE의 자산을 계승한 AMS/NEVE의 복각을 비롯해, 인스파이어된 모델도 많이 출시되어 있다. 세계에서 가장 유명한 채널 스트립이라 해도 과언이 아니다.
+      </div>
+      <div class="gear-tagline">베이스의 라인을 보여주는 직선적인 드라이브감</div>
+      <div class="gear-specs">
+        <span class="spec-chip">3밴드 EQ</span>
+        <span class="spec-chip">Class A 회로</span>
+        <span class="spec-chip">변압기 포화</span>
+        <span class="spec-chip">고정 주파수 선택</span>
+        <span class="spec-chip">1970년 설계</span>
+      </div>
+    </div>
+
+    <p><strong>[소재: 베이스 / 처리 전→후 비교]</strong></p>
+
+    <div class="voice-section">
+      <div class="voice-card featured">
+        <div class="voice-who">
+          <div class="voice-avatar av-yonetsu">🔵</div>
+          <div>
+            <div class="voice-name">요네즈 유지로</div>
+            <div class="voice-role">메인 엔지니어</div>
+          </div>
+        </div>
+        <div class="voice-text">
+          평소에는 레코딩용 프리앰프로 쓰는 경우가 많지만, 라인으로 통과시키면 <em>직선적인 드라이브감</em>을 노릴 수 있어서 베이스에 사용하는 경우도 많습니다. 여기서는 게인을 플랫으로 유지한 채 EQ로 <em>1.6kHz를 올려 드라이브를 더했습니다.</em><br/><br/>
+          통과시키는 것만으로도 라인이 보이는 듯한 효과가 있지만, EQ로 중역을 부스트해서 방향성을 강조해봤습니다. 다만 "1.6kHz를 올린다"기보다는 더 넓은 범위에서 <em>"이 부근을 더 듣고 싶다"</em>는 인상으로 조작합니다.<br/><br/>
+          EQ로서 실제 기재는 개체 차가 크기 때문에 "항상 이런 세팅"이 아니라, <em>좋은 소리가 나면 거기서 손을 멈추는</em> 식으로 사용합니다.
+        </div>
+      </div>
+
+      <div class="voice-card">
+        <div class="voice-who">
+          <div class="voice-avatar av-onishi">🟢</div>
+          <div>
+            <div class="voice-name">오니시 요시아키</div>
+            <div class="voice-role">엔지니어</div>
+          </div>
+        </div>
+        <div class="voice-text">
+          믹스에서 사용할 때는 트랜스포머의 왜곡을 더하는 <em>"맛내기 계열"</em>로 사용합니다. 요네즈 군과는 인상이 약간 달라서, 저역에 관해서는 솔리드하다기보다 <em>느슨한 이미지</em>가 있어서 저역을 불룩하게 만들고 싶을 때 사용하기도 합니다.
+        </div>
+      </div>
+    </div>
+
+    <div class="point-grid">
+      <div class="point-card">
+        <div class="point-icon">🎸</div>
+        <div class="point-title">라인 입력의 드라이브 활용</div>
+        <div class="point-desc">마이크 입력이 아닌 라인 입력으로 사용해도 트랜스포머가 특유의 직선적 드라이브감을 더한다. 게인 플랫 상태에서도 "통과"만으로 캐릭터가 붙는다.</div>
+      </div>
+      <div class="point-card">
+        <div class="point-icon">🎚</div>
+        <div class="point-title">개체 차를 활용하는 감각</div>
+        <div class="point-desc">실제 하드웨어는 유닛마다 소리가 다르다. "이 설정이 정답"이 아니라 귀로 들으며 최적 지점을 찾는 감각이 빈티지 EQ 사용의 핵심.</div>
+      </div>
+      <div class="point-card">
+        <div class="point-icon">🔊</div>
+        <div class="point-title">1073의 저역 — 두 가지 해석</div>
+        <div class="point-desc">요네즈: 직선적·단단한 드라이브감 / 오니시: 느슨하고 불룩한 저역. 같은 기재도 엔지니어마다 다르게 들린다 — 이것이 빈티지 EQ의 묘미.</div>
+      </div>
+      <div class="point-card">
+        <div class="point-icon">💡</div>
+        <div class="point-title">플러그인 활용 팁</div>
+        <div class="point-desc">Neve 1073 에뮬레이션(UAD·Waves·Slate)을 사용할 때도 같은 개념 적용. 게인을 높이면 드라이브 증가. 세팅보다 결과로 판단하는 접근법.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- NEVE 1081 -->
+  <section class="section" id="neve1081">
+    <h2><span class="num">02</span>NEVE 1081</h2>
+
+    <div class="gear-header">
+      <div class="gear-label">Equalizer — 1973</div>
+      <div class="gear-name">NEVE 1081</div>
+      <div class="gear-desc">
+        1973년에 8048 콘솔의 채널 스트립으로 등장한, 1073의 후계에 위치하는 프리앰프+EQ. EQ가 4밴드로 진화해 사용하기 편해졌으며, 하이/로우가 셸빙/피크로 전환 가능하고 중앙 2개 밴드의 Q가 2단계로 전환 가능해졌다. 내부 회로는 1073이 클래스 A인 반면 클래스 AB를 채용하고 있다.
+      </div>
+      <div class="gear-tagline">현대 음악에도 잘 어울리는 빈티지 NEVE</div>
+      <div class="gear-specs">
+        <span class="spec-chip">4밴드 EQ</span>
+        <span class="spec-chip">Class AB 회로</span>
+        <span class="spec-chip">셸빙/피크 전환</span>
+        <span class="spec-chip">Q 2단계 전환</span>
+        <span class="spec-chip">1973년 설계</span>
+      </div>
+    </div>
+
+    <p><strong>[소재: 베이스 / 처리 전→후 비교]</strong></p>
+
+    <div class="setting-box">
+      <div class="setting-title">요네즈의 실제 세팅값</div>
+      <div class="setting-grid">
+        <div class="setting-item">
+          <div class="setting-freq">56Hz</div>
+          <div class="setting-val">↑ BOOST</div>
+          <div class="setting-type">저역 부스트</div>
+        </div>
+        <div class="setting-item">
+          <div class="setting-freq">220Hz</div>
+          <div class="setting-val">↑ BOOST</div>
+          <div class="setting-type">중저역 부스트</div>
+        </div>
+        <div class="setting-item">
+          <div class="setting-freq">3.3kHz</div>
+          <div class="setting-val">↑ BOOST</div>
+          <div class="setting-type">중고역 부스트</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="voice-section">
+      <div class="voice-card featured">
+        <div class="voice-who">
+          <div class="voice-avatar av-yonetsu">🔵</div>
+          <div>
+            <div class="voice-name">요네즈 유지로</div>
+            <div class="voice-role">메인 엔지니어</div>
+          </div>
+        </div>
+        <div class="voice-text">
+          56Hz, 220Hz, 3.3kHz를 부스트했습니다. 1073과 마찬가지로 <em>대략적인 커브</em>이기 때문에, 명확하게 특정 주파수를 조작한다기보다는 <em>올려본 느낌으로 결정</em>했습니다.<br/><br/>
+          레코딩 프리앰프로 사용하는 경우, 드럼의 피부 모노 등에서 <em>헤드 앰프 게인을 의도적으로 올린 뒤 아웃 트림을 낮춰 조정</em>하면 프리앰프 회로 색감을 강하게 낼 수 있습니다. NEVE는 그 방법이 잘 맞습니다. 라인 입력으로는 마이크 입력만큼 게인이 오르지 않지만, 그래도 캐릭터가 더해진 인상은 있습니다.
+        </div>
+      </div>
+
+      <div class="voice-card">
+        <div class="voice-who">
+          <div class="voice-avatar av-morimoto">🟠</div>
+          <div>
+            <div class="voice-name">모리모토 코지</div>
+            <div class="voice-role">수석 엔지니어</div>
+          </div>
+        </div>
+        <div class="voice-text">
+          클래스 AB 회로이기 때문에 클래스 A인 1073에 비해 <em>소리가 빠른 인상</em>이 있습니다. 그 의미에서 현대 음악을 할 때는 1081이 더 맞는 것 같습니다.
+        </div>
+      </div>
+
+      <div class="voice-card">
+        <div class="voice-who">
+          <div class="voice-avatar av-onishi">🟢</div>
+          <div>
+            <div class="voice-name">오니시 요시아키</div>
+            <div class="voice-role">엔지니어</div>
+          </div>
+        </div>
+        <div class="voice-text">
+          1073과 비교하면 <em>EQ 포인트가 훨씬 사용하기 쉬워서</em>, EQ로서 생각하면 1073보다 더 좋아합니다.
+        </div>
+      </div>
+    </div>
+
+    <div class="gold-box">
+      <strong>💡 "헤드 앰프 올리기 + 아웃 트림 낮추기" 기법:</strong><br/>
+      NEVE 프리앰프의 게인을 높게 올려 프리앰프 회로를 살짝 포화시킨 뒤, 출력 트림으로 레벨을 맞추는 방식. 클린 신호보다 풍부한 배음과 두께가 더해진다. 플러그인 에뮬레이션에서도 Input 게인을 높이고 Output을 낮추는 방식으로 재현 가능.
+    </div>
+
+    <h3>1073 vs 1081 — 엔지니어들의 관점 비교</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>항목</th><th>NEVE 1073</th><th>NEVE 1081</th></tr>
+      </thead>
+      <tbody>
+        <tr class="hl">
+          <td>회로 방식</td>
+          <td>Class A — 따뜻하고 느긋한 응답</td>
+          <td>Class AB — 빠르고 현대적인 응답</td>
+        </tr>
+        <tr>
+          <td>EQ 밴드</td>
+          <td>3밴드, 고정 주파수 선택</td>
+          <td>4밴드, 셸빙/피크 전환 + Q 전환</td>
+        </tr>
+        <tr class="hl">
+          <td>저역 캐릭터</td>
+          <td>느슨하고 불룩한 이미지(오니시)<br/>직선적 드라이브(요네즈)</td>
+          <td>더 타이트하고 빠른 저역</td>
+        </tr>
+        <tr>
+          <td>EQ 조작성</td>
+          <td>굵직한 포인트, 감각적 사용</td>
+          <td>더 세밀하게 EQ 포인트 지정 가능</td>
+        </tr>
+        <tr class="hl">
+          <td>어울리는 장르</td>
+          <td>클래식 록, 재즈, 빈티지 팝</td>
+          <td>현대 팝, R&amp;B, EDM</td>
+        </tr>
+        <tr>
+          <td>엔지니어 선호</td>
+          <td>맛내기·드라이브 목적</td>
+          <td>EQ 도구로 사용 시 선호(오니시)</td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Pultec EQP-1A3 -->
+  <section class="section" id="pultec">
+    <h2><span class="num">03</span>Pultec EQP-1A3</h2>
+
+    <div class="gear-header">
+      <div class="gear-label">Program Equalizer — 1951–1981</div>
+      <div class="gear-name">Pultec EQP-1A3</div>
+      <div class="gear-desc">
+        1951년부터 1981년까지 생산된 EQP-1 시리즈 중 후기형 2U 버전. EQ부는 패시브 회로로 구성되며, 진공관 앰프로 전체 게인을 올리는 구조. 같은 대역에서 부스트와 어테뉴에이트를 동시에 사용할 수 있는 것이 특징. 최종 기에는 증폭단에 API 2520 오퍼앰프를 채용한 버전도 있었다.
+      </div>
+      <div class="gear-tagline">두께를 컨트롤해서 설득력 있는 소리로</div>
+      <div class="gear-specs">
+        <span class="spec-chip">패시브 EQ</span>
+        <span class="spec-chip">진공관 앰프</span>
+        <span class="spec-chip">동시 부스트+컷</span>
+        <span class="spec-chip">2밴드(저역+고역)</span>
+        <span class="spec-chip">1951년 설계</span>
+      </div>
+    </div>
+
+    <p><strong>[소재: 베이스 / 처리 전→후 비교]</strong></p>
+
+    <div class="voice-section">
+      <div class="voice-card featured">
+        <div class="voice-who">
+          <div class="voice-avatar av-yonetsu">🔵</div>
+          <div>
+            <div class="voice-name">요네즈 유지로</div>
+            <div class="voice-role">메인 엔지니어</div>
+          </div>
+        </div>
+        <div class="voice-text">
+          여기서는 <em>3kHz를 상당히 올리면서</em>, 동시에 100Hz를 부스트하고 약간 어테뉴에이트했습니다. 저역의 어테뉴에이트 포인트 주파수는 부스트보다 약간 높아서, 어테뉴에이트는 피크적인 특성을 띱니다.<br/><br/>
+          셸빙으로 올라간 지점에서 내려가기 시작하는데... <em>이 더하고 빼는 것을 2개의 노브로 무한히 조절할 수 있습니다.</em> 그래서 <em>두께 조절 도구</em> 같은 느낌입니다.<br/><br/>
+          베이스와 보컬에 사용하는 경우가 많습니다. 고역을 올려도 아프게 느껴지지 않는 것이 특징이며, 너무 밝게 느껴지는 소스에 <em>5kHz 어테뉴에이트를 거는 경우도 있습니다.</em>
+        </div>
+      </div>
+
+      <div class="voice-card">
+        <div class="voice-who">
+          <div class="voice-avatar av-onishi">🟢</div>
+          <div>
+            <div class="voice-name">오니시 요시아키</div>
+            <div class="voice-role">엔지니어</div>
+          </div>
+        </div>
+        <div class="voice-text">
+          개성이 강해서 만능은 아니지만, <em>보컬에 넣으면 설득력이 나옵니다.</em> 이것을 통과시키면 클라이언트가 납득해주는 경우가 있습니다. 아날로그 신시사이저를 만지는 것 같은 느낌도 있어서, 재미있고 좋아하는 기재입니다.
+        </div>
+      </div>
+
+      <div class="voice-card">
+        <div class="voice-who">
+          <div class="voice-avatar av-morimoto">🟠</div>
+          <div>
+            <div class="voice-name">모리모토 코지</div>
+            <div class="voice-role">수석 엔지니어</div>
+          </div>
+        </div>
+        <div class="voice-text">
+          보컬에서 초고역을 올리면, <em>청자와 대면하는 것 같은 느낌</em>이 납니다.
+        </div>
+      </div>
+    </div>
+
+    <div class="gold-box">
+      <strong>💡 Pultec의 핵심 — "동시 부스트+어테뉴에이트"의 작동 원리:</strong><br/>
+      패시브 EQ의 구조상, 같은 주파수에서 BOOST와 ATTEN 노브를 동시에 올리면 <strong>어테뉴에이트 포인트가 부스트 포인트보다 약간 높은 주파수에 위치</strong>한다. 예를 들어 60Hz를 동시 조작하면 60Hz 이하는 부스트되고, 80–100Hz 부근에서 피크를 만들며 감쇠가 시작된다 → 저역은 살리면서 탁함은 제거하는 "타이트한 저역" 효과. 이것이 그 유명한 <strong>Pultec 저역 트릭</strong>의 물리적 실체다.
+    </div>
+
+    <h3>Pultec 고역 — "아프지 않은 에어"의 비밀</h3>
+    <p>
+      현대 파라메트릭 이퀄라이저로 10kHz를 +4dB 올리면 귀에 자극적으로 들릴 수 있다. 그러나 Pultec의 진공관 앰프와 인덕터 기반 패시브 회로는 고역을 부스트해도 <strong>자극성이 없고 매끄러운 에어감</strong>을 만들어낸다. 이것이 "Pultec를 통과시키면 클라이언트가 납득한다"는 말의 핵심 — 수치로 설명하기 어렵지만 <strong>인간의 귀가 기분 좋게 느끼는 배음 구조</strong>를 만들어낸다.
+    </p>
+  </section>
+
+  <!-- API 550A & 560 -->
+  <section class="section" id="api">
+    <h2><span class="num">04</span>API 550A &amp; 560</h2>
+
+    <div class="gear-header">
+      <div class="gear-label">Equalizer — 1960s~</div>
+      <div class="gear-name">API 550A &amp; 560</div>
+      <div class="gear-desc">
+        1968년, API 창업과 함께 사울 워커가 만들어낸 2520 오퍼앰프는 API의 사운드 캐릭터를 결정하는 부품이 됐다. 550A(1971년)는 3밴드 파라메트릭 EQ, 560(1960년대 말)은 레코딩용으로는 드문 10밴드 그래픽 EQ. 둘 다 현재도 생산이 계속되고 있다.
+      </div>
+      <div class="gear-tagline">펀치 있는 음색으로 부스트해도 무너지지 않는다</div>
+      <div class="gear-specs">
+        <span class="spec-chip">550A: 3밴드 파라메트릭</span>
+        <span class="spec-chip">560: 10밴드 그래픽</span>
+        <span class="spec-chip">2520 오퍼앰프</span>
+        <span class="spec-chip">프로포셔널 Q</span>
+        <span class="spec-chip">현재도 생산 중</span>
+      </div>
+    </div>
+
+    <p><strong>[550A 소재: 스네어 / 560 소재: 킥 / 처리 전→후 비교]</strong></p>
+
+    <div class="setting-box">
+      <div class="setting-title">요네즈의 API 550A 실제 세팅 (스네어)</div>
+      <div class="setting-grid">
+        <div class="setting-item">
+          <div class="setting-freq">200Hz</div>
+          <div class="setting-val">+6dB</div>
+          <div class="setting-type">바디감 부스트</div>
+        </div>
+        <div class="setting-item">
+          <div class="setting-freq">3kHz</div>
+          <div class="setting-val">+2dB</div>
+          <div class="setting-type">크랙 부스트</div>
+        </div>
+        <div class="setting-item">
+          <div class="setting-freq">10kHz</div>
+          <div class="setting-val">+6dB</div>
+          <div class="setting-type">셸빙 에어</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="voice-section">
+      <div class="voice-card featured">
+        <div class="voice-who">
+          <div class="voice-avatar av-yonetsu">🔵</div>
+          <div>
+            <div class="voice-name">요네즈 유지로</div>
+            <div class="voice-role">메인 엔지니어</div>
+          </div>
+        </div>
+        <div class="voice-text">
+          550A는 200Hz를 +6dB, 3kHz를 +2dB, 10kHz를 셸빙으로 +6dB 올렸습니다. <em>이렇게 마구 올려도 무너지지 않는 것</em>이 API EQ의 특징입니다. 펀치 있는 소리이기 때문에 드럼이나 기타에 쓰고 싶은 이퀄라이저입니다. 두텁다기보다 <em>펀치가 있는 소리</em>입니다.<br/><br/>
+          560도 사운드적으로 비슷한 캐릭터입니다. 여기서는 각 대역을 조금씩 조정했는데, <em>비터의 바삭바삭한 4kHz를 낮추고</em>, 카리카리한 성분인 <em>8kHz를 올렸습니다.</em><br/><br/>
+          믹스에서 여러 가지가 쌓여 불분명해졌을 때, <em>통과시키는 것만으로 감각적이고 직접적인 느낌으로 되돌릴 수 있는 것</em>이 좋습니다. 비트 소재에 적합합니다.
+        </div>
+      </div>
+
+      <div class="voice-card">
+        <div class="voice-who">
+          <div class="voice-avatar av-morimoto">🟠</div>
+          <div>
+            <div class="voice-name">모리모토 코지</div>
+            <div class="voice-role">수석 엔지니어</div>
+          </div>
+        </div>
+        <div class="voice-text">
+          둘 다 <em>통과시키는 것만으로 소리가 변합니다.</em> <em>프로포셔널 Q</em>이기 때문에 게인 증감이 클수록 Q 폭이 좁아져서, 올린 양에 따라 소리가 크게 변합니다. 개인적으로 560은 <em>저역의 묵직한 느낌</em>이 나서 베이스에 사용합니다.
+        </div>
+      </div>
+    </div>
+
+    <h3>프로포셔널 Q란?</h3>
+    <p>
+      API 550 계열의 핵심 특성 중 하나. 게인을 조금만 올리면 Q가 넓어져(음악적인 부스트), 많이 올리면 Q가 자동으로 좁아진다(집중적인 부스트). 즉, <strong>게인 양에 따라 Q가 자동으로 최적화</strong>되는 구조다. 이것이 "API는 마구 올려도 무너지지 않는다"는 특성의 이유 중 하나 — 강하게 올릴수록 더 타깃된 부스트가 된다.
+    </p>
+
+    <div class="point-grid">
+      <div class="point-card">
+        <div class="point-icon">👊</div>
+        <div class="point-title">550A — 스네어·기타·드럼 버스</div>
+        <div class="point-desc">+6dB 이상 과감하게 올려도 파탄나지 않는 내성이 있다. "부스트를 두려워하지 않아도 되는" 몇 안 되는 EQ. 펀치와 존재감이 최우선일 때.</div>
+      </div>
+      <div class="point-card">
+        <div class="point-icon">🥁</div>
+        <div class="point-title">560 — 킥·베이스·빠른 컬러링</div>
+        <div class="point-desc">10밴드 그래픽으로 직관적인 조작. 저역의 묵직한 느낌이 강해 킥·베이스에 최적. "통과만으로 소리가 변한다"는 말 그대로의 즉각적 색감 부여.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 총정리 -->
+  <section class="section" id="summary">
+    <h2><span class="num">05</span>총정리 — 빈티지 EQ 4종 비교</h2>
+
+    <table class="compare-table">
+      <thead>
+        <tr><th>기재</th><th>핵심 캐릭터</th><th>주 용도</th><th>플러그인 에뮬</th></tr>
+      </thead>
+      <tbody>
+        <tr class="hl">
+          <td><strong>NEVE 1073</strong></td>
+          <td>직선적 드라이브, 트랜스포머 포화, 느슨한 저역</td>
+          <td>베이스 라인 강조, 보컬 맛내기, 드럼 버스</td>
+          <td>UAD Neve 1073, Waves V-EQ3, Slate</td>
+        </tr>
+        <tr>
+          <td><strong>NEVE 1081</strong></td>
+          <td>빠른 응답(Class AB), EQ 조작 용이</td>
+          <td>현대 팝·록, EQ 도구로 사용 시</td>
+          <td>UAD Neve 1081, bx_console</td>
+        </tr>
+        <tr class="hl">
+          <td><strong>Pultec EQP-1A3</strong></td>
+          <td>두께 컨트롤, 진공관 배음, 설득력 있는 에어</td>
+          <td>베이스·보컬 두께, 버스 에어감, 마스터</td>
+          <td>UAD Pultec EQP-1A, Waves PuigTec</td>
+        </tr>
+        <tr>
+          <td><strong>API 550A / 560</strong></td>
+          <td>펀치, 프로포셔널 Q, 대량 부스트에도 파탄 없음</td>
+          <td>스네어·킥·기타·드럼 버스, 비트 소재</td>
+          <td>Waves API 550A/560, UAD API</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="gold-box">
+      <strong>🎯 프로 3인이 공통으로 말하는 빈티지 EQ 사용의 본질:</strong><br/><br/>
+      1. <strong>"통과시키는 것만으로 소리가 변한다"</strong> — 적극적인 EQ 조작 없이도 회로 자체가 캐릭터를 더한다.<br/>
+      2. <strong>"좋은 소리가 나면 거기서 손을 멈춘다"</strong> — 세팅을 외우는 것이 아니라 귀가 판단하는 것이 기준이다.<br/>
+      3. <strong>"개체 차를 즐긴다"</strong> — 하드웨어의 유닛별 차이는 결점이 아닌 개성. 플러그인에는 없는 살아있는 요소.<br/>
+      4. <strong>"클라이언트의 귀가 납득하는 소리"</strong> — 수치로 설명 못해도 결과로 증명하는 것이 빈티지 EQ의 힘.
+    </div>
+  </section>
+
+  <div class="practice-box">
+    <h3>🎧 실습해보기 — 빈티지 EQ 플러그인 체험</h3>
+    <div class="practice-steps">
+      <div class="step">Neve 1073 에뮬레이션(Waves V-EQ3 또는 유사 플러그인)을 베이스 트랙에 삽입하고, EQ는 건드리지 않은 채 게인만 통과시켜 바이패스 전후를 비교한다. 회로 자체의 캐릭터를 귀로 확인한다.</div>
+      <div class="step">Pultec 에뮬레이션에서 60Hz BOOST +4 / ATTEN +3을 동시 적용해 킥 또는 베이스에 사용해본다. 저역 타이트닝 효과를 바이패스와 비교하며 체감한다.</div>
+      <div class="step">API 550A 에뮬레이션에서 스네어에 200Hz +6dB / 10kHz 셸빙 +6dB를 과감하게 올려본다. "무너지지 않는" API의 특성을 다른 EQ로 같은 세팅을 해보며 차이를 비교한다.</div>
+      <div class="step">같은 보컬 트랙에 1073, Pultec, API 550A를 각각 걸어보고 "어느 것이 이 목소리에 어울리는가"를 귀로만 판단해본다. 수치 없이 선택하는 훈련.</div>
+    </div>
+  </div>
+
+  <nav class="chapter-nav">
+    <a href="chapter13.html" class="nav-btn">
+      <span class="nav-label">이전 챕터</span>
+      <span class="nav-title">← 13장. 거장들의 EQ 비기</span>
+    </a>
+    <a href="index.html" class="nav-btn next">
+      <span class="nav-label">목차</span>
+      <span class="nav-title">전체 목차 →</span>
+    </a>
+  </nav>
+</main>
+
+<script>
+  window.addEventListener('scroll',()=>{
+    const doc=document.documentElement;
+    document.getElementById('progressFill').style.width=(doc.scrollTop/(doc.scrollHeight-doc.clientHeight)*100)+'%';
+  });
+  document.querySelectorAll('section[id]').forEach(s=>{
+    new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        const a=document.querySelector(`.toc-sidebar a[href="#${s.id}"]`);
+        if(a) a.classList.toggle('active',e.isIntersecting);
+      });
+    },{threshold:.25}).observe(s);
+  });
+</script>
+</body>
+</html>
