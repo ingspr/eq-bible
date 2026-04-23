@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EQ 테크닉 바이블 — 15장</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;700&display=swap');
+    :root {
+      --bg:#ffffff; --bg2:#f8f8f6; --bg3:#f2f1ee; --surface:#ebe9e4;
+      --border:#d8d5ce; --accent:#c9541e; --blue:#2563eb; --green:#16a34a;
+      --red:#dc2626; --purple:#7c3aed; --text:#1a1a18; --text-dim:#5a5a54; --text-mute:#a8a8a0;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{background:var(--bg);color:var(--text);font-family:'Noto Sans KR',sans-serif;font-weight:400;line-height:1.85;font-size:16px;}
+
+    .toc-sidebar{position:fixed;top:0;left:0;width:256px;height:100vh;background:var(--bg2);border-right:1px solid var(--border);padding:40px 24px;overflow-y:auto;z-index:100;}
+    .toc-sidebar .book-title{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:6px;}
+    .toc-sidebar h2{font-size:14px;font-weight:700;margin-bottom:28px;}
+    .toc-sidebar ul{list-style:none;}
+    .toc-sidebar li{margin-bottom:2px;}
+    .toc-sidebar a{display:block;padding:7px 12px;border-radius:6px;color:var(--text-dim);text-decoration:none;font-size:13px;transition:all .2s;}
+    .toc-sidebar a:hover,.toc-sidebar a.active{background:var(--surface);color:var(--accent);}
+    .toc-chapter{font-size:10px;letter-spacing:.1em;color:var(--text-mute);font-weight:700;margin:20px 0 6px 12px;text-transform:uppercase;}
+
+    .progress-bar{position:fixed;top:0;left:256px;right:0;height:3px;background:var(--border);z-index:200;}
+    .progress-fill{height:100%;background:var(--accent);width:0%;transition:width .1s;}
+
+    .main{margin-left:256px;max-width:820px;padding:80px 64px 120px;}
+
+    .chapter-header{margin-bottom:72px;}
+    .chapter-label{display:inline-flex;align-items:center;gap:10px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:18px;}
+    .chapter-label::before{content:'';display:block;width:28px;height:2px;background:var(--accent);}
+    .chapter-header h1{font-family:'Noto Serif KR',serif;font-size:clamp(30px,5vw,50px);font-weight:700;line-height:1.3;margin-bottom:24px;}
+    .chapter-header h1 em{color:var(--accent);font-style:normal;}
+    .chapter-intro{font-size:17px;line-height:1.95;color:var(--text-dim);border-left:3px solid var(--border);padding-left:20px;}
+
+    .section{margin-bottom:72px;}
+    h2{font-family:'Noto Serif KR',serif;font-size:24px;font-weight:700;margin-bottom:28px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+    h2 .num{color:var(--accent);margin-right:10px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:700;}
+    h3{font-size:17px;font-weight:700;margin:36px 0 14px;}
+    h3::before{content:'▍';color:var(--accent);margin-right:8px;}
+    p{margin-bottom:18px;font-size:16px;line-height:1.95;}
+
+    /* 트러블 카드 */
+    .trouble-card{border-radius:20px;overflow:hidden;margin:32px 0;box-shadow:0 2px 16px rgba(0,0,0,.06);}
+    .trouble-header{padding:20px 28px;display:flex;align-items:center;gap:16px;}
+    .trouble-header.t1{background:linear-gradient(135deg,#1e3a8a,#2563eb);}
+    .trouble-header.t2{background:linear-gradient(135deg,#7c2d12,#c9541e);}
+    .trouble-header.t3{background:linear-gradient(135deg,#166534,#16a34a);}
+    .trouble-header.t4{background:linear-gradient(135deg,#4c1d95,#7c3aed);}
+    .trouble-badge{font-size:10px;font-weight:700;letter-spacing:.12em;background:rgba(255,255,255,.2);color:#fff;padding:4px 12px;border-radius:20px;flex-shrink:0;}
+    .trouble-title{font-size:16px;font-weight:700;color:#fff;line-height:1.4;}
+    .solution-bar{padding:12px 28px;font-size:13px;font-weight:700;}
+    .solution-bar.s1{background:#dbeafe;color:#1e3a8a;}
+    .solution-bar.s2{background:#fef3c7;color:#92400e;}
+    .solution-bar.s3{background:#dcfce7;color:#166534;}
+    .solution-bar.s4{background:#ede9fe;color:#4c1d95;}
+    .trouble-body{background:var(--bg2);border:1px solid var(--border);border-top:none;padding:28px 28px 24px;}
+
+    /* 설정 박스 */
+    .eq-setting{background:#1a1a18;border-radius:12px;padding:20px 24px;margin:16px 0;color:#e8e6e2;}
+    .eq-setting-title{font-size:11px;font-weight:700;letter-spacing:.12em;color:rgba(201,84,30,.8);margin-bottom:14px;text-transform:uppercase;}
+    .eq-setting-rows{display:flex;flex-direction:column;gap:10px;}
+    .eq-row{display:flex;align-items:center;gap:16px;}
+    .eq-freq{font-size:14px;font-weight:700;color:#c9541e;min-width:70px;}
+    .eq-bar-wrap{flex:1;height:8px;background:#2d2d2a;border-radius:4px;overflow:hidden;}
+    .eq-bar{height:100%;border-radius:4px;}
+    .eq-bar.boost{background:linear-gradient(90deg,#c9541e,#f97316);}
+    .eq-bar.cut{background:linear-gradient(90deg,#2563eb,#60a5fa);}
+    .eq-bar.dynamic{background:linear-gradient(90deg,#7c3aed,#a78bfa);}
+    .eq-val{font-size:13px;color:#a8a8a0;min-width:60px;text-align:right;}
+    .eq-type{font-size:11px;color:rgba(201,84,30,.7);margin-left:4px;}
+
+    /* 단계 */
+    .step-list{display:flex;flex-direction:column;gap:14px;margin:20px 0;}
+    .step-item{display:flex;gap:14px;align-items:flex-start;}
+    .step-num{min-width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;margin-top:2px;}
+    .step-content{font-size:15px;color:var(--text-dim);line-height:1.8;}
+    .step-content strong{color:var(--text);}
+
+    /* 포인트 카드 */
+    .point-box{background:var(--bg3);border-radius:10px;padding:18px 22px;margin:16px 0;font-size:15px;line-height:1.85;border-left:3px solid var(--accent);}
+    .point-box strong{color:var(--accent);}
+
+    /* 팁/경고 */
+    .tip-box{background:rgba(37,99,235,.06);border:1px solid rgba(37,99,235,.2);border-radius:10px;padding:20px 24px;margin:20px 0;font-size:15px;line-height:1.8;}
+    .tip-box strong{color:var(--blue);}
+    .warn-box{background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);border-radius:10px;padding:20px 24px;margin:20px 0;font-size:15px;line-height:1.8;}
+    .warn-box strong{color:var(--red);}
+
+    /* 비교 테이블 */
+    .compare-table{width:100%;border-collapse:collapse;margin:24px 0;font-size:14px;}
+    .compare-table th{background:var(--bg3);font-weight:700;padding:12px 16px;text-align:left;border-bottom:2px solid var(--border);font-size:13px;}
+    .compare-table td{padding:11px 16px;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.7;}
+    .compare-table tr:hover td{background:var(--bg2);}
+    .compare-table .hl{background:rgba(201,84,30,.04);}
+
+    /* 번들 그리드 */
+    .bundle-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:24px 0;}
+    .bundle-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;}
+    .bundle-name{font-size:14px;font-weight:700;margin-bottom:6px;}
+    .bundle-price{font-size:13px;color:var(--accent);font-weight:700;margin-bottom:6px;}
+    .bundle-desc{font-size:12px;color:var(--text-mute);line-height:1.6;}
+
+    /* 실습 박스 */
+    .practice-box{background:linear-gradient(135deg,rgba(201,84,30,.06) 0%,rgba(201,84,30,.02) 100%);border:1.5px solid rgba(201,84,30,.25);border-radius:14px;padding:32px;margin:48px 0;}
+    .practice-box h3{font-size:16px;font-weight:700;color:var(--accent);margin-bottom:16px;}
+    .practice-box h3::before{display:none;}
+    .practice-steps{counter-reset:step;display:flex;flex-direction:column;gap:12px;}
+    .step{counter-increment:step;display:flex;gap:14px;align-items:flex-start;font-size:15px;}
+    .step::before{content:counter(step);min-width:28px;height:28px;background:var(--accent);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;margin-top:2px;}
+
+    .chapter-nav{display:flex;justify-content:space-between;margin-top:96px;padding-top:32px;border-top:1px solid var(--border);}
+    .nav-btn{display:inline-flex;flex-direction:column;gap:4px;text-decoration:none;padding:16px 24px;border-radius:10px;border:1px solid var(--border);transition:all .2s;}
+    .nav-btn:hover{border-color:var(--accent);background:var(--bg3);}
+    .nav-btn.next{text-align:right;}
+    .nav-label{font-size:11px;color:var(--text-mute);font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+    .nav-title{font-size:15px;font-weight:700;color:var(--text);}
+
+    @media(max-width:900px){
+      .toc-sidebar{display:none;}
+      .progress-bar{left:0;}
+      .main{margin-left:0;padding:48px 28px 80px;}
+      .bundle-grid{grid-template-columns:1fr 1fr;}
+    }
+    @media(max-width:600px){.bundle-grid{grid-template-columns:1fr;}}
+    ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--bg2);}::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  </style>
+</head>
+<body>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<nav class="toc-sidebar">
+  <div class="book-title">EQ 테크닉 바이블</div>
+  <h2>Chapter 15</h2>
+  <ul>
+    <li><a href="#intro">Pro-Q 3 보컬 EQ 개요</a></li>
+    <li><a href="#trouble1">Trouble 1 — 소리가 얇고 중저역 불안정</a></li>
+    <li><a href="#trouble2">Trouble 2 — 치찰음이 귀를 찌른다</a></li>
+    <li><a href="#trouble3">Trouble 3 — 특정 대역이 귀에 걸린다</a></li>
+    <li><a href="#trouble4">Trouble 4 — 레퍼런스 음색에 가까워지고 싶다</a></li>
+    <li><a href="#tips">Pro-Q 3 보컬 핵심 팁</a></li>
+    <li><a href="#proq4">Pro-Q 4 — 무엇이 달라졌나</a></li>
+    <li><a href="#bundles">번들 구성</a></li>
+    <li><a href="#summary">정리</a></li>
+    <div class="toc-chapter">다른 챕터</div>
+    <li><a href="chapter14.html">← 14장. 빈티지 EQ 실전</a></li>
+    <li><a href="index.html">전체 목차</a></li>
+  </ul>
+</nav>
+
+<main class="main">
+  <header class="chapter-header">
+    <div class="chapter-label">Chapter 15</div>
+    <h1>FabFilter <em>Pro-Q 3 · 4</em><br/>보컬 EQ 완전 가이드</h1>
+    <p class="chapter-intro">
+      자택 레코딩 보컬의 음질 고민을 Pro-Q 한 플러그인으로 해결한다. 소리가 얇다, 치찰음이 귀를 찌른다, 특정 대역이 귀에 걸린다, 레퍼런스 음색에 가까워지고 싶다 — Pro-Q 3의 4가지 실전 트러블슈팅과 함께, 2024년 출시된 Pro-Q 4의 신기능까지 총정리한다.
+    </p>
+  </header>
+
+  <!-- 개요 -->
+  <section class="section" id="intro">
+    <h2><span class="num">00</span>FabFilter Pro-Q 3 — 보컬 이퀄라이저로서의 강점</h2>
+
+    <p>
+      Pro-Q 3는 단순한 파라메트릭 이퀄라이저를 넘어, <strong>다이나믹 EQ·EQ Match·초고해상도 스펙트럼 애널라이저</strong>를 하나에 통합한 플러그인이다. 보컬 처리에서 특히 강력한 이유는 이 세 기능이 유기적으로 연동되기 때문이다.
+    </p>
+
+    <table class="compare-table">
+      <thead>
+        <tr><th>기능</th><th>보컬에서의 역할</th></tr>
+      </thead>
+      <tbody>
+        <tr class="hl">
+          <td><strong>다이나믹 EQ</strong></td>
+          <td>중저역 불안정, 치찰음, 공명음을 레벨 기반으로 자동 제어 — 디에서·멀티밴드 컴프 역할 겸용</td>
+        </tr>
+        <tr>
+          <td><strong>스펙트럼 애널라이저</strong></td>
+          <td>마우스 커서를 멈추면 해당 주파수의 문제 성분을 시각화 — 귀로 찾기 어려운 공명 포인트를 발견</td>
+        </tr>
+        <tr class="hl">
+          <td><strong>EQ Match</strong></td>
+          <td>레퍼런스 트랙의 스펙트럼을 분석해 자동으로 커브 생성 — 원곡 음색에 가까워지는 최단 경로</td>
+        </tr>
+        <tr>
+          <td><strong>리니어 페이즈 모드</strong></td>
+          <td>EQ Match 적용 시 위상 변화 없이 처리 — 마스터링·버스 EQ에서 특히 중요</td>
+        </tr>
+        <tr class="hl">
+          <td><strong>오토 게인 보상</strong></td>
+          <td>EQ 전후 레벨을 자동 매칭 — 볼륨이 커서 좋게 들리는 착각 방지</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="tip-box">
+      <strong>기본 조작법 요약:</strong> 화면 위 더블클릭 → EQ 포인트 생성. 드래그 → 주파수·게인 이동. 마우스 스크롤 → Q값 조절. EQ 포인트 우클릭(Mac: control+클릭) → 팝업 메뉴에서 다이나믹 전환·Shape 변경 등 세부 설정.
+    </div>
+  </section>
+
+  <!-- Trouble 1 -->
+  <section class="section" id="trouble1">
+    <h2><span class="num">01</span>Trouble 1 — 소리가 얇고 중저역이 불안정하다</h2>
+
+    <div class="trouble-card">
+      <div class="trouble-header t1">
+        <span class="trouble-badge">Trouble 1</span>
+        <div class="trouble-title">보컬 소리가 얇고, 특히 저음부에서 소리가 가늘어진다</div>
+      </div>
+      <div class="solution-bar s1">✦ Solution — 다이나믹 EQ로 안정적이고 풍성한 소리로</div>
+      <div class="trouble-body">
+
+        <p>
+          자택 레코딩에서 흔한 문제. 오케와 섞으면 저음 파트에서 소리가 가늘어지거나, 음량은 충분한데 존재감이 없는 느낌이 든다. 이런 경우 무조건 고역을 올리기보다 <strong>중저역의 밀도를 보강</strong>하는 것이 먼저다.
+        </p>
+
+        <h3>1단계 — 중저역 부스트로 두께 확인</h3>
+        <div class="eq-setting">
+          <div class="eq-setting-title">기준 세팅 예시</div>
+          <div class="eq-setting-rows">
+            <div class="eq-row">
+              <div class="eq-freq">180Hz</div>
+              <div class="eq-bar-wrap"><div class="eq-bar boost" style="width:60%"></div></div>
+              <div class="eq-val">+6dB</div>
+              <div class="eq-type">피크 Q≈1.7</div>
+            </div>
+            <div class="eq-row">
+              <div class="eq-freq">800Hz</div>
+              <div class="eq-bar-wrap"><div class="eq-bar boost" style="width:40%"></div></div>
+              <div class="eq-val">+4dB</div>
+              <div class="eq-type">→ 다이나믹 EQ로 전환</div>
+            </div>
+          </div>
+        </div>
+
+        <p>
+          180Hz 부근을 +6dB 부스트하면 두께와 친밀감이 생긴다. Q는 1.676(기본값) 정도로 시작. 단, 정적 부스트로 6dB를 항상 올리면 저음부에서 과해질 수 있다.
+        </p>
+
+        <h3>2단계 — 다이나믹 EQ로 전환해 자동 제어</h3>
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-content">EQ 포인트 우클릭(Mac: control+클릭) → 팝업 메뉴에서 <strong>"Make Dynamic"</strong> 선택 → 다이나믹 EQ로 전환</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">EQ 포인트 위아래에 삼각형 아이콘이 표시된다. 이것을 드래그해 다이나믹 EQ의 최대 증감량 범위를 설정</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">스레숄드는 기본값 AUTO로 자동 설정됨. 필요하면 수동으로 조정 가능</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-content">EQ 포인트를 올리면 부스트 방향, 내리면 컷 방향으로 다이나믹이 동작한다</div>
+          </div>
+        </div>
+
+        <div class="point-box">
+          <strong>왜 다이나믹 EQ인가:</strong> 중저역이 불안정한 이유는 음량이 작을 때 저역이 부족하고 클 때는 과해지기 때문이다. 정적 EQ로 +6dB를 고정하면 큰 소리에서 과잉이 된다. 다이나믹 EQ는 소리가 작을 때 더 많이 부스트하고, 클 때는 덜 건드리므로 <strong>노래 전체에서 균일한 두께</strong>가 유지된다.
+        </div>
+
+        <p>
+          800Hz 부근에도 같은 방식으로 다이나믹 EQ(+4dB)를 추가하면 중역의 존재감도 함께 안정된다. 특히 저음 파트에서 소리가 꺼지는 구간에 효과적.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trouble 2 -->
+  <section class="section" id="trouble2">
+    <h2><span class="num">02</span>Trouble 2 — 치찰음(サ행)이 귀를 찌른다</h2>
+
+    <div class="trouble-card">
+      <div class="trouble-header t2">
+        <span class="trouble-badge">Trouble 2</span>
+        <div class="trouble-title">고역을 올리면 'ㅅ'·'ㅈ' 계열 자음이 날카롭게 튀어나온다</div>
+      </div>
+      <div class="solution-bar s2">✦ Solution — 다이나믹 EQ를 디에서(De-esser)처럼 활용</div>
+      <div class="trouble-body">
+
+        <p>
+          공기감을 위해 고역 셸빙을 올리면 치찰음 'ㅅ' 자음이 더 강조되어 귀를 찌르는 현상. 별도 디에서 플러그인 없이 <strong>Pro-Q 3의 다이나믹 EQ만으로 해결</strong>할 수 있다.
+        </p>
+
+        <h3>다이나믹 EQ를 디에서로 쓰는 방법</h3>
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-content">문제 치찰음 대역(보통 <strong>5~8kHz</strong>)에 EQ 포인트를 생성. 우선 +3~4dB 부스트해 위치를 확인</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">EQ 포인트 우클릭 → <strong>Shape → "Hi-Shelf"</strong> 선택. 이 대역 이상을 하이셸빙 형태로 제어</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">우클릭 → <strong>"Make Dynamic"</strong>으로 다이나믹 모드 전환</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-content">삼각형 아이콘을 아래로 드래그해 <strong>–6dB</strong> 컷 방향으로 설정. 치찰음이 튈 때만 자동으로 눌러준다</div>
+          </div>
+        </div>
+
+        <div class="eq-setting">
+          <div class="eq-setting-title">치찰음 다이나믹 컷 예시</div>
+          <div class="eq-setting-rows">
+            <div class="eq-row">
+              <div class="eq-freq">5~8kHz</div>
+              <div class="eq-bar-wrap"><div class="eq-bar dynamic" style="width:60%"></div></div>
+              <div class="eq-val">–6dB</div>
+              <div class="eq-type">다이나믹 Hi-Shelf</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="point-box">
+          <strong>디에서 플러그인 vs 다이나믹 EQ 차이:</strong><br/>
+          디에서는 고정된 치찰음 감지 알고리즘으로 동작. 다이나믹 EQ는 내가 원하는 주파수 범위와 강도를 직접 설정하므로 <strong>더 정밀하고 자연스러운 결과</strong>가 나오는 경우가 많다. 특히 치찰음이 아닌 다른 자음('ㄲ', '키킹 소리' 등)에서 과도하게 눌리는 디에서의 단점을 피할 수 있다.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trouble 3 -->
+  <section class="section" id="trouble3">
+    <h2><span class="num">03</span>Trouble 3 — 특정 대역이 귀에 걸리는 울림이 있다</h2>
+
+    <div class="trouble-card">
+      <div class="trouble-header t3">
+        <span class="trouble-badge">Trouble 3</span>
+        <div class="trouble-title">사비에서 특정 주파수가 "키이" 하고 귀에 달라붙는다</div>
+      </div>
+      <div class="solution-bar s3">✦ Solution — 침처럼 좁은 Q로 콕 찍어 제거</div>
+      <div class="trouble-body">
+
+        <p>
+          자택 레코딩 공간의 공명이나 마이크 특성에 의해 특정 주파수만 과도하게 강조되는 현상. 귀로 대략적인 위치는 느끼지만 정확한 주파수를 찾기 어렵다. Pro-Q 3의 스펙트럼 애널라이저가 이 문제를 시각적으로 해결해준다.
+        </p>
+
+        <h3>스펙트럼 애널라이저로 문제 주파수 찾기</h3>
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-content">DAW를 재생한 상태에서 Pro-Q 3의 스펙트럼 그래프 위에 <strong>마우스 커서를 올려 정지</strong></div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">잠시 기다리면 그레이로 표시되던 스펙트럼이 <strong>해석 결과(분석 모드)로 전환</strong>되어 피크 주파수가 선명하게 표시된다</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">귀에 걸리는 구간(사비 등)에서 반복 확인. 예: 2.2kHz · 4.2kHz · 11kHz 부근에 "3개의 침" 같은 날카로운 피크가 발견되는 경우</div>
+          </div>
+        </div>
+
+        <h3>좁은 Q(침 모양)로 정밀 컷</h3>
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-content">피크 주파수에 EQ 포인트 생성 후, <strong>마우스 스크롤</strong>로 Q를 좁혀 Q값을 높인다(Q 10 이상). 화면에서 침처럼 뾰족한 커브로 변환</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">5</div>
+            <div class="step-content">그 포인트에서 <strong>–3~–6dB</strong> 컷 적용. 음악을 들으면서 "귀에 걸리는 느낌"이 사라질 때까지 조정</div>
+          </div>
+        </div>
+
+        <div class="eq-setting">
+          <div class="eq-setting-title">좁은 Q 컷 예시 (발견된 공명 주파수에 따라 다름)</div>
+          <div class="eq-setting-rows">
+            <div class="eq-row">
+              <div class="eq-freq">2.2kHz</div>
+              <div class="eq-bar-wrap"><div class="eq-bar cut" style="width:30%"></div></div>
+              <div class="eq-val">–4dB</div>
+              <div class="eq-type">Q≈10 이상</div>
+            </div>
+            <div class="eq-row">
+              <div class="eq-freq">4.2kHz</div>
+              <div class="eq-bar-wrap"><div class="eq-bar cut" style="width:25%"></div></div>
+              <div class="eq-val">–3dB</div>
+              <div class="eq-type">Q≈10 이상</div>
+            </div>
+            <div class="eq-row">
+              <div class="eq-freq">11kHz</div>
+              <div class="eq-bar-wrap"><div class="eq-bar cut" style="width:20%"></div></div>
+              <div class="eq-val">–3dB</div>
+              <div class="eq-type">Q≈8 이상</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="warn-box">
+          <strong>주의 — EQ 포인트가 너무 많아지면:</strong><br/>
+          한 소스에 좁은 Q 컷을 10개 이상 넣으면 전체 음색의 개성과 활기가 사라질 수 있다. 1개 소스에 2~3개 이내로 억제. 그래도 귀에 걸린다면 EQ 방향이 아닌 마이킹·공간 문제를 먼저 해결할 것을 권장한다.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Trouble 4 -->
+  <section class="section" id="trouble4">
+    <h2><span class="num">04</span>Trouble 4 — 레퍼런스 원곡의 음색에 가까워지고 싶다</h2>
+
+    <div class="trouble-card">
+      <div class="trouble-header t4">
+        <span class="trouble-badge">Trouble 4</span>
+        <div class="trouble-title">마스터링 단계에서 원곡과 비교하면 음색이 너무 다르다</div>
+      </div>
+      <div class="solution-bar s4">✦ Solution — EQ Match 기능으로 간단하게 실현</div>
+      <div class="trouble-body">
+
+        <p>
+          보컬 단독이 아닌 <strong>믹스 전체를 원곡의 음색 방향으로 가까워지게 하는</strong> 마스터링 단계 기법. EQ Match 전에 반드시 두 가지를 설정해야 한다.
+        </p>
+
+        <div class="tip-box">
+          <strong>EQ Match 사용 전 필수 설정 2가지:</strong><br/>
+          ① 프로세싱 모드를 <strong>Linear Phase(리니어 페이즈)</strong>로 설정<br/>
+          ② 아웃풋 옵션에서 <strong>오토 게인 ON</strong> — EQ 처리 후에도 레벨이 일정하게 유지
+        </div>
+
+        <h3>EQ Match 단계별 사용법</h3>
+        <div class="step-list">
+          <div class="step-item">
+            <div class="step-num">1</div>
+            <div class="step-content">DAW의 빈 트랙에 <strong>원곡 오디오를 임포트</strong>. 이 트랙 자체는 반드시 <strong>뮤트</strong>. Pro-Q 3를 삽입</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">2</div>
+            <div class="step-content">마스터 페이더에 Pro-Q 3를 삽입. 화면의 <strong>"Analyzer"를 클릭</strong>한 뒤 <strong>"EQ Match"(녹색 버튼)</strong>를 클릭</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">3</div>
+            <div class="step-content">좌측 "(Reference)"를 클릭해 원곡 트랙에 삽입한 Pro-Q 3를 선택. 분석시키고 싶은 구간(사비 등)을 재생 → 화면에 흰색 커브(레퍼런스 스펙트럼)가 표시됨</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">4</div>
+            <div class="step-content"><strong>"Match"를 클릭</strong>. 음악을 들으면서 <strong>슬라이더(적색 테두리)</strong>를 움직여 원하는 음색을 선택. 슬라이더를 오른쪽으로 할수록 사용하는 EQ 포인트가 많아짐</div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">5</div>
+            <div class="step-content">마음에 드는 설정이 됐으면 <strong>"Finish"</strong>를 클릭해 완료</div>
+          </div>
+        </div>
+
+        <div class="point-box">
+          <strong>왜 리니어 페이즈 모드인가:</strong> EQ Match처럼 여러 밴드를 동시에 조정하는 처리는 위상 변화가 크다. 리니어 페이즈 모드를 사용하면 EQ 처리가 위상 이동 없이 적용되어 마스터링 품질에서 더 자연스러운 결과가 나온다. 단, CPU 부하가 증가하고 레이턴시가 발생하므로 최종 믹싱·마스터링 단계에서 사용하는 것이 원칙.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 핵심 팁 종합 -->
+  <section class="section" id="tips">
+    <h2><span class="num">05</span>Pro-Q 3 보컬 이퀄라이저 핵심 팁 종합</h2>
+
+    <table class="compare-table">
+      <thead>
+        <tr><th>문제 상황</th><th>Pro-Q 3 접근법</th><th>핵심 설정</th></tr>
+      </thead>
+      <tbody>
+        <tr class="hl">
+          <td>소리가 얇고 저음에서 꺼진다</td>
+          <td>중저역 다이나믹 부스트</td>
+          <td>180Hz +6dB → Make Dynamic</td>
+        </tr>
+        <tr>
+          <td>중역이 들쑥날쑥 불안정</td>
+          <td>800Hz 다이나믹 EQ 추가</td>
+          <td>800Hz +4dB → Make Dynamic</td>
+        </tr>
+        <tr class="hl">
+          <td>치찰음('ㅅ'·'ㅈ') 귀에 찌름</td>
+          <td>다이나믹 EQ를 디에서처럼</td>
+          <td>5~8kHz Hi-Shelf → Dynamic –6dB</td>
+        </tr>
+        <tr>
+          <td>특정 주파수 울림·귀에 걸림</td>
+          <td>스펙트럼 분석 후 좁은 Q 컷</td>
+          <td>Q 10 이상 + –3~–6dB 컷, 2~3개 이내</td>
+        </tr>
+        <tr class="hl">
+          <td>원곡 음색에 가까워지고 싶다</td>
+          <td>EQ Match 기능</td>
+          <td>리니어 페이즈 + 오토 게인 ON 필수</td>
+        </tr>
+        <tr>
+          <td>EQ 전후 공정한 비교가 안 된다</td>
+          <td>오토 게인 보상 활성화</td>
+          <td>출력 옵션에서 Auto Gain ON</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>다이나믹 EQ를 만드는 3단계 — 공통 순서</h3>
+    <div class="step-list">
+      <div class="step-item">
+        <div class="step-num">1</div>
+        <div class="step-content"><strong>EQ 포인트 생성</strong> — 더블클릭으로 원하는 주파수에 포인트 배치</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">2</div>
+        <div class="step-content"><strong>우클릭 → "Make Dynamic"</strong> — 정적 EQ → 다이나믹 EQ로 전환. 위아래 삼각형 아이콘이 나타남</div>
+      </div>
+      <div class="step-item">
+        <div class="step-num">3</div>
+        <div class="step-content"><strong>삼각형 드래그로 범위 조정</strong> — 올리면 부스트 방향, 내리면 컷 방향. 스레숄드는 AUTO 또는 수동 설정</div>
+      </div>
+    </div>
+
+    <div class="tip-box">
+      <strong>오토 게인 보상 — 항상 켜두기:</strong> EQ를 적용하면 레벨이 달라진다. 레벨이 올라가면 무조건 좋게 들리는 착각이 생긴다. 오토 게인을 켜두면 EQ 전후 볼륨을 자동으로 맞춰 순수하게 음색 변화만 비교할 수 있다.
+    </div>
+  </section>
+
+  <!-- Pro-Q 4 -->
+  <section class="section" id="proq4">
+    <h2><span class="num">06</span>Pro-Q 4 — Pro-Q 3와 무엇이 달라졌나</h2>
+
+    <p>
+      2024년 출시된 <strong>FabFilter Pro-Q 4</strong>는 Pro-Q 3의 완성도를 기반으로 핵심 처리 엔진과 워크플로를 전면 업그레이드한 버전이다. 기존 Pro-Q 3 세션과의 하위 호환성이 유지되므로, 업그레이드 후에도 기존 프로젝트는 그대로 열린다.
+    </p>
+
+    <h3>가장 큰 변화 — Spectral Dynamics</h3>
+    <p>
+      Pro-Q 3의 다이나믹 EQ는 지정한 밴드 전체의 게인을 레벨에 따라 제어했다. Pro-Q 4의 <strong>Spectral Dynamics</strong>는 밴드 내 <em>개별 주파수 단위</em>로 독립 반응한다. 예컨대 2~5kHz 범위를 지정하면, 3.2kHz 공명만 튈 때 그 주파수만 정밀하게 눌리고 나머지 대역은 그대로 유지된다.
+    </p>
+
+    <table class="compare-table">
+      <thead>
+        <tr><th>기능</th><th>Pro-Q 3 다이나믹 EQ</th><th>Pro-Q 4 Spectral Dynamics</th></tr>
+      </thead>
+      <tbody>
+        <tr class="hl">
+          <td>처리 단위</td>
+          <td>밴드 전체</td>
+          <td><strong>밴드 내 주파수별 독립</strong></td>
+        </tr>
+        <tr>
+          <td>보컬 치찰음 제거</td>
+          <td>6~8kHz 대역 전체 눌림</td>
+          <td>튀는 주파수만 선택적 감쇠</td>
+        </tr>
+        <tr class="hl">
+          <td>공명 제거</td>
+          <td>좁은 Q로 특정 포인트 컷</td>
+          <td>특정 주파수만 동적으로 컷, 음색 손상 최소화</td>
+        </tr>
+        <tr>
+          <td>멀티밴드 컴프 대체</td>
+          <td>부분적 가능</td>
+          <td>더 자연스럽고 투명하게 처리</td>
+        </tr>
+        <tr class="hl">
+          <td>CPU 사용</td>
+          <td>낮음</td>
+          <td>다소 높음 (처리 복잡도 증가)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>그 외 주요 신기능</h3>
+    <table class="compare-table">
+      <thead>
+        <tr><th>신기능</th><th>설명</th></tr>
+      </thead>
+      <tbody>
+        <tr class="hl">
+          <td><strong>EQ Sketch</strong></td>
+          <td>마우스로 EQ 커브를 자유롭게 그리면 Pro-Q 4가 자동으로 밴드로 변환 — 빠른 아이디어 스케치에 최적</td>
+        </tr>
+        <tr>
+          <td><strong>Instance List</strong></td>
+          <td>세션 내 모든 Pro-Q 4 / Pro-C 3 / Pro-DS / Pro-G 인스턴스를 하나의 인터페이스에서 일괄 제어</td>
+        </tr>
+        <tr class="hl">
+          <td><strong>연속 슬로프 (12~96dB/oct)</strong></td>
+          <td>HPF·LPF 슬로프를 12~96dB/oct 사이에서 자유롭게 설정 가능 — 기존 단계식보다 훨씬 세밀한 컨트롤</td>
+        </tr>
+        <tr>
+          <td><strong>All Pass 필터 추가</strong></td>
+          <td>위상만 회전시키는 All Pass 필터 형태 추가 — 위상 정렬·공간감 조정에 활용</td>
+        </tr>
+        <tr class="hl">
+          <td><strong>빈티지 새츄레이션 모드</strong></td>
+          <td>아날로그 하드웨어 EQ의 하모닉 왜곡 특성을 에뮬레이션 — 디지털 이퀄라이저에 따뜻한 색감 추가</td>
+        </tr>
+        <tr>
+          <td><strong>피아노 디스플레이</strong></td>
+          <td>주파수 축에 피아노 건반을 표시 — 음악적 음정 기반으로 EQ 포인트를 직관적으로 배치</td>
+        </tr>
+        <tr class="hl">
+          <td><strong>서라운드 지원</strong></td>
+          <td>5.1 / 7.1 등 멀티채널 포맷 공식 지원 — 영상·게임 음향 작업 확대</td>
+        </tr>
+        <tr>
+          <td><strong>다이나믹 EQ 음질 개선</strong></td>
+          <td>Pro-Q 3 대비 다이나믹 EQ의 왜곡 감소, 리니어 페이즈·내추럴 페이즈 처리 정밀도 향상</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Pro-Q 3 → Pro-Q 4 업그레이드 권장 여부</h3>
+    <div class="point-box">
+      <strong>적극 권장하는 경우:</strong> 보컬·드럼 공명 제거, 치찰음 처리를 섬세하게 하고 싶은 경우 / 서라운드·Atmos 믹싱으로 확장 예정인 경우 / EQ Sketch처럼 직관적인 워크플로를 선호하는 경우
+    </div>
+    <div class="tip-box">
+      <strong>Pro-Q 3도 여전히 충분한 경우:</strong> 이 챕터에서 다룬 4가지 트러블슈팅(다이나믹 EQ·EQ Match·스펙트럼 분석·좁은 Q 컷)은 Pro-Q 3로도 완벽하게 가능하다. 예산이 부담스럽다면 Pro-Q 3로 충분히 프로 품질 보컬 EQ를 구현할 수 있다.
+    </div>
+    <div class="warn-box">
+      <strong>업그레이드 비용:</strong> Pro-Q 3 기존 사용자는 할인된 업그레이드 가격으로 전환 가능. FabFilter 공식 계정에 로그인 후 "My Licenses" 페이지에서 확인.
+    </div>
+  </section>
+
+  <!-- 번들 -->
+  <section class="section" id="bundles">
+    <h2><span class="num">07</span>FabFilter 번들 구성</h2>
+    <p>Pro-Q 3는 단독 구매 외에 FabFilter 번들 세트로도 구입할 수 있다. 각 번들에는 리버브·컴프레서 등 다른 플러그인이 포함된다.</p>
+    <div class="bundle-grid">
+      <div class="bundle-card">
+        <div class="bundle-name">Essentials Bundle</div>
+        <div class="bundle-price">₩약 110,000~</div>
+        <div class="bundle-desc">Pro-Q 3 + Pro-C 2(컴프레서) + Pro-R(리버브). 믹싱 기초 3종 세트.</div>
+      </div>
+      <div class="bundle-card">
+        <div class="bundle-name">Mixing Bundle</div>
+        <div class="bundle-price">₩약 186,000~</div>
+        <div class="bundle-desc">Essentials + Pro-MB(멀티밴드) + Pro-DS(디에서) + Pro-G(게이트). 믹싱 올인원.</div>
+      </div>
+      <div class="bundle-card">
+        <div class="bundle-name">Mastering Bundle</div>
+        <div class="bundle-price">₩약 136,000~</div>
+        <div class="bundle-desc">Pro-Q 3 + Pro-L 2(리미터) + Pro-MB. 마스터링 특화 세트.</div>
+      </div>
+      <div class="bundle-card">
+        <div class="bundle-name">FX Bundle</div>
+        <div class="bundle-price">₩약 245,000~</div>
+        <div class="bundle-desc">컴프·딜레이·필터·앰프 모델링 등 10종 이상. 신스·사운드 디자인 포함.</div>
+      </div>
+      <div class="bundle-card">
+        <div class="bundle-name">Pro Bundle</div>
+        <div class="bundle-price">₩약 200,000~</div>
+        <div class="bundle-desc">믹싱·마스터링 향용 리버브·리미터·멀티밴드 컴프 등 동일 포함.</div>
+      </div>
+      <div class="bundle-card">
+        <div class="bundle-name">Total Bundle</div>
+        <div class="bundle-price">₩약 269,000~</div>
+        <div class="bundle-desc">FabFilter 전 플러그인 포함. 2종의 신스(Saturn 2 포함)까지 모두 수록.</div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--text-mute);">※ 가격은 환율에 따라 변동. 이미 Pro-Q/Pro-Q 2를 보유한 경우 업그레이드 할인 적용 가능. FabFilter 공식 사이트 참고.</p>
+  </section>
+
+  <!-- 정리 -->
+  <section class="section" id="summary">
+    <h2><span class="num">08</span>정리</h2>
+    <p>
+      Pro-Q 3는 별도 디에서나 멀티밴드 컴프레서 없이도 <strong>다이나믹 EQ 하나로 보컬의 주요 문제를 대부분 해결</strong>할 수 있다. 핵심은 단순한 정적 EQ가 아닌, 음악의 다이나믹에 반응하는 처리를 사용하는 것이다.
+    </p>
+    <table class="compare-table">
+      <thead>
+        <tr><th>기능</th><th>한 줄 요약</th></tr>
+      </thead>
+      <tbody>
+        <tr class="hl"><td><strong>다이나믹 EQ (Make Dynamic)</strong></td><td>레벨에 반응하는 EQ — 과잉 처리 없이 자연스러운 보컬 제어</td></tr>
+        <tr><td><strong>스펙트럼 애널라이저 정지 기능</strong></td><td>마우스 커서 정지 → 문제 주파수 시각화 — 귀만으로 찾기 어려운 공명 발견</td></tr>
+        <tr class="hl"><td><strong>좁은 Q (침 모양)</strong></td><td>Q 10 이상으로 특정 공명 포인트만 정확히 컷 — 음색 손상 최소화</td></tr>
+        <tr><td><strong>EQ Match</strong></td><td>레퍼런스 트랙 스펙트럼 분석 → 자동 커브 생성 — 원곡 음색 접근 최단 경로</td></tr>
+        <tr class="hl"><td><strong>리니어 페이즈 모드</strong></td><td>EQ Match 사용 시 위상 변화 없이 처리 — 마스터링 품질 확보</td></tr>
+        <tr><td><strong>오토 게인 보상</strong></td><td>EQ 전후 레벨 자동 매칭 — 공정한 A/B 비교</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="practice-box">
+    <h3>🎧 실습해보기 — Pro-Q 3로 보컬 문제 하나씩 해결</h3>
+    <div class="practice-steps">
+      <div class="step">자신의 보컬(또는 자택 레코딩 소스)에 Pro-Q 3를 삽입하고 스펙트럼 애널라이저를 켠다. 재생 중 마우스를 그래프 위에서 정지시켜 피크 주파수를 확인한다.</div>
+      <div class="step">180Hz 부근에 EQ 포인트(+5dB)를 만들고 바이패스 비교. 두께가 생기는지 확인 후 우클릭 → "Make Dynamic"으로 전환해 다이나믹 처리와 정적 처리의 차이를 들어본다.</div>
+      <div class="step">치찰음이 심한 보컬이 있다면 6kHz 부근에 포인트 생성 → Shape: Hi-Shelf → Make Dynamic → 삼각형 아이콘을 아래로 드래그해 –6dB 컷 설정. 'ㅅ' 자음이 등장할 때만 눌리는지 확인.</div>
+      <div class="step">레퍼런스 트랙을 하나 준비해 DAW에 임포트(뮤트). 마스터에 Pro-Q 3 삽입 → Linear Phase 모드 → Analyzer → EQ Match. 원곡 Pro-Q 3를 Reference로 지정해 Match 기능을 사용해본다.</div>
+    </div>
+  </div>
+
+  <nav class="chapter-nav">
+    <a href="chapter14.html" class="nav-btn">
+      <span class="nav-label">이전 챕터</span>
+      <span class="nav-title">← 14장. 빈티지 EQ 실전</span>
+    </a>
+    <a href="index.html" class="nav-btn next">
+      <span class="nav-label">목차</span>
+      <span class="nav-title">전체 목차 →</span>
+    </a>
+  </nav>
+</main>
+
+<script>
+  window.addEventListener('scroll',()=>{
+    const doc=document.documentElement;
+    document.getElementById('progressFill').style.width=(doc.scrollTop/(doc.scrollHeight-doc.clientHeight)*100)+'%';
+  });
+  document.querySelectorAll('section[id]').forEach(s=>{
+    new IntersectionObserver(entries=>{
+      entries.forEach(e=>{
+        const a=document.querySelector(`.toc-sidebar a[href="#${s.id}"]`);
+        if(a) a.classList.toggle('active',e.isIntersecting);
+      });
+    },{threshold:.25}).observe(s);
+  });
+</script>
+</body>
+</html>
